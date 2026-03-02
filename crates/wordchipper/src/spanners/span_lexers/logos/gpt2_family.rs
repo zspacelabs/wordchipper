@@ -10,7 +10,7 @@ use core::ops::Range;
 
 use logos::{Logos, SpannedIter};
 
-use crate::{alloc::vec::Vec, spanners::SpanRef};
+use crate::{alloc::collections::VecDeque, spanners::SpanRef};
 
 /// How a logos token interacts with whitespace splitting.
 ///
@@ -315,7 +315,7 @@ where
     last: usize,
     pending_ws: Option<Range<usize>>,
 
-    fifo: Vec<Range<usize>>,
+    fifo: VecDeque<Range<usize>>,
     iter: Option<SpannedIter<'source, Token>>,
 }
 
@@ -332,7 +332,7 @@ where
             text,
             last: 0,
             pending_ws: None,
-            fifo: Vec::new(),
+            fifo: Default::default(),
             iter: Some(iter),
         }
     }
@@ -341,7 +341,7 @@ where
         &mut self,
         range: Range<usize>,
     ) {
-        self.fifo.push(range);
+        self.fifo.push_back(range);
     }
 
     fn next_tok(&mut self) -> Option<(Gpt2FamilyTokenRole, Range<usize>)> {
@@ -415,8 +415,8 @@ where
         }
 
         loop {
-            if !self.fifo.is_empty() {
-                return Some(self.fifo.remove(0));
+            if let Some(range) = self.fifo.pop_front() {
+                return Some(range);
             }
 
             if let Some((role, Range { start, end })) = self.next_tok() {
