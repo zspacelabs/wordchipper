@@ -5,7 +5,7 @@ use std::{
 
 use wordchipper::{TokenDecoder, TokenEncoder, Tokenizer};
 
-use crate::{
+use crate::util::{
     disk_cache,
     input_output::{InputArgs, OutputArgs},
     model_selector::ModelSelectorArgs,

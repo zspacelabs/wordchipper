@@ -2,10 +2,10 @@
 
 use crate::{join_patterns, support::regex::ConstRegexPattern};
 
-/// The original "`r50k_base`" pretrained vocabulary word pattern.
+/// The original "`gpt2`" vocabulary word pattern.
 ///
 /// Slower, use [`OA_R50K_BASE_PATTERN`].
-pub const OA_R50K_BASE_PATTERN_SLOW: ConstRegexPattern = ConstRegexPattern::Fancy(join_patterns!(
+pub const OA_GPT2_PATTERN_SLOW: ConstRegexPattern = ConstRegexPattern::Fancy(join_patterns!(
     r"'s",
     r"'t",
     r"'re",
@@ -20,10 +20,10 @@ pub const OA_R50K_BASE_PATTERN_SLOW: ConstRegexPattern = ConstRegexPattern::Fanc
     r"\s+",
 ));
 
-/// The optimized "`r50k_base`" pretrained vocabulary word pattern.
+/// The optimized "`gpt2`" vocabulary word pattern.
 ///
-/// Faster than [`OA_R50K_BASE_PATTERN_SLOW`], optimized for performance.
-pub const OA_R50K_BASE_PATTERN: ConstRegexPattern = ConstRegexPattern::Fancy(join_patterns!(
+/// Faster than [`OA_GPT2_PATTERN_SLOW`], optimized for performance.
+pub const OA_GPT2_PATTERN: ConstRegexPattern = ConstRegexPattern::Fancy(join_patterns!(
     r"'(?:[sdmt]|ll|ve|re)",
     r" ?\p{L}++",
     r" ?\p{N}++",
@@ -33,8 +33,14 @@ pub const OA_R50K_BASE_PATTERN: ConstRegexPattern = ConstRegexPattern::Fancy(joi
     r"\s",
 ));
 
+/// The optimized "`gpt2`" vocabulary word pattern.
+///
+/// Faster than [`OA_GPT2_PATTERN_SLOW`], optimized for performance.
+pub const OA_R50K_BASE_PATTERN: ConstRegexPattern = OA_GPT2_PATTERN;
+
 /// The "`p50k_base`" pretrained vocabulary word pattern.
 pub const OA_P50K_BASE_PATTERN: ConstRegexPattern = OA_R50K_BASE_PATTERN;
+
 /// The "`cl100k_base`" pretrained vocabulary word pattern.
 pub const OA_CL100K_BASE_PATTERN: ConstRegexPattern = ConstRegexPattern::Fancy(join_patterns!(
     r"'(?i:[sdmt]|ll|ve|re)",
@@ -65,7 +71,7 @@ mod test {
     #[test]
     fn test_patterns_compile() {
         assert!(OA_R50K_BASE_PATTERN.compile().is_ok());
-        assert!(OA_R50K_BASE_PATTERN_SLOW.compile().is_ok());
+        assert!(OA_GPT2_PATTERN_SLOW.compile().is_ok());
 
         assert!(OA_CL100K_BASE_PATTERN.compile().is_ok());
 

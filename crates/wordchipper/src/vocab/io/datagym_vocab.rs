@@ -200,7 +200,7 @@ pub fn load_gpt2_vocab<T: TokenType>(
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
+    use std::{println, sync::Arc};
 
     use wordchipper_disk_cache::WordchipperDiskCache;
 
@@ -213,6 +213,8 @@ mod tests {
         let mut disk_cache: WordchipperDiskCache = Default::default();
         let vocab: Arc<UnifiedTokenVocab<u32>> = load_gpt2_vocab(&mut disk_cache).unwrap().into();
         let encoder = TokenEncoderOptions::default().build(vocab.clone());
+
+        println!("{}", vocab.spanning().pattern().as_str());
         common_encoder_tests(vocab, encoder);
     }
 }

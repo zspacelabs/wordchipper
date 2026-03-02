@@ -13,7 +13,7 @@ use wordchipper::{
 };
 use wordchipper_training::{BPETRainerOptions, BPETrainer};
 
-use crate::{input_output::OutputArgs, logging::LogArgs};
+use crate::util::{input_output::OutputArgs, logging::LogArgs};
 
 /// File formats for the train command.
 #[derive(Debug, Clone, Copy, clap::ValueEnum)]
