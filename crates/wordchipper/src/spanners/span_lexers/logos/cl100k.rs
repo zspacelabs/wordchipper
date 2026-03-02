@@ -375,6 +375,56 @@ mod tests {
     }
 
     // -------------------------------------------------------------------
+    // iterator vs for_each oracle equivalence
+    // -------------------------------------------------------------------
+
+    /// Collect Word ranges from for_each_classified_span (the oracle).
+    fn oracle_word_ranges(text: &str) -> Vec<Range<usize>> {
+        use crate::spanners::span_lexers::logos::gpt2_family::{
+            Gpt2FamilyTokenRole,
+            for_each_classified_span,
+        };
+
+        let tokens: Vec<(Gpt2FamilyTokenRole, Range<usize>)> = Cl100kToken::lexer(text)
+            .spanned()
+            .map(|(res, range)| {
+                let role = match res {
+                    Ok(tok) => tok.family_role(),
+                    Err(_) => Gpt2FamilyTokenRole::Gap,
+                };
+                (role, range)
+            })
+            .collect();
+
+        let mut word_ranges = Vec::new();
+        for_each_classified_span(tokens.into_iter(), text, 0, &mut |span| {
+            if let SpanRef::Word(r) = span {
+                word_ranges.push(r);
+            }
+            true
+        });
+        word_ranges
+    }
+
+    proptest::proptest! {
+        #![proptest_config(proptest::prelude::ProptestConfig::with_cases(2000))]
+
+        /// The iterator must produce exactly the same Word ranges as
+        /// the for_each_classified_span oracle for any input.
+        #[test]
+        fn iter_matches_oracle(text in "\\PC{0,200}") {
+            let iter_ranges: Vec<Range<usize>> =
+                Gpt2FamilySpanIter::new(text.as_str(), Cl100kToken::lexer(&text).spanned())
+                    .collect();
+            let oracle_ranges = oracle_word_ranges(&text);
+            proptest::prop_assert_eq!(
+                &iter_ranges, &oracle_ranges,
+                "cl100k iter vs oracle mismatch for {:?}", text
+            );
+        }
+    }
+
+    // -------------------------------------------------------------------
     // proptest oracle: regex vs logos equivalence
     // -------------------------------------------------------------------
 
