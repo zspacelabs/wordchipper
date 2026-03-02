@@ -59,11 +59,11 @@ pub enum RegexWrapper {
 }
 
 impl SpanLexer for RegexWrapper {
-    fn next_span(
-        &self,
-        text: &str,
-    ) -> Option<Range<usize>> {
-        self.find_iter(text).next().map(|m| m.range())
+    fn find_iter<'a>(
+        &'a self,
+        text: &'a str,
+    ) -> Box<dyn Iterator<Item = Range<usize>> + 'a> {
+        Box::new(self.find_iter(text).map(|m| m.range()))
     }
 }
 

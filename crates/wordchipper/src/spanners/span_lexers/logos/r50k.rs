@@ -6,6 +6,7 @@
 //! accelerated lexer using [`Gpt2FamilyTokenRole`] and [`for_each_classified_span`].
 
 use core::ops::Range;
+use std::prelude::rust_2015::Box;
 
 use logos::Logos;
 
@@ -15,7 +16,7 @@ use crate::{
     spanners::span_lexers::{
         SpanLexer,
         accelerators::RegexAcceleratorHook,
-        logos::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilyTokenRole, gpt2_family_token_next_span},
+        logos::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilySpanIter, Gpt2FamilyTokenRole},
     },
 };
 
@@ -77,11 +78,14 @@ inventory::submit! {
 }
 
 impl SpanLexer for R50kLexer {
-    fn next_span(
-        &self,
-        text: &str,
-    ) -> Option<Range<usize>> {
-        gpt2_family_token_next_span(text, R50kToken::lexer(text).spanned())
+    fn find_iter<'a>(
+        &'a self,
+        text: &'a str,
+    ) -> Box<dyn Iterator<Item = Range<usize>> + 'a> {
+        Box::new(Gpt2FamilySpanIter::new(
+            text,
+            R50kToken::lexer(text).spanned(),
+        ))
     }
 }
 

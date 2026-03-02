@@ -6,10 +6,11 @@
 //! accelerated lexer using [`Gpt2FamilyTokenRole`] and [`for_each_classified_span`].
 
 use core::ops::Range;
+use std::prelude::rust_2015::Box;
 
 use logos::Logos;
 
-use super::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilyTokenRole, gpt2_family_token_next_span};
+use super::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilySpanIter, Gpt2FamilyTokenRole};
 use crate::{
     alloc::sync::Arc,
     pretrained::openai::OA_CL100K_BASE_PATTERN,
@@ -76,11 +77,14 @@ inventory::submit! {
 }
 
 impl SpanLexer for Cl100kLexer {
-    fn next_span(
-        &self,
-        text: &str,
-    ) -> Option<Range<usize>> {
-        gpt2_family_token_next_span(text, Cl100kToken::lexer(text).spanned())
+    fn find_iter<'a>(
+        &'a self,
+        text: &'a str,
+    ) -> Box<dyn Iterator<Item = Range<usize>> + 'a> {
+        Box::new(Gpt2FamilySpanIter::new(
+            text,
+            Cl100kToken::lexer(text).spanned(),
+        ))
     }
 }
 
