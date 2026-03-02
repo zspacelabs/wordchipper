@@ -7,7 +7,6 @@ use crate::commands::train_cmd::FileFormat;
 
 /// Args for batched input.
 #[derive(clap::Args, Debug)]
-#[group(required = true, multiple = false)]
 pub struct BatchedInputArgs {
     /// Input files.
     files: Vec<String>,
