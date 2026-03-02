@@ -116,11 +116,11 @@ impl StressLexerArgs {
         log::error!("sample: <<<{}>>>", sample_ctx);
         log::error!("expected: {:?}", expected_ctx);
         for (i, span) in expected_ctx.iter().enumerate() {
-            log::error!("  {}: {:?}: <<<{}>>", i, span, &sample[span.clone()]);
+            log::error!("  {}: {:?}: <<<{}>>>", i, span, &sample[span.clone()]);
         }
         log::error!("observed: {:?}", observed_ctx);
         for (i, span) in observed_ctx.iter().enumerate() {
-            log::error!("  {}: {:?}: <<<{}>>", i, span, &sample[span.clone()]);
+            log::error!("  {}: {:?}: <<<{}>>>", i, span, &sample[span.clone()]);
         }
 
         Err("Accelerated lexer failed to match reference lexer."
