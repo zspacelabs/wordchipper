@@ -1,7 +1,7 @@
 //! # Regex Wrapper
 //! This modules provides mechanisms to mix `regex` and `fancy_regex` types.
 
-use core::fmt::Debug;
+use core::{fmt::Debug, ops::Range};
 
 use crate::{alloc::boxed::Box, spanners::span_lexers::SpanLexer, support::regex::RegexPattern};
 
@@ -62,8 +62,8 @@ impl SpanLexer for RegexWrapper {
     fn next_span(
         &self,
         text: &str,
-    ) -> Option<(usize, usize)> {
-        self.find_iter(text).next().map(|m| (m.start(), m.end()))
+    ) -> Option<Range<usize>> {
+        self.find_iter(text).next().map(|m| m.range())
     }
 }
 

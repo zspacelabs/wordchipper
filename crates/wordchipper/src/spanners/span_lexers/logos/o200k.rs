@@ -96,9 +96,8 @@ impl SpanLexer for O200kLexer {
     fn next_span(
         &self,
         text: &str,
-    ) -> Option<(usize, usize)> {
+    ) -> Option<Range<usize>> {
         gpt2_family_token_next_span(text, O200kToken::lexer(text).spanned())
-            .map(|Range { start, end }| (start, end))
     }
 }
 

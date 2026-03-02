@@ -1,5 +1,7 @@
 //! # Lexer Text Spanner
 
+use core::ops::Range;
+
 use crate::{
     alloc::sync::Arc,
     spanners::{SpanRef, TextSpanner, span_lexers::SpanLexer},
@@ -40,7 +42,7 @@ impl LexerTextSpanner {
     fn next_special_span(
         &self,
         text: &str,
-    ) -> Option<(usize, usize)> {
+    ) -> Option<Range<usize>> {
         self.special_lexer.as_ref().and_then(|s| s.next_span(text))
     }
 
@@ -65,7 +67,7 @@ impl LexerTextSpanner {
         f: &mut dyn FnMut(SpanRef) -> bool,
     ) -> (bool, usize) {
         let mut last = 0;
-        while let Some((start, end)) = self.word_lexer.next_span(&text[last..]) {
+        while let Some(Range { start, end }) = self.word_lexer.next_span(&text[last..]) {
             let start = start + last;
             let end = end + last;
             if last < start {
@@ -104,7 +106,7 @@ impl TextSpanner for LexerTextSpanner {
         let mut current = text;
         let mut offset = 0;
 
-        while let Some((start, end)) = self.next_special_span(current) {
+        while let Some(Range { start, end }) = self.next_special_span(current) {
             let pre = &current[..start];
 
             let (cont, used) = self.for_each_word(pre, offset, f);

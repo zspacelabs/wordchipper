@@ -1,6 +1,6 @@
 //! # `SpanLexer` trait
 
-use core::ops::Deref;
+use core::ops::{Deref, Range};
 
 /// Word-scanning plugin trait.
 ///
@@ -18,15 +18,10 @@ use core::ops::Deref;
 /// for traits like `Iterator` and `Future`.
 pub trait SpanLexer: Send + Sync {
     /// Find the next match in `text` starting from `offset`.
-    ///
-    /// Returns `(start, end)` byte positions relative to `text`, or `None`.
-    /// Used by the default [`for_each_word`](Self::for_each_word) and for
-    /// special-token scanning. Implementations that override `for_each_word`
-    /// can leave this at the default (returns `None`).
     fn next_span(
         &self,
         text: &str,
-    ) -> Option<(usize, usize)>;
+    ) -> Option<Range<usize>>;
 }
 
 // Blanket implementation for any type that derefs to a SpanLexer.
@@ -39,7 +34,7 @@ where
     fn next_span(
         &self,
         text: &str,
-    ) -> Option<(usize, usize)> {
+    ) -> Option<Range<usize>> {
         self.deref().next_span(text)
     }
 }
