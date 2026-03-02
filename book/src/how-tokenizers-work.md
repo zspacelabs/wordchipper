@@ -31,12 +31,14 @@ al., 2016) works in two phases: training and encoding.
 ### Training: building the vocabulary
 
 Training starts with a base vocabulary of individual bytes (0-255) and iteratively discovers the
-most useful multi-byte tokens.
+most useful multi-byte tokens. In practice, the training corpus is first split into spans by a regex
+pattern (see [Pre-tokenization](#pre-tokenization-splitting-before-bpe) below), and pair counting
+happens within each span independently. The regex determines what token boundaries are possible. The
+steps below describe the core merge algorithm that runs on those spans.
 
 **Step 1.** Start with every unique byte as a token. The vocabulary has 256 entries.
 
-**Step 2.** Count every adjacent pair of tokens across the training corpus. Find the most frequent
-pair.
+**Step 2.** Count every adjacent pair of tokens across all spans. Find the most frequent pair.
 
 **Step 3.** Create a new token that represents that pair merged together. Add it to the vocabulary.
 Record the merge rule: `(token_a, token_b) -> new_token`.
@@ -185,8 +187,8 @@ Input:     "Hello, world!"
 In wordchipper's architecture:
 
 - **Step 1** is handled by a `TextSpanner` (the `spanners` module). The default uses regex. For
-  known patterns (cl100k, o200k, r50k), a compile-time DFA lexer is used automatically for
-  30-50x faster spanning.
+  known patterns (cl100k, o200k, r50k), a compile-time DFA lexer is used automatically for 30-50x
+  faster spanning.
 - **Step 2** is handled by a `SpanEncoder` (the `encoders` module). Multiple BPE algorithms are
   available, optimized for different use cases.
 
