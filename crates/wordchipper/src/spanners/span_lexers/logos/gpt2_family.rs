@@ -450,10 +450,11 @@ where
                                 emit!(trim..ws_end);
                                 emit!(start..end);
                             } else {
-                                emit!(trim..end)
+                                emit!(trim..end);
                             }
+                        } else {
+                            emit!(start..end);
                         }
-                        emit!(start..end);
                     }
                     Gpt2FamilyTokenRole::Word { check_contraction } => {
                         if let Some(ws) = self.pending_ws.take() {
