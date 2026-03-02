@@ -24,6 +24,14 @@ pub struct StressLexerArgs {
 
     #[command(flatten)]
     selector: LexerSelectorArgs,
+
+    /// Span context before error.
+    #[clap(long, default_value_t = 4)]
+    pub pre_context_size: usize,
+
+    /// Span context after error.
+    #[clap(long, default_value_t = 4)]
+    pub post_context_size: usize,
 }
 
 impl StressLexerArgs {
@@ -69,9 +77,6 @@ impl StressLexerArgs {
         ref_lexer: &dyn SpanLexer,
         test_lexer: &dyn SpanLexer,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        const PRE_CONTEXT_SIZE: usize = 2;
-        const POST_CONTEXT_SIZE: usize = 2;
-
         let expected_spans = ref_lexer.find_iter(sample).collect::<Vec<_>>();
         let observed_spans = test_lexer.find_iter(sample).collect::<Vec<_>>();
 
@@ -88,10 +93,10 @@ impl StressLexerArgs {
         }
         let first_diff = first_diff.unwrap();
         let mut start = first_diff;
-        for _ in 0..PRE_CONTEXT_SIZE {
+        for _ in 0..self.pre_context_size {
             start -= 1;
         }
-        let end = first_diff + POST_CONTEXT_SIZE;
+        let end = first_diff + self.post_context_size;
 
         let expected_ctx = &expected_spans[start..end];
         let observed_ctx = &observed_spans[start..end];
@@ -110,7 +115,13 @@ impl StressLexerArgs {
         log::error!("Accelerated lexer failed to match reference lexer.");
         log::error!("sample: <<<{}>>>", sample_ctx);
         log::error!("expected: {:?}", expected_ctx);
+        for (i, span) in expected_ctx.iter().enumerate() {
+            log::error!("  {}: {:?}: <<<{}>>", i, span, &sample[span.clone()]);
+        }
         log::error!("observed: {:?}", observed_ctx);
+        for (i, span) in observed_ctx.iter().enumerate() {
+            log::error!("  {}: {:?}: <<<{}>>", i, span, &sample[span.clone()]);
+        }
 
         Err("Accelerated lexer failed to match reference lexer."
             .to_string()
