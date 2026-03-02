@@ -419,9 +419,7 @@ where
                 return Some(self.fifo.remove(0));
             }
 
-            if let Some((role, range)) = self.next_tok() {
-                let Range { start, end } = range;
-
+            if let Some((role, Range { start, end })) = self.next_tok() {
                 if self.last < start {
                     // We skipped over a gap.
                     // If there was a pending ws, emit it.
@@ -446,9 +444,7 @@ where
                         if let Some(ws) = self.pending_ws.take() {
                             let ws_start = ws.start;
                             let ws_end = ws.end;
-
                             let trim = flush_ws_split!(ws);
-
                             if trim == ws_start || bytes[trim] != b' ' {
                                 // Single ws char, or last char is not ASCII space.
                                 emit!(trim..ws_end);
