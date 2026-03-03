@@ -9,6 +9,7 @@
 use core::ops::Range;
 
 use logos::{Logos, SpannedIter};
+use ringbuf::traits::{Consumer, Producer};
 
 use crate::spanners::SpanRef;
 
@@ -120,10 +121,7 @@ where
     last: usize,
     pending_ws: Option<Range<usize>>,
 
-    // Inline ring buffer: avoids heap allocation entirely.
-    buf: [Range<usize>; 3],
-    buf_r: u8,
-    buf_w: u8,
+    ring: ringbuf::StaticRb<Range<usize>, 3>,
 
     iter: Option<SpannedIter<'source, Token>>,
 }
@@ -141,9 +139,7 @@ where
             text,
             last: 0,
             pending_ws: None,
-            buf: [0..0, 0..0, 0..0],
-            buf_r: 0,
-            buf_w: 0,
+            ring: Default::default(),
             iter: Some(iter),
         }
     }
@@ -152,21 +148,11 @@ where
         &mut self,
         range: Range<usize>,
     ) {
-        debug_assert!(
-            (self.buf_w.wrapping_sub(self.buf_r)) < 3,
-            "inline ring buffer overflow"
-        );
-        self.buf[(self.buf_w % 3) as usize] = range;
-        self.buf_w = self.buf_w.wrapping_add(1);
+        self.ring.try_push(range).unwrap();
     }
 
     fn pop(&mut self) -> Option<Range<usize>> {
-        if self.buf_r == self.buf_w {
-            return None;
-        }
-        let range = self.buf[(self.buf_r % 3) as usize].clone();
-        self.buf_r = self.buf_r.wrapping_add(1);
-        Some(range)
+        self.ring.try_pop()
     }
 
     fn next_tok(&mut self) -> Option<(Gpt2FamilyTokenRole, Range<usize>)> {

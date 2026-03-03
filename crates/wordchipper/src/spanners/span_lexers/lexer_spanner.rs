@@ -45,7 +45,7 @@ impl LexerTextSpanner {
     ) -> Option<Range<usize>> {
         self.special_lexer
             .as_ref()
-            .and_then(|s| s.find_iter(text).next())
+            .and_then(|s| s.find_span_iter(text).next())
     }
 
     /// Scan `text` into [`Word`](SpanRef::Word) and [`Gap`](SpanRef::Gap) spans.
@@ -70,7 +70,7 @@ impl LexerTextSpanner {
     ) -> (bool, usize) {
         let mut last = 0;
 
-        for Range { start, end } in self.word_lexer.find_iter(text) {
+        for Range { start, end } in self.word_lexer.find_span_iter(text) {
             if last < start {
                 if !f(SpanRef::Gap(offset_range::<usize>(last..start, offset))) {
                     return (false, last);

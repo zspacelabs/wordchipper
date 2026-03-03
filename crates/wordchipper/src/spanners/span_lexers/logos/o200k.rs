@@ -93,7 +93,7 @@ inventory::submit! {
 }
 
 impl SpanLexer for O200kLexer {
-    fn find_iter<'a>(
+    fn find_span_iter<'a>(
         &'a self,
         text: &'a str,
     ) -> Box<dyn Iterator<Item = Range<usize>> + 'a> {
@@ -110,6 +110,7 @@ mod tests {
     use crate::{
         alloc::{sync::Arc, vec::Vec},
         spanners::{SpanRef, TextSpanner, span_lexers::LexerTextSpanner},
+        support::regex::RegexWrapper,
     };
 
     /// Build a `TextSpanner` from a logos lexer with no specials.
@@ -141,6 +142,20 @@ mod tests {
             "expected \" she's\" as one token, got: {:?}",
             words
         );
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn test_regression() {
+        let sample = " average temperature of 21°C (70ºF) during the winter.
+Owing to";
+
+        let regex = RegexWrapper::from(OA_O200K_BASE_PATTERN.to_pattern());
+        let expected_spans = regex.find_span_iter(&sample).collect::<Vec<_>>();
+
+        let observed_spans = O200kLexer.find_span_iter(&sample).collect::<Vec<_>>();
+
+        assert_eq!(observed_spans, expected_spans);
     }
 
     #[test]

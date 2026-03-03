@@ -32,31 +32,32 @@ doc_markdown = "deny"
 # Public Deps
 # These are visible to users, so we need to be careful about overly recent requirements.
 
-base64 = { version = "0.22.1", default-features = false }
-aho-corasick = { version = "1.1", default-features = false }
 bpe-openai = "0.3"
 compact_str = "0.9.0"
 dary_heap = "0.3.5"
 directories-next = "2.0.0"
 downloader = "0.2.7"
 hashbrown = "0.16.0"
+inventory = "0.3.20"
+jsonl = "4.0.1"
 parking_lot = "0.12.4"
+rand = "0.9.2"
+rayon = "1.11"
 serde = "1.0.220"
 serde_json = "1.0.140"
-jsonl = "4.0.1"
-rand = "0.9.2"
 shellexpand = "3.1.0"
-strum = { version = "0.27.0", default-features = false, features = ["derive"] }
-rayon = "1.11"
 spin = "0.9.8"
-inventory = "0.3.20"
 
+aho-corasick = { version = "1.1", default-features = false }
+base64 = { version = "0.22.1", default-features = false }
 foldhash = { version = "0.2.0", default-features = false }
 logos = { version = "0.16.1", default-features = false }
 log = { version = "0.4.20", default-features = false }
 num-traits = { version = "0.2.10", default-features = false }
 once_cell = { version = "1.21.0", default-features = false }
 regex = { version = "1.12.3", default-features = false }
+ringbuf = { version = "0.4.2", default-features = false }
+strum = { version = "0.27.0", default-features = false, features = ["derive"] }
 thiserror = { version = "2.0.10", default-features = false }
 tracing = { version = "0.1.40", default-features = false }
 

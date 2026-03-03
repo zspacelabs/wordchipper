@@ -14,7 +14,7 @@ use crate::prelude::*;
 /// for traits like `Iterator` and `Future`.
 pub trait SpanLexer: Send + Sync {
     /// Returns an iter over matching spans in the text.
-    fn find_iter<'a>(
+    fn find_span_iter<'a>(
         &'a self,
         text: &'a str,
     ) -> Box<dyn Iterator<Item = Range<usize>> + 'a>;
@@ -27,10 +27,10 @@ where
     D: Deref + Send + Sync,
     D::Target: SpanLexer,
 {
-    fn find_iter<'a>(
+    fn find_span_iter<'a>(
         &'a self,
         text: &'a str,
     ) -> Box<dyn Iterator<Item = Range<usize>> + 'a> {
-        self.deref().find_iter(text)
+        self.deref().find_span_iter(text)
     }
 }

@@ -26,12 +26,12 @@ pub struct StressLexerArgs {
     selector: LexerSelectorArgs,
 
     /// Span context before error.
-    #[clap(long, default_value_t = 4)]
-    pub pre_context_size: usize,
+    #[clap(long, default_value_t = 8)]
+    pub pre_context: usize,
 
     /// Span context after error.
-    #[clap(long, default_value_t = 4)]
-    pub post_context_size: usize,
+    #[clap(long, default_value_t = 8)]
+    pub post_context: usize,
 }
 
 impl StressLexerArgs {
@@ -53,8 +53,8 @@ impl StressLexerArgs {
             let failures = samples
                 .par_iter()
                 .filter_map(|s| {
-                    let expected = ref_lexer.find_iter(s).collect::<Vec<_>>();
-                    let test = accel_lexer.find_iter(s).collect::<Vec<_>>();
+                    let expected = ref_lexer.find_span_iter(s).collect::<Vec<_>>();
+                    let test = accel_lexer.find_span_iter(s).collect::<Vec<_>>();
                     if test != expected {
                         return Some(s);
                     }
@@ -77,8 +77,8 @@ impl StressLexerArgs {
         ref_lexer: &dyn SpanLexer,
         test_lexer: &dyn SpanLexer,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let expected_spans = ref_lexer.find_iter(sample).collect::<Vec<_>>();
-        let observed_spans = test_lexer.find_iter(sample).collect::<Vec<_>>();
+        let expected_spans = ref_lexer.find_span_iter(sample).collect::<Vec<_>>();
+        let observed_spans = test_lexer.find_span_iter(sample).collect::<Vec<_>>();
 
         if observed_spans == expected_spans {
             return Ok(());
@@ -93,10 +93,10 @@ impl StressLexerArgs {
         }
         let first_diff = first_diff.unwrap();
         let mut start = first_diff;
-        for _ in 0..self.pre_context_size {
+        for _ in 0..self.pre_context {
             start -= 1;
         }
-        let end = first_diff + self.post_context_size;
+        let end = first_diff + self.post_context;
 
         let expected_ctx = &expected_spans[start..end];
         let observed_ctx = &observed_spans[start..end];

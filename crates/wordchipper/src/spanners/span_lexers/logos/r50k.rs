@@ -77,7 +77,7 @@ inventory::submit! {
 }
 
 impl SpanLexer for R50kLexer {
-    fn find_iter<'a>(
+    fn find_span_iter<'a>(
         &'a self,
         text: &'a str,
     ) -> Box<dyn Iterator<Item = Range<usize>> + 'a> {
