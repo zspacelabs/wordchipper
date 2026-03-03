@@ -110,17 +110,31 @@ impl StressLexerArgs {
             observed_ctx.last().unwrap().end,
         );
 
+        let marker = first_diff - start;
+
         let sample_ctx = &sample[sample_start..sample_end];
 
         log::error!("Accelerated lexer failed to match reference lexer.");
         log::error!("sample: <<<{}>>>", sample_ctx);
         log::error!("expected: {:?}", expected_ctx);
         for (i, span) in expected_ctx.iter().enumerate() {
-            log::error!("  {}: {:?}: <<<{}>>>", i, span, &sample[span.clone()]);
+            log::error!(
+                " {}{}: {:?}: <<<{}>>>",
+                if marker == i { "*" } else { " " },
+                i,
+                span,
+                &sample[span.clone()]
+            );
         }
         log::error!("observed: {:?}", observed_ctx);
         for (i, span) in observed_ctx.iter().enumerate() {
-            log::error!("  {}: {:?}: <<<{}>>>", i, span, &sample[span.clone()]);
+            log::error!(
+                " {}{}: {:?}: <<<{}>>>",
+                if marker == i { "*" } else { " " },
+                i,
+                span,
+                &sample[span.clone()]
+            );
         }
 
         Err("Accelerated lexer failed to match reference lexer."
