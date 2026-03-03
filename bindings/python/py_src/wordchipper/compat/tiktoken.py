@@ -18,7 +18,7 @@ from typing import Any
 from wordchipper import Tokenizer
 
 # ---------------------------------------------------------------------------
-# Model-to-encoding mappings (from tiktoken 0.12, excluding gpt-2 entries)
+# Model-to-encoding mappings (based on tiktoken, excluding gpt-2 entries)
 # ---------------------------------------------------------------------------
 
 MODEL_TO_ENCODING: dict[str, str] = {
@@ -92,7 +92,7 @@ MODEL_PREFIX_TO_ENCODING: dict[str, str] = {
 
 _ENCODING_NAMES = ["r50k_base", "p50k_base", "p50k_edit", "cl100k_base", "o200k_base"]
 
-# Thread-safe encoding cache (keyed by encoding name)
+# Encoding cache (keyed by encoding name)
 _cache: dict[str, Encoding] = {}
 
 
@@ -116,14 +116,14 @@ class Encoding:
 
     @property
     def n_vocab(self) -> int:
-        return self.max_token_value + 1
+        return self._tok.vocab_size
 
     @property
     def eot_token(self) -> int:
         for tok_name, tok_id in self._tok.get_special_tokens():
             if tok_name == "<|endoftext|>":
                 return tok_id
-        return self.max_token_value
+        raise ValueError(f"encoding {self._name!r} has no <|endoftext|> token")
 
     @property
     def special_tokens_set(self) -> set[str]:
@@ -138,6 +138,11 @@ class Encoding:
         allowed_special: Any = None,
         disallowed_special: Any = None,
     ) -> list[int]:
+        """Encode text to token IDs.
+
+        ``allowed_special`` and ``disallowed_special`` are accepted for API
+        compatibility but have no effect.
+        """
         return self._tok.encode(text)
 
     def encode_ordinary(self, text: str) -> list[int]:

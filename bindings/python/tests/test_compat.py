@@ -54,6 +54,10 @@ class TestTiktokenModelMapping:
     def test_encoding_name_for_model_finetuned(self):
         assert tiktoken.encoding_name_for_model("ft:gpt-4o:my-org") == "o200k_base"
 
+    def test_encoding_for_model_prefix(self):
+        enc = tiktoken.encoding_for_model("gpt-4o-2024-08-06")
+        assert enc.name == "o200k_base"
+
     def test_encoding_name_for_model_unknown(self):
         with pytest.raises(KeyError):
             tiktoken.encoding_name_for_model("totally-unknown-model")
@@ -90,6 +94,12 @@ class TestTiktokenEncoding:
         batch = enc.encode_batch(texts)
         assert enc.decode_batch(batch) == texts
 
+    def test_encode_empty(self, enc):
+        assert enc.encode("") == []
+
+    def test_decode_empty(self, enc):
+        assert enc.decode([]) == ""
+
     def test_encode_accepts_special_kwargs(self, enc):
         # These kwargs are accepted silently for API compat
         tokens = enc.encode("hello", allowed_special="all", disallowed_special=())
@@ -103,7 +113,6 @@ class TestTiktokenProperties:
 
     def test_n_vocab(self, enc):
         assert enc.n_vocab > 0
-        assert enc.n_vocab == enc.max_token_value + 1
 
     def test_max_token_value(self, enc):
         assert enc.max_token_value > 0
@@ -158,6 +167,10 @@ class TestHFTokenizer:
         result = tok.encode("hello")
         assert len(result.ids) > 0
 
+    def test_from_pretrained_unknown(self):
+        with pytest.raises(ValueError):
+            HFTokenizer.from_pretrained("Xenova/totally-unknown")
+
     def test_encode_returns_encoding(self, tok):
         result = tok.encode("hello world")
         assert isinstance(result, HFEncoding)
@@ -200,6 +213,17 @@ class TestHFTokenizer:
         tid = tok.token_to_id("hello")
         assert tid is not None
         assert tok.id_to_token(tid) == "hello"
+
+    def test_id_to_token_out_of_range(self, tok):
+        assert tok.id_to_token(999_999_999) is None
+
+    def test_encode_empty(self, tok):
+        result = tok.encode("")
+        assert result.ids == []
+        assert result.tokens == []
+
+    def test_decode_empty(self, tok):
+        assert tok.decode([]) == ""
 
     def test_encode_accepts_extra_kwargs(self, tok):
         # Extra params accepted silently for API compat

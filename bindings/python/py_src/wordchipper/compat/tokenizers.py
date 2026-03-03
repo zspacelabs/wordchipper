@@ -61,6 +61,11 @@ class Tokenizer:
         is_pretokenized: bool = False,
         add_special_tokens: bool = True,
     ) -> Encoding:
+        """Encode a string, returning an :class:`Encoding` with ids and tokens.
+
+        ``pair``, ``is_pretokenized``, and ``add_special_tokens`` are accepted
+        for API compatibility but have no effect.
+        """
         ids = self._tok.encode(sequence)
         tokens = [self._tok.id_to_token(i) or "" for i in ids]
         return Encoding(ids=ids, tokens=tokens)
@@ -83,6 +88,11 @@ class Tokenizer:
         ids: list[int],
         skip_special_tokens: bool = True,
     ) -> str:
+        """Decode token IDs to a string.
+
+        ``skip_special_tokens`` is accepted for API compatibility but has no
+        effect.
+        """
         return self._tok.decode(ids)
 
     def decode_batch(
