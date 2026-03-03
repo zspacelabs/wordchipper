@@ -42,14 +42,26 @@ use crate::{
 /// with following uppercase letters. `WordUpper` restricts its leading chars to
 /// `[\p{Lu}\p{Lt}]` so Lo/Lm/M chars can only match via `WordLower`.
 ///
+/// For o200k parity, mark chars (`\p{M}`) are excluded from the "prefix"
+/// entrypoint of prefixed-word/punctuation variants. In the regex alternation,
+/// a leading mark is consumed by branch 1 (`...[\p{Ll}\p{Lm}\p{Lo}\p{M}]+`)
+/// before later branches, but Logos chooses longest-match. Excluding `\p{M}`
+/// from those entrypoints preserves regex branch precedence while keeping DFA
+/// tokenization fast.
+///
 /// | Regex branch                                         | Logos variant  |
 /// |------------------------------------------------------|----------------|
-/// | `[^\r\n\p{L}\p{N}]?[UPPER]*[LOWER]+CONTRACTION?`     | WordLower      |
-/// | `[^\r\n\p{L}\p{N}]?[Lu,Lt]+[LOWER]*CONTRACTION?`     | WordUpper      |
+/// | `[^\r\n\p{L}\p{N}]?[UPPER]*[LOWER]+CONTRACTION?`     | `WordLower`      |
+/// | `[^\r\n\p{L}\p{N}]?[Lu,Lt]+[LOWER]*CONTRACTION?`     | `WordUpper`      |
 /// | `\p{N}{1,3}`                                         | Digits         |
-/// | ` ?[^\s\p{L}\p{N}]+[\r\n/]*`                         | Punctuation    |
+/// | ` ?[^\s\p{L}\p{N}]+[\r\n/]*`                         | Punctuation*   |
 /// | `\s*[\r\n]+`                                         | Newline        |
 /// | `\s+`                                                | Whitespace     |
+///
+/// `*` Implemented as two DFA variants:
+/// - `PunctuationSpaced`: leading ASCII space + punctuation body.
+/// - `PunctuationBare`: no leading space with non-Mark 2nd-core-char path.
+/// - `PunctuationBareMark`: no leading space, `punct + mark+` path.
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub(crate) enum O200kToken {
     // Regex Branch 1: UPPER*LOWER+ (no prefix, first char is letter/mark).
@@ -62,7 +74,7 @@ pub(crate) enum O200kToken {
 
     // Regex Branch 1 with non-letter prefix.
     #[regex(
-        r"[^\r\n\p{Letter}\p{Number}][\p{Lu}\p{Lt}\p{Lm}\p{Lo}\p{M}]*[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(?i:'(?:s|t|d|m|re|ve|ll))?",
+        r"[^\r\n\p{Letter}\p{Number}\p{Mark}][\p{Lu}\p{Lt}\p{Lm}\p{Lo}\p{M}]*[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(?i:'(?:s|t|d|m|re|ve|ll))?",
         priority = 3
     )]
     PrefixedWordLower,
@@ -76,7 +88,7 @@ pub(crate) enum O200kToken {
 
     // Regex Branch 2 with non-letter prefix.
     #[regex(
-        r"[^\r\n\p{Letter}\p{Number}][\p{Lu}\p{Lt}]+[\p{Ll}\p{Lm}\p{Lo}\p{M}]*(?i:'(?:s|t|d|m|re|ve|ll))?",
+        r"[^\r\n\p{Letter}\p{Number}\p{Mark}][\p{Lu}\p{Lt}]+[\p{Ll}\p{Lm}\p{Lo}\p{M}]*(?i:'(?:s|t|d|m|re|ve|ll))?",
         priority = 1
     )]
     PrefixedWordUpper,
@@ -85,8 +97,19 @@ pub(crate) enum O200kToken {
     Digits,
 
     // Note: o200k includes '/' in the newline-char set after punctuation.
-    #[regex(r" ?[^\s\p{Letter}\p{Number}]+[\r\n/]*")]
-    Punctuation,
+    //
+    // Spaced punctuation (`" !..."`) is always handled by punctuation in the
+    // regex alternation.
+    #[regex(r" [^\s\p{Letter}\p{Number}\p{Mark}][^\s\p{Letter}\p{Number}]*[\r\n/]*")]
+    PunctuationSpaced,
+
+    // Bare punctuation (`"!..."`) must not consume an immediate Mark as the
+    // 2nd core char; regex branch 1 matches `!◌` before punctuation.
+    #[regex(r"[^\s\p{Letter}\p{Number}\p{Mark}]\p{Mark}+", priority = 6)]
+    PunctuationBareMark,
+
+    #[regex(r"[^\s\p{Letter}\p{Number}\p{Mark}](?:[^\s\p{Letter}\p{Number}\p{Mark}][^\s\p{Letter}\p{Number}]*)?[\r\n/]*")]
+    PunctuationBare,
 
     #[regex(r"\s*[\r\n]+")]
     Newline,
@@ -107,7 +130,9 @@ impl Gpt2FamilyLogos<'_> for O200kToken {
                 check_contraction: false,
                 first_char_is_letter: false,
             },
-            Self::Punctuation => Gpt2FamilyTokenRole::Punctuation,
+            Self::PunctuationSpaced | Self::PunctuationBareMark | Self::PunctuationBare => {
+                Gpt2FamilyTokenRole::Punctuation
+            }
             Self::Digits | Self::Newline => Gpt2FamilyTokenRole::Standalone,
         }
     }
@@ -207,6 +232,10 @@ mod tests {
             // Lo + Lu sequences
             "\u{00BA}ABC",
             "\u{00BA}OpenAI",
+            // Mark + Lu should split mark as its own token (regex branch order).
+            "\u{0300}A",
+            // Mark + punctuation + Lu should keep mark separate.
+            "\u{0300}!A",
         ];
 
         for sample in cases {
