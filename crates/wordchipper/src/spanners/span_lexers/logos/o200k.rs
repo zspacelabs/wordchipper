@@ -109,15 +109,7 @@ mod tests {
     use super::*;
     use crate::{
         alloc::{sync::Arc, vec::Vec},
-        spanners::{
-            SpanRef,
-            TextSpanner,
-            span_lexers::{
-                LexerTextSpanner,
-                accelerators::testutil::assert_matches_reference_lexer,
-            },
-        },
-        support::regex::RegexWrapper,
+        spanners::{SpanRef, TextSpanner, span_lexers::LexerTextSpanner},
     };
 
     /// Build a `TextSpanner` from a logos lexer with no specials.
@@ -157,10 +149,13 @@ mod tests {
         let sample = " average temperature of 21°C (70ºF) during the winter.
 Owing to";
 
+        use crate::support::regex::RegexWrapper;
         let ref_lexer: Box<dyn SpanLexer> =
             Box::new(RegexWrapper::from(OA_O200K_BASE_PATTERN.to_pattern()));
+
         let accel_lexer: Box<dyn SpanLexer> = Box::new(O200kLexer);
 
+        use crate::spanners::span_lexers::accelerators::testutil::*;
         assert_matches_reference_lexer(sample, &ref_lexer, &accel_lexer);
     }
 

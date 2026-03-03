@@ -70,7 +70,10 @@ pub mod testutil {
     use core::cmp::max;
 
     use super::*;
-    use crate::prelude::*;
+    use crate::{
+        alloc::{format, vec},
+        prelude::*,
+    };
 
     /// Testing utility for checking that a sample and an accelerated span lexer match.
     pub fn assert_matches_reference_lexer(
