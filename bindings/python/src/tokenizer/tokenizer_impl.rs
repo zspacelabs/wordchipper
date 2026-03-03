@@ -35,10 +35,9 @@ impl Tokenizer {
         py.detach(|| {
             let mut disk_cache = wc::WordchipperDiskCache::default();
 
-            let (_descr, vocab) =
-                wordchipper::load_vocab(name, &mut disk_cache).map_err(to_pyerr)?;
+            let loaded = wc::load_vocab(name, &mut disk_cache).map_err(to_pyerr)?;
 
-            let inner = options.inner().build(vocab.clone());
+            let inner = options.inner().build(loaded.vocab().clone());
 
             Ok(Tokenizer { inner })
         })

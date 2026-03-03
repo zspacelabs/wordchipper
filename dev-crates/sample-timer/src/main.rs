@@ -91,7 +91,7 @@ pub struct Args {
     pub batch_size: usize,
 
     /// The pretrained model to compare.
-    #[arg(long, default_value = "openai::o200k_harmony")]
+    #[arg(long, default_value = "openai:o200k_harmony")]
     pub model: ModelSelector,
 
     /// Ignore missing models?
@@ -133,31 +133,31 @@ pub struct Args {
 #[derive(ValueEnum, Clone, Copy, Debug, PartialEq)]
 pub enum ModelSelector {
     /// Select "`openai::gpt2`" model.
-    #[value(name = "openai::gpt2")]
+    #[value(name = "openai:gpt2")]
     OpenaiGpt2,
 
     /// Select "`openai::r50k_base`" model.
-    #[value(name = "openai::r50k_base")]
+    #[value(name = "openai:r50k_base")]
     OpenaiR50kBase,
 
     /// Select "`openai::p50k_base`" model.
-    #[value(name = "openai::p50k_base")]
+    #[value(name = "openai:p50k_base")]
     OpenaiP50kBase,
 
     /// Select "`openai::p50k_edit`" model.
-    #[value(name = "openai::p50k_edit")]
+    #[value(name = "openai:p50k_edit")]
     OpenaiP50kEdit,
 
     /// Select "`openai::cl100k_base`" model.
-    #[value(name = "openai::cl100k_base")]
+    #[value(name = "openai:cl100k_base")]
     OpenaiCl100kBase,
 
     /// Select "`openai::o200k_base`" model.
-    #[value(name = "openai::o200k_base")]
+    #[value(name = "openai:o200k_base")]
     OpenaiO200kBase,
 
     /// Select "`openai::o200k_harmony`" model.
-    #[value(name = "openai::o200k_harmony")]
+    #[value(name = "openai:o200k_harmony")]
     OpenaiO200kHarmony,
 }
 
@@ -175,13 +175,13 @@ impl ModelSelector {
         use ModelSelector::*;
         use OATokenizer::*;
         match self {
-            OpenaiGpt2 => "openai::gpt2".to_string(),
-            OpenaiR50kBase => format!("openai::{}", R50kBase),
-            OpenaiP50kBase => format!("openai::{}", P50kBase),
-            OpenaiP50kEdit => format!("openai::{}", P50kEdit),
-            OpenaiCl100kBase => format!("openai::{}", Cl100kBase),
-            OpenaiO200kBase => format!("openai::{}", O200kBase),
-            OpenaiO200kHarmony => format!("openai::{}", O200kHarmony),
+            OpenaiGpt2 => "openai:gpt2".to_string(),
+            OpenaiR50kBase => format!("openai:{}", R50kBase),
+            OpenaiP50kBase => format!("openai:{}", P50kBase),
+            OpenaiP50kEdit => format!("openai:{}", P50kEdit),
+            OpenaiCl100kBase => format!("openai:{}", Cl100kBase),
+            OpenaiO200kBase => format!("openai:{}", O200kBase),
+            OpenaiO200kHarmony => format!("openai:{}", O200kHarmony),
         }
     }
 
@@ -189,8 +189,10 @@ impl ModelSelector {
         &self,
         disk_cache: &mut WordchipperDiskCache,
     ) -> Result<Arc<UnifiedTokenVocab<T>>, BoxError> {
-        let (_desc, vocab) = wordchipper::load_vocab(&self.model(), disk_cache)?;
-        let vocab = vocab.to_token_type().unwrap().into();
+        let vocab = wordchipper::load_vocab(&self.model(), disk_cache)?
+            .vocab()
+            .to_token_type()?
+            .into();
         Ok(vocab)
     }
 
@@ -220,7 +222,10 @@ fn main() -> Result<(), BoxError> {
 
     let mut disk_cache = WordchipperDiskCache::default();
     // println!("Loading wordchipper...");
-    let (_desc, vocab) = wordchipper::load_vocab(args.model.to_string().as_str(), &mut disk_cache)?;
+    let loaded = wordchipper::load_vocab(args.model.to_string().as_str(), &mut disk_cache)?;
+
+    println!("Loaded: {:?}", loaded.description());
+    let vocab = loaded.vocab().clone();
 
     // TODO: complete batch-observer inversion of control for additional tokenizer
     // wrappers.

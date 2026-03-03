@@ -4,6 +4,7 @@ use once_cell::sync::OnceCell;
 use spin::RwLock;
 
 use crate::{
+    TokenType,
     UnifiedTokenVocab,
     WCError,
     WCResult,
@@ -13,6 +14,10 @@ use crate::{
         sync::Arc,
     },
     prelude::*,
+    pretrained::{
+        vocab_description::VocabDescription,
+        vocab_query::VocabQuery,
+    },
     support::resources::ResourceLoader,
 };
 
@@ -81,13 +86,13 @@ pub fn resolve_vocab(name: &str) -> WCResult<VocabDescription> {
 /// Load a [`UnifiedTokenVocab`] by name.
 ///
 /// ## Returns
-/// * `Ok((desc, vocab))` - on success.
+/// * `Ok(LabeledVocab<u32>)` - on success.
 /// * `Err(WCError::ResourceNotFound)` - if the vocabulary is not found.
 /// * `Err(e)` - on any other error.
 pub fn load_vocab(
     name: &str,
     loader: &mut dyn ResourceLoader,
-) -> WCResult<(VocabDescription, Arc<UnifiedTokenVocab<u32>>)> {
+) -> WCResult<LabeledVocab<u32>> {
     with_vocab_factory(&mut move |f: &VocabFactory| f.load_vocab(name, loader))
 }
 
@@ -98,45 +103,87 @@ pub fn load_vocab(
 pub fn list_models() -> Vec<String> {
     let mut res = Vec::new();
     for listing in list_vocabs() {
-        let source = listing.source;
         for descr in &listing.vocabs {
-            let name = format!("{source}::{}", descr.id.clone());
-            res.push(name);
+            res.push(descr.id().to_string());
         }
     }
     res
-}
-
-/// A description of a pretrained tokenizer.
-#[derive(Debug, Clone)]
-pub struct VocabDescription {
-    /// The resolution id of the vocabulary.
-    pub id: String,
-
-    /// The cache context for the vocabulary.
-    pub context: Vec<String>,
-
-    /// A description of the vocabulary.
-    pub description: String,
 }
 
 /// A listing of known tokenizer.
 #[derive(Debug, Clone)]
 pub struct VocabListing {
     /// The id of the factory that produced the vocabularies.
-    pub source: String,
+    source: String,
 
     /// A description of the factory.
-    pub description: String,
+    description: String,
 
     /// Explicitly listed vocabularies.
-    pub vocabs: Vec<VocabDescription>,
+    vocabs: Vec<VocabDescription>,
+}
+
+impl VocabListing {
+    /// Build a new vocabulary listing.
+    pub fn new(
+        source: &str,
+        description: &str,
+        vocabs: Vec<VocabDescription>,
+    ) -> Self {
+        Self {
+            source: source.to_string(),
+            description: description.to_string(),
+            vocabs,
+        }
+    }
+
+    /// Get the id of the factory that produced the vocabularies.
+    pub fn provider(&self) -> &str {
+        &self.source
+    }
+
+    /// Get the description of the factory.
+    pub fn description(&self) -> &str {
+        &self.description
+    }
+
+    /// Get the explicit list of vocabularies.
+    pub fn vocabs(&self) -> &[VocabDescription] {
+        &self.vocabs
+    }
+}
+
+/// Resolved vocabulary with its description and loaded vocabulary.
+#[derive(Clone)]
+pub struct LabeledVocab<T: TokenType> {
+    description: VocabDescription,
+    vocab: Arc<UnifiedTokenVocab<T>>,
+}
+
+impl<T: TokenType> LabeledVocab<T> {
+    /// Build a new resolved vocabulary.
+    pub fn new(
+        description: VocabDescription,
+        vocab: Arc<UnifiedTokenVocab<T>>,
+    ) -> Self {
+        Self { description, vocab }
+    }
+
+    /// Get the description of the vocabulary.
+    pub fn description(&self) -> &VocabDescription {
+        &self.description
+    }
+
+    /// Get the unified token vocabulary.
+    pub fn vocab(&self) -> &Arc<UnifiedTokenVocab<T>> {
+        &self.vocab
+    }
 }
 
 /// A factory for searching for and loading.
 pub trait VocabProvider: Sync + Send {
     /// The name of the factory.
-    fn id(&self) -> String;
+    fn name(&self) -> String;
 
     /// Get an extended description of the factory.
     fn description(&self) -> String;
@@ -152,14 +199,21 @@ pub trait VocabProvider: Sync + Send {
     /// * `Err(e)` - on any other error.
     fn resolve_vocab(
         &self,
-        name: &str,
+        query: &VocabQuery,
     ) -> WCResult<VocabDescription> {
-        for vocab in self.list_vocabs() {
-            if vocab.id == name {
-                return Ok(vocab);
+        for desc in self.list_vocabs() {
+            if query.schema().is_some() && query.schema() != desc.id().schema() {
+                continue;
+            }
+            if query.path().is_some() && query.path() != desc.id().path() {
+                continue;
+            }
+
+            if query.name() == desc.id().name() {
+                return Ok(desc);
             }
         }
-        Err(WCError::ResourceNotFound(name.to_string()))
+        Err(WCError::ResourceNotFound(query.to_string()))
     }
 
     /// Load a vocabulary from a name.
@@ -170,9 +224,9 @@ pub trait VocabProvider: Sync + Send {
     /// * `Err(e)` - on any other error.
     fn load_vocab(
         &self,
-        name: &str,
+        query: &VocabQuery,
         loader: &mut dyn ResourceLoader,
-    ) -> WCResult<(VocabDescription, Arc<UnifiedTokenVocab<u32>>)>;
+    ) -> WCResult<LabeledVocab<u32>>;
 }
 
 /// A factory for searching for and loading vocabularies.
@@ -194,7 +248,7 @@ impl VocabFactory {
     ) -> Option<&Arc<dyn VocabProvider>> {
         self.providers
             .iter()
-            .find(|p| p.id().to_lowercase() == id.to_lowercase())
+            .find(|p| p.name().to_lowercase() == id.to_lowercase())
     }
 
     /// Register a new [`VocabProvider`].
@@ -207,10 +261,10 @@ impl VocabFactory {
         &mut self,
         provider: Arc<dyn VocabProvider>,
     ) -> WCResult<()> {
-        let id = provider.id().to_lowercase();
+        let id = provider.name().to_lowercase();
 
         for existing in &self.providers {
-            if id == existing.id().to_lowercase() {
+            if id == existing.name().to_lowercase() {
                 return Err(WCError::DuplicatedResource(format!(
                     "Vocabulary provider with id '{id}' already exists",
                 )));
@@ -230,7 +284,7 @@ impl VocabFactory {
     ) -> Option<Arc<dyn VocabProvider>> {
         self.providers
             .iter()
-            .position(|p| p.id() == id)
+            .position(|p| p.name() == id)
             .map(|i| self.providers.remove(i))
     }
 
@@ -239,7 +293,7 @@ impl VocabFactory {
         let mut res = Vec::new();
         for provider in &self.providers {
             res.push(VocabListing {
-                source: provider.id(),
+                source: provider.name(),
                 description: provider.description(),
                 vocabs: provider.list_vocabs(),
             });
@@ -253,66 +307,46 @@ impl VocabFactory {
     /// * `Ok(description)` - on success.
     /// * `Err(WCError::ResourceNotFound)` - if the vocabulary is not found.
     /// * `Err(e)` - on any other error.
-    pub fn resolve_vocab(
+    pub fn resolve_vocab<Q>(
         &self,
-        name: &str,
-    ) -> WCResult<VocabDescription> {
-        if name.contains("::") {
-            let (provider_name, vocab_name) = name.split_once("::").unwrap();
-
-            if let Some(provider) = self.find_provider(provider_name) {
-                return match provider.resolve_vocab(vocab_name) {
-                    Ok(vocab) => Ok(vocab),
-                    Err(WCError::ResourceNotFound(_)) => {
-                        Err(WCError::ResourceNotFound(name.to_string()))
-                    }
-                    Err(err) => Err(err),
-                };
-            }
-        } else {
-            for provider in &self.providers {
-                match provider.resolve_vocab(name) {
-                    Ok(vocab) => return Ok(vocab),
-                    Err(WCError::ResourceNotFound(_)) => (),
-                    Err(err) => return Err(err),
-                }
+        query: Q,
+    ) -> WCResult<VocabDescription>
+    where
+        Q: Into<VocabQuery>,
+    {
+        let query = query.into();
+        for provider in &self.providers {
+            match provider.resolve_vocab(&query) {
+                Ok(vocab) => return Ok(vocab),
+                Err(WCError::ResourceNotFound(_)) => (),
+                Err(err) => return Err(err),
             }
         }
-        Err(WCError::ResourceNotFound(name.to_string()))
+        Err(WCError::ResourceNotFound(query.to_string()))
     }
 
     /// Load a [`UnifiedTokenVocab`] by name.
     ///
     /// ## Returns
-    /// * `Ok((desc, vocab))` - on success.
+    /// * `Ok(LabeledVocab<u32>)` - on success.
     /// * `Err(WCError::ResourceNotFound)` - if the vocabulary is not found.
     /// * `Err(e)` - on any other error.
-    pub fn load_vocab(
+    pub fn load_vocab<Q>(
         &self,
-        name: &str,
+        query: Q,
         loader: &mut dyn ResourceLoader,
-    ) -> WCResult<(VocabDescription, Arc<UnifiedTokenVocab<u32>>)> {
-        if name.contains("::") {
-            let (provider_name, vocab_name) = name.split_once("::").unwrap();
-
-            if let Some(provider) = self.find_provider(provider_name) {
-                return match provider.load_vocab(vocab_name, loader) {
-                    Ok(vocab) => Ok(vocab),
-                    Err(WCError::ResourceNotFound(_)) => {
-                        Err(WCError::ResourceNotFound(name.to_string()))
-                    }
-                    Err(err) => Err(err),
-                };
-            }
-        } else {
-            for provider in &self.providers {
-                match provider.load_vocab(name, loader) {
-                    Ok(vocab) => return Ok(vocab),
-                    Err(WCError::ResourceNotFound(_)) => (),
-                    Err(err) => return Err(err),
-                }
+    ) -> WCResult<LabeledVocab<u32>>
+    where
+        Q: Into<VocabQuery>,
+    {
+        let query = query.into();
+        for provider in &self.providers {
+            match provider.load_vocab(&query, loader) {
+                Ok(vocab) => return Ok(vocab),
+                Err(WCError::ResourceNotFound(_)) => (),
+                Err(err) => return Err(err),
             }
         }
-        Err(WCError::ResourceNotFound(name.to_string()))
+        Err(WCError::ResourceNotFound(query.to_string()))
     }
 }

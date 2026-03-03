@@ -29,7 +29,7 @@ lexer (cl100k, o200k, r50k), the DFA lexer is used automatically.
 Spanning throughput on a single thread:
 
 | Model       | Regex    | Logos DFA | Speedup |
-| ----------- | -------- | --------- | ------- |
+|-------------|----------|-----------|---------|
 | cl100k_base | ~25 MB/s | ~732 MB/s | **29x** |
 | o200k_base  | ~15 MB/s | ~765 MB/s | **52x** |
 
@@ -40,7 +40,7 @@ If you want to force regex-based spanning (e.g., for testing or debugging):
 ```rust,no_run
 # use wordchipper::{TokenizerOptions, load_vocab, disk_cache::WordchipperDiskCache};
 # let mut cache = WordchipperDiskCache::default();
-# let (_, vocab) = load_vocab("openai::cl100k_base", &mut cache).unwrap();
+# let (_, vocab) = load_vocab("openai:cl100k_base", &mut cache).unwrap();
 let tok = TokenizerOptions::default()
     .with_accelerated_lexers(false)
     .build(vocab);
@@ -55,7 +55,7 @@ single-threaded speed, concurrent access, memory usage, and implementation compl
 ### The algorithms
 
 | Algorithm       | Best for                    | Notes                                                       |
-| --------------- | --------------------------- | ----------------------------------------------------------- |
+|-----------------|-----------------------------|-------------------------------------------------------------|
 | `MergeHeap`     | Concurrent / multi-threaded | Default for `ConcurrentDefault`. Heap-based merge tracking. |
 | `PriorityMerge` | Single-threaded             | Default for `SingleThreadDefault`. Priority-queue merging.  |
 | `BufferSweep`   | Testing / reference         | Simple and correct, not optimized.                          |
@@ -72,7 +72,7 @@ use wordchipper::{
 };
 
 let mut cache = WordchipperDiskCache::default();
-let (_, vocab) = load_vocab("openai::cl100k_base", &mut cache).unwrap();
+let (_, vocab) = load_vocab("openai:cl100k_base", &mut cache).unwrap();
 
 let mut opts = TokenizerOptions::default();
 opts.encoder.set_span_encoder(SpanEncoderSelector::BpeBacktrack);
@@ -100,7 +100,7 @@ threads:
 ```rust,no_run
 # use wordchipper::{TokenizerOptions, TokenEncoder, load_vocab, disk_cache::WordchipperDiskCache};
 # let mut cache = WordchipperDiskCache::default();
-# let (_, vocab) = load_vocab("openai::cl100k_base", &mut cache).unwrap();
+# let (_, vocab) = load_vocab("openai:cl100k_base", &mut cache).unwrap();
 let tok = TokenizerOptions::default()
     .with_parallel(true)
     .build(vocab);
@@ -128,10 +128,10 @@ Or configure it programmatically via `rayon::ThreadPoolBuilder`.
 wordchipper uses hash maps extensively for vocabulary lookups. The `fast-hash` feature (enabled by
 default) swaps in foldhash for faster hashing:
 
-| Feature     | Hash function | Notes                                  |
-| ----------- | ------------- | -------------------------------------- |
-| `fast-hash` | foldhash      | Good general-purpose, works in no_std  |
-| (none)      | default       | SipHash (std) or hashbrown default     |
+| Feature     | Hash function | Notes                                 |
+|-------------|---------------|---------------------------------------|
+| `fast-hash` | foldhash      | Good general-purpose, works in no_std |
+| (none)      | default       | SipHash (std) or hashbrown default    |
 
 Unlike previous versions, `fast-hash` works in `no_std` environments. See
 [Feature Flags](./feature-flags.md) for details.
@@ -141,7 +141,7 @@ Unlike previous versions, `fast-hash` works in `no_std` environments. See
 Encode + decode throughput on 90 MB shards, 48 threads:
 
 | Model         | wordchipper | tiktoken-rs | HuggingFace tokenizers |
-| ------------- | ----------- | ----------- | ---------------------- |
+|---------------|-------------|-------------|------------------------|
 | r50k_base     | 239 MiB/s   | 169 MiB/s   | 22 MiB/s               |
 | p50k_base     | 251 MiB/s   | 163 MiB/s   | 22 MiB/s               |
 | p50k_edit     | 242 MiB/s   | 170 MiB/s   | 21 MiB/s               |

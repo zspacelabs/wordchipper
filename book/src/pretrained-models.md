@@ -7,7 +7,7 @@ tokens.
 ## Model overview
 
 | Model           | Vocab tokens | Pattern        | Special tokens                                       | Used by          |
-| --------------- | ------------ | -------------- | ---------------------------------------------------- | ---------------- |
+|-----------------|--------------|----------------|------------------------------------------------------|------------------|
 | `r50k_base`     | ~50k         | GPT-2 pattern  | `<\|endoftext\|>`                                    | GPT-2            |
 | `p50k_base`     | ~50k         | GPT-2 pattern  | `<\|endoftext\|>`                                    | Codex            |
 | `p50k_edit`     | ~50k         | GPT-2 pattern  | endoftext, fim_prefix/middle/suffix                  | Codex (edit)     |
@@ -45,7 +45,7 @@ The standard way to load a model:
 use wordchipper::{load_vocab, disk_cache::WordchipperDiskCache};
 
 let mut cache = WordchipperDiskCache::default();
-let (desc, vocab) = load_vocab("openai::cl100k_base", &mut cache).unwrap();
+let (desc, vocab) = load_vocab("openai:cl100k_base", &mut cache).unwrap();
 ```
 
 `load_vocab` returns a `(VocabDescription, Arc<UnifiedTokenVocab<u32>>)`. The description contains
@@ -53,7 +53,7 @@ metadata; the vocab contains everything needed for encoding and decoding.
 
 ### Short names
 
-The `openai::` prefix is optional. Both `"cl100k_base"` and `"openai::cl100k_base"` work. Use
+The `openai::` prefix is optional. Both `"cl100k_base"` and `"openai:cl100k_base"` work. Use
 `list_vocabs()` for all registered short names and `list_models()` for fully qualified names.
 
 ### Loading from a file path
@@ -89,7 +89,7 @@ used for control flow: marking end-of-text, fill-in-middle boundaries, prompt bo
 ```rust,no_run
 # use wordchipper::{load_vocab, disk_cache::WordchipperDiskCache, TokenizerOptions, TokenEncoder};
 # let mut cache = WordchipperDiskCache::default();
-# let (_, vocab) = load_vocab("openai::cl100k_base", &mut cache).unwrap();
+# let (_, vocab) = load_vocab("openai:cl100k_base", &mut cache).unwrap();
 # let tok = TokenizerOptions::default().build(vocab);
 let specials = tok.special_vocab();
 for (bytes, &id) in specials.span_map().iter() {
@@ -152,7 +152,7 @@ The base64 decodes to the raw bytes that the token represents. This format is wh
 If you're building a tool that interacts with an OpenAI model, use the matching tokenizer:
 
 | If you use...            | Load...       |
-| ------------------------ | ------------- |
+|--------------------------|---------------|
 | GPT-4o, GPT-4o-mini      | `o200k_base`  |
 | GPT-4, GPT-3.5-turbo     | `cl100k_base` |
 | GPT-3 (text-davinci-003) | `p50k_base`   |

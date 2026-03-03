@@ -75,9 +75,8 @@
 //!
 //! fn example() -> WCResult<Arc<Tokenizer<u32>>> {
 //!     let mut disk_cache = WordchipperDiskCache::default();
-//!     let (_desc, vocab) =
-//!         load_vocab("openai::o200k_harmony", &mut disk_cache)?;
-//!     Ok(TokenizerOptions::default().build(vocab))
+//!     let loaded = load_vocab("openai:o200k_harmony", &mut disk_cache)?;
+//!     Ok(TokenizerOptions::default().build(loaded.vocab().clone()))
 //! }
 //! ```
 //!

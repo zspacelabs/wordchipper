@@ -7,11 +7,11 @@ impl ListModelsArgs {
         let vocabs = wordchipper::list_vocabs();
 
         for listing in &vocabs {
-            println!("\"{}\" - {}", listing.source, listing.description);
+            println!("\"{}\" - {}", listing.provider(), listing.description());
 
-            for vocab in &listing.vocabs {
-                println!("  * \"{}:{}\"", listing.source, vocab.id);
-                println!("    {}", vocab.description);
+            for desc in listing.vocabs() {
+                println!("* \"{}\"", desc.id());
+                println!("  {}", desc.description());
             }
         }
 

@@ -24,12 +24,12 @@ def test_from_pretrained_empty_name():
 
 
 PRETRAINED_MODELS = [
-    "openai::r50k_base",
-    "openai::p50k_base",
-    "openai::p50k_edit",
-    "openai::cl100k_base",
-    "openai::o200k_base",
-    "openai::o200k_harmony",
+    "openai:r50k_base",
+    "openai:p50k_base",
+    "openai:p50k_edit",
+    "openai:cl100k_base",
+    "openai:o200k_base",
+    "openai:o200k_harmony",
 ]
 
 
@@ -302,7 +302,7 @@ def test_available_models():
     models = Tokenizer.available_models()
     assert isinstance(models, list)
     assert len(models) > 0
-    for name in ["openai::r50k_base", "openai::p50k_base", "openai::cl100k_base", "openai::o200k_base"]:
+    for name in ["openai:r50k_base", "openai:p50k_base", "openai:cl100k_base", "openai:o200k_base"]:
         assert name in models
 
 

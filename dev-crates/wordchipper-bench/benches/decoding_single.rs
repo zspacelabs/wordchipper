@@ -48,7 +48,11 @@ struct WcFixture {
 impl WcFixture {
     fn by_name(model: &str) -> Self {
         let mut disk_cache = WordchipperDiskCache::default();
-        let (_desc, vocab) = wordchipper::load_vocab(model, &mut disk_cache).unwrap();
+        let vocab = wordchipper::load_vocab(model, &mut disk_cache)
+            .unwrap()
+            .vocab()
+            .clone();
+
         Self::from_vocab(vocab)
     }
 
@@ -66,9 +70,9 @@ struct TiktokenFixture {
     bpe: Arc<CoreBPE>,
 }
 
-static WC_CL100K: LazyLock<WcFixture> = LazyLock::new(|| WcFixture::by_name("openai::cl100k_base"));
+static WC_CL100K: LazyLock<WcFixture> = LazyLock::new(|| WcFixture::by_name("openai:cl100k_base"));
 
-static WC_O200K: LazyLock<WcFixture> = LazyLock::new(|| WcFixture::by_name("openai::o200k_base"));
+static WC_O200K: LazyLock<WcFixture> = LazyLock::new(|| WcFixture::by_name("openai:o200k_base"));
 
 static TT_CL100K: LazyLock<TiktokenFixture> = LazyLock::new(|| TiktokenFixture {
     bpe: Arc::new(tiktoken_rs::cl100k_base().unwrap()),

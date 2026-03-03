@@ -11,7 +11,7 @@ use wordchipper::{
 #[group(required = true, multiple = false)]
 pub struct ModelSelectorArgs {
     /// Model to use for encoding.
-    #[arg(long, default_value = "openai::r50k_base")]
+    #[arg(long, default_value = "openai:r50k_base")]
     model: String,
 }
 
@@ -26,7 +26,10 @@ impl ModelSelectorArgs {
         &self,
         disk_cache: &mut WordchipperDiskCache,
     ) -> Result<Arc<UnifiedTokenVocab<u32>>, Box<dyn std::error::Error>> {
-        let (_desc, vocab) = wordchipper::load_vocab(self.model(), disk_cache)?;
+        let vocab = wordchipper::load_vocab(self.model(), disk_cache)?
+            .vocab()
+            .clone();
+
         Ok(vocab)
     }
 
