@@ -60,6 +60,54 @@ Export a vocabulary in tiktoken's base64 format:
 tok.save_base64_vocab("vocab.tiktoken")
 ```
 
+### Compatibility wrappers
+
+Drop-in replacements for `tiktoken` and HuggingFace `tokenizers`. Change one import line and
+the rest of your code stays the same.
+
+**tiktoken**
+
+```python
+# Before
+import tiktoken
+enc = tiktoken.get_encoding("cl100k_base")
+
+# After
+from wordchipper.compat import tiktoken
+enc = tiktoken.get_encoding("cl100k_base")
+
+tokens = enc.encode("hello world")
+text = enc.decode(tokens)
+
+# Model lookup works too
+enc = tiktoken.encoding_for_model("gpt-4o")
+```
+
+The `Encoding` class exposes `encode`, `encode_ordinary`, `encode_batch`, `decode`,
+`decode_batch`, and properties `name`, `n_vocab`, `max_token_value`, `eot_token`, and
+`special_tokens_set`.
+
+**HuggingFace tokenizers**
+
+```python
+# Before
+from tokenizers import Tokenizer
+
+# After
+from wordchipper.compat.tokenizers import Tokenizer
+
+tok = Tokenizer.from_pretrained("Xenova/gpt-4o")
+output = tok.encode("hello world")
+output.ids      # [24912, 2375]
+output.tokens   # ["hello", " world"]
+text = tok.decode(output.ids)
+```
+
+The `Tokenizer` class exposes `encode`, `encode_batch`, `decode`, `decode_batch`,
+`get_vocab_size`, `token_to_id`, and `id_to_token`. Known HuggingFace identifiers
+(e.g. `Xenova/gpt-4o`) are mapped automatically; bare encoding names like `cl100k_base`
+also work.
+
 ### Building from source
 
 Requires [Rust](https://rustup.rs/) and [uv](https://docs.astral.sh/uv/):
