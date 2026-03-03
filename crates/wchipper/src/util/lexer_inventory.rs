@@ -83,8 +83,8 @@ impl LexerInventory {
         &self,
         query: &str,
     ) -> Option<&LexerDescription> {
-        if query.contains("::") {
-            let (schema, name) = query.split_once("::")?;
+        if query.contains(":") {
+            let (schema, name) = query.split_once(":")?;
             for lexer in &self.lexers {
                 if lexer.schema == schema && lexer.aliases.iter().any(|a| a == name) {
                     return Some(lexer);

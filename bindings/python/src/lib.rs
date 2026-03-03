@@ -8,6 +8,7 @@ pub(crate) mod wc {
         Tokenizer,
         TokenizerOptions,
         disk_cache::WordchipperDiskCache,
+        load_vocab,
         support::{
             slices::{
                 inner_slice_view,

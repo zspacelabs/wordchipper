@@ -24,7 +24,7 @@ use wordchipper::{
 fn main() -> wordchipper::WCResult<()> {
     // Load vocabulary (downloads and caches on first run)
     let mut cache = WordchipperDiskCache::default();
-    let (_desc, vocab) = load_vocab("openai::cl100k_base", &mut cache)?;
+    let (_desc, vocab) = load_vocab("openai:cl100k_base", &mut cache)?;
 
     // Build a tokenizer
     let tok = TokenizerOptions::default().build(vocab);
@@ -88,7 +88,7 @@ use wordchipper::{
 
 fn main() -> wordchipper::WCResult<()> {
     let mut cache = WordchipperDiskCache::default();
-    let (_desc, vocab) = load_vocab("openai::cl100k_base", &mut cache)?;
+    let (_desc, vocab) = load_vocab("openai:cl100k_base", &mut cache)?;
     let tok = TokenizerOptions::default()
         .with_parallel(true)
         .build(vocab);
@@ -115,7 +115,7 @@ use wordchipper::{UnifiedTokenVocab, TokenizerOptions, load_vocab, disk_cache::W
 
 fn main() -> wordchipper::WCResult<()> {
     let mut cache = WordchipperDiskCache::default();
-    let (_desc, vocab) = load_vocab("openai::r50k_base", &mut cache)?;
+    let (_desc, vocab) = load_vocab("openai:r50k_base", &mut cache)?;
 
     // Convert to u16 (works for r50k_base with ~50k tokens)
     let vocab_u16: Arc<UnifiedTokenVocab<u16>> = Arc::new(vocab.as_ref().to_token_type());

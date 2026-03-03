@@ -24,17 +24,23 @@
 //!
 //! fn example() -> wordchipper::WCResult<Arc<Tokenizer<u32>>> {
 //!     let mut disk_cache = WordchipperDiskCache::default();
-//!     let (_desc, vocab) =
-//!         load_vocab("openai::o200k_harmony", &mut disk_cache)?;
+//!     let loaded = load_vocab("openai:o200k_harmony", &mut disk_cache)?;
 //!
-//!     let tokenizer = TokenizerOptions::default().build(vocab.into());
+//!     let tokenizer =
+//!         TokenizerOptions::default().build(loaded.vocab().clone());
 //!
 //!     Ok(tokenizer)
 //! }
 //! ```
 
 pub mod openai;
+mod vocab_description;
 mod vocab_factory;
+mod vocab_query;
 
 #[doc(inline)]
+pub use vocab_description::*;
+#[doc(inline)]
 pub use vocab_factory::*;
+#[doc(inline)]
+pub use vocab_query::*;

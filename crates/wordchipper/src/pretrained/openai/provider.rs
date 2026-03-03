@@ -1,5 +1,4 @@
 use crate::{
-    UnifiedTokenVocab,
     WCError,
     WCResult,
     alloc::{
@@ -8,9 +7,11 @@ use crate::{
     },
     prelude::*,
     pretrained::{
-        VocabDescription,
+        LabeledVocab,
         VocabProvider,
         VocabProviderInventoryHook,
+        vocab_description::VocabDescription,
+        vocab_query::VocabQuery,
     },
     support::resources::ResourceLoader,
 };
@@ -23,7 +24,7 @@ inventory::submit! {
 pub struct OpenaiVocabProvider {}
 
 impl VocabProvider for OpenaiVocabProvider {
-    fn id(&self) -> String {
+    fn name(&self) -> String {
         "openai".to_string()
     }
 
@@ -36,64 +37,63 @@ impl VocabProvider for OpenaiVocabProvider {
         let mut vs: Vec<VocabDescription> = Default::default();
 
         #[cfg(feature = "datagym")]
-        vs.push(VocabDescription {
-            id: "gpt2".to_string(),
-            context: vec!["openai".to_string(), "gpt2".to_string()],
-            description: "GPT-2 `gpt2` vocabulary".to_string(),
-        });
+        vs.push(VocabDescription::new(
+            "openai:gpt2",
+            &["openai", "gpt2"],
+            "GPT-2 `gpt2` vocabulary",
+        ));
 
         #[cfg(feature = "std")]
         vs.extend_from_slice(&[
-            VocabDescription {
-                id: "r50k_base".to_string(),
-                context: vec!["openai".to_string(), "r50k_base".to_string()],
-                description: "GPT-2 `p50k_base` vocabulary".to_string(),
-            },
-            VocabDescription {
-                id: "p50k_base".to_string(),
-                context: vec!["openai".to_string(), "p50k_base".to_string()],
-                description: "GPT-2 `p50k_base` vocabulary".to_string(),
-            },
-            VocabDescription {
-                id: "p50k_edit".to_string(),
-                context: vec!["openai".to_string(), "p50k_edit".to_string()],
-                description: "GPT-2 `p50k_edit` vocabulary".to_string(),
-            },
-            VocabDescription {
-                id: "cl100k_base".to_string(),
-                context: vec!["openai".to_string(), "cl100k_base".to_string()],
-                description: "GPT-3 `cl100k_base` vocabulary".to_string(),
-            },
-            VocabDescription {
-                id: "o200k_base".to_string(),
-                context: vec!["openai".to_string(), "o200k_base".to_string()],
-                description: "GPT-5 `o200k_base` vocabulary".to_string(),
-            },
-            VocabDescription {
-                id: "o200k_harmony".to_string(),
-                context: vec!["openai".to_string(), "o200k_harmony".to_string()],
-                description: "GPT-5 `o200k_harmony` vocabulary".to_string(),
-            },
+            VocabDescription::new(
+                "openai:r50k_base",
+                &["openai", "r50k_base"],
+                "GPT-2 `p50k_base` vocabulary",
+            ),
+            VocabDescription::new(
+                "openai:p50k_base",
+                &["openai", "p50k_base"],
+                "GPT-2 `p50k_base` vocabulary",
+            ),
+            VocabDescription::new(
+                "openai:p50k_edit",
+                &["openai", "p50k_edit"],
+                "GPT-2 `p50k_edit` vocabulary",
+            ),
+            VocabDescription::new(
+                "openai:cl100k_base",
+                &["openai", "cl100k_base"],
+                "GPT-3 `cl100k_base` vocabulary",
+            ),
+            VocabDescription::new(
+                "openai:o200k_base",
+                &["openai", "o200k_base"],
+                "GPT-5 `o200k_base` vocabulary",
+            ),
+            VocabDescription::new(
+                "openai:o200k_harmony",
+                &["openai", "o200k_harmony"],
+                "GPT-5 `o200k_harmony` vocabulary",
+            ),
         ]);
-
         vs
     }
 
     fn load_vocab(
         &self,
-        name: &str,
+        query: &VocabQuery,
         loader: &mut dyn ResourceLoader,
-    ) -> WCResult<(VocabDescription, Arc<UnifiedTokenVocab<u32>>)> {
+    ) -> WCResult<LabeledVocab<u32>> {
+        let _descr = self.resolve_vocab(query)?;
         let _ = loader;
-        let _descr = self.resolve_vocab(name)?;
 
         #[cfg(feature = "datagym")]
         {
             use super::load_gpt2_vocab;
 
-            if name == "gpt2" {
+            if _descr.id().name() == "gpt2" {
                 let vocab = load_gpt2_vocab(loader)?;
-                return Ok((_descr, vocab.into()));
+                return Ok(LabeledVocab::new(_descr, vocab.into()));
             }
         }
 
@@ -102,12 +102,12 @@ impl VocabProvider for OpenaiVocabProvider {
             use core::str::FromStr;
 
             use crate::pretrained::openai::OATokenizer;
-            if let Ok(oat) = OATokenizer::from_str(name) {
+            if let Ok(oat) = OATokenizer::from_str(_descr.id().name()) {
                 let vocab = oat.load_vocab(loader)?;
-                return Ok((_descr, vocab.into()));
+                return Ok(LabeledVocab::new(_descr, vocab.into()));
             }
         }
 
-        Err(WCError::ResourceNotFound(name.to_string()))
+        Err(WCError::ResourceNotFound(query.to_string()))
     }
 }
