@@ -1,4 +1,7 @@
-use wordchipper::disk_cache::{WordchipperDiskCache, WordchipperDiskCacheOptions};
+use wordchipper::disk_cache::{
+    WordchipperDiskCache,
+    WordchipperDiskCacheOptions,
+};
 
 /// Disk cache argument group.
 #[derive(clap::Args, Debug)]

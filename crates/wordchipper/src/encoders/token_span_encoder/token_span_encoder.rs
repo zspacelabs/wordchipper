@@ -3,8 +3,15 @@ use crate::{
     TokenType,
     UnifiedTokenVocab,
     WCResult,
-    alloc::{boxed::Box, sync::Arc, vec::Vec},
-    encoders::token_span_encoder::{SpanEncoder, SpanEncoderSelector},
+    alloc::{
+        boxed::Box,
+        sync::Arc,
+        vec::Vec,
+    },
+    encoders::token_span_encoder::{
+        SpanEncoder,
+        SpanEncoderSelector,
+    },
     spanners::TextSpanner,
     vocab::SpecialVocab,
 };

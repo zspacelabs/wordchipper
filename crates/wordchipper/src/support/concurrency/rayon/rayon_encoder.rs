@@ -83,7 +83,10 @@ mod tests {
         UnifiedTokenVocab,
         encoders::{
             TokenEncoder,
-            testing::{common_encoder_test_vocab, common_encoder_tests},
+            testing::{
+                common_encoder_test_vocab,
+                common_encoder_tests,
+            },
         },
     };
 

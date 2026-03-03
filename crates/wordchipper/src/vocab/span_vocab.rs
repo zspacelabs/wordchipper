@@ -3,7 +3,11 @@
 use crate::{
     WCResult,
     alloc::vec::Vec,
-    types::{TokenType, WCHashMap, WCHashSet},
+    types::{
+        TokenType,
+        WCHashMap,
+        WCHashSet,
+    },
     vocab::{
         ByteMapVocab,
         ByteTokenMap,
@@ -276,7 +280,11 @@ impl<T: TokenType> VocabIndex<T> for SpanMapVocab<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::vocab::{ByteMapVocab, SpanTokenMap, VocabIndex};
+    use crate::vocab::{
+        ByteMapVocab,
+        SpanTokenMap,
+        VocabIndex,
+    };
 
     #[test]
     fn test_access() {

@@ -1,11 +1,15 @@
 //! # Vocab Factory Support
 
 #[cfg(feature = "std")]
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-    path::{Path, PathBuf},
-};
+use std::fs::File;
+#[cfg(feature = "std")]
+use std::io::BufRead;
+#[cfg(feature = "std")]
+use std::io::BufReader;
+#[cfg(feature = "std")]
+use std::path::Path;
+#[cfg(feature = "std")]
+use std::path::PathBuf;
 
 #[cfg(feature = "std")]
 use crate::WCResult;
@@ -15,10 +19,16 @@ use crate::support::resources::ResourceLoader;
 use crate::vocab::UnifiedTokenVocab;
 use crate::{
     TokenType,
-    alloc::{string::String, vec::Vec},
+    alloc::{
+        string::String,
+        vec::Vec,
+    },
     spanners::TextSpanningConfig,
     support::{
-        regex::{ConstRegexPattern, RegexPattern},
+        regex::{
+            ConstRegexPattern,
+            RegexPattern,
+        },
         resources::ConstKeyedResource,
     },
 };

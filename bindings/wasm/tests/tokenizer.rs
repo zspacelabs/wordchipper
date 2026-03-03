@@ -1,7 +1,14 @@
 //! WASM binding tests using `wasm-bindgen-test`.
 
-use base64::{Engine, prelude::BASE64_STANDARD};
-use js_sys::{Array, JsString, Uint32Array};
+use base64::{
+    Engine,
+    prelude::BASE64_STANDARD,
+};
+use js_sys::{
+    Array,
+    JsString,
+    Uint32Array,
+};
 use wasm_bindgen_test::*;
 use wordchipper_wasm::Tokenizer;
 

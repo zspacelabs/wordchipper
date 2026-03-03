@@ -4,10 +4,22 @@
 
 extern crate alloc;
 
-use alloc::{format, string::String, sync::Arc, vec::Vec};
+use alloc::{
+    format,
+    string::String,
+    sync::Arc,
+    vec::Vec,
+};
 
-use base64::{Engine, prelude::BASE64_STANDARD};
-use js_sys::{Array, JsString, Uint32Array};
+use base64::{
+    Engine,
+    prelude::BASE64_STANDARD,
+};
+use js_sys::{
+    Array,
+    JsString,
+    Uint32Array,
+};
 use wasm_bindgen::prelude::*;
 use wordchipper::{
     TokenDecoder,
@@ -18,10 +30,16 @@ use wordchipper::{
     VocabIndex,
     pretrained::openai::OATokenizer,
     support::{
-        slices::{inner_slice_view, inner_str_view},
+        slices::{
+            inner_slice_view,
+            inner_str_view,
+        },
         strings::string_from_utf8_lossy,
     },
-    vocab::{SpanMapVocab, SpanTokenMap},
+    vocab::{
+        SpanMapVocab,
+        SpanTokenMap,
+    },
 };
 
 /// Parse tiktoken base64-encoded vocab data from raw bytes.
@@ -163,7 +181,8 @@ impl Tokenizer {
         }
     }
 
-    /// Look up the token ID for a given token string. Returns null if not found.
+    /// Look up the token ID for a given token string. Returns null if not
+    /// found.
     #[wasm_bindgen(js_name = "tokenToId")]
     pub fn token_to_id(
         &self,
@@ -175,7 +194,8 @@ impl Tokenizer {
         }
     }
 
-    /// Look up the token string for a given token ID. Returns null if not found.
+    /// Look up the token string for a given token ID. Returns null if not
+    /// found.
     #[wasm_bindgen(js_name = "idToToken")]
     pub fn id_to_token(
         &self,

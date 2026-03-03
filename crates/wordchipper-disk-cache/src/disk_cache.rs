@@ -2,12 +2,21 @@
 
 use std::{
     fs,
-    path::{Path, PathBuf},
+    path::{
+        Path,
+        PathBuf,
+    },
 };
 
-use downloader::{Download, Downloader};
+use downloader::{
+    Download,
+    Downloader,
+};
 
-use crate::{WORDCHIPPER_CACHE_CONFIG, path_utils};
+use crate::{
+    WORDCHIPPER_CACHE_CONFIG,
+    path_utils,
+};
 
 /// Options for [`WordchipperDiskCache`].
 #[derive(Clone, Default, Debug)]
@@ -54,8 +63,8 @@ impl WordchipperDiskCacheOptions {
 /// Disk cache for downloaded files.
 ///
 /// Leverages [`Downloader`] for downloading files,
-/// and [`PathResolver`](`crate::PathResolver`) for resolving cache and data paths
-/// appropriate for a user/system combo, and any environment overrides.
+/// and [`PathResolver`](`crate::PathResolver`) for resolving cache and data
+/// paths appropriate for a user/system combo, and any environment overrides.
 pub struct WordchipperDiskCache {
     /// Cache directory.
     cache_dir: PathBuf,
@@ -131,30 +140,35 @@ impl WordchipperDiskCache {
         path_utils::extend_path(&self.cache_dir, context, file)
     }
 
-    /// Loads a cached file from a specified path or downloads it if it does not exist.
+    /// Loads a cached file from a specified path or downloads it if it does not
+    /// exist.
     ///
     /// # Arguments
-    /// * `context`: A slice of `C` containing path-related context used in determining the
-    ///   cache location. These paths are combined to build the cached file's location.
-    /// * `urls`: A slice of string references specifying the URLs to download the file from
-    ///   if it is not already cached.
-    /// * `download`: A boolean flag indicating whether to attempt downloading the file
-    ///   from the provided URLs if it does not already exist in the cache.
+    /// * `context`: A slice of `C` containing path-related context used in
+    ///   determining the cache location. These paths are combined to build the
+    ///   cached file's location.
+    /// * `urls`: A slice of string references specifying the URLs to download
+    ///   the file from if it is not already cached.
+    /// * `download`: A boolean flag indicating whether to attempt downloading
+    ///   the file from the provided URLs if it does not already exist in the
+    ///   cache.
     ///
     /// # Returns
-    /// * Returns a [`PathBuf`] pointing to the cached file if it exists or is successfully downloaded.
-    /// * Returns an error if the file is not found in the cache and downloading is not allowed
-    ///   or fails.
+    /// * Returns a [`PathBuf`] pointing to the cached file if it exists or is
+    ///   successfully downloaded.
+    /// * Returns an error if the file is not found in the cache and downloading
+    ///   is not allowed or fails.
     ///
     /// # Errors
-    /// * Returns an error if the cached file does not exist and `download` is `false`.
+    /// * Returns an error if the cached file does not exist and `download` is
+    ///   `false`.
     /// * Returns an error if the downloading process fails.
     pub fn load_cached_path<C, S>(
         &mut self,
         context: &[C],
         urls: &[S],
         download: bool,
-        /* TODO: hash: Option<&str>, */
+        // TODO: hash: Option<&str>,
     ) -> Result<PathBuf, Box<dyn std::error::Error>>
     where
         C: AsRef<Path>,
@@ -204,7 +218,10 @@ impl WordchipperDiskCache {
 
 #[cfg(test)]
 mod tests {
-    use std::{env, path::PathBuf};
+    use std::{
+        env,
+        path::PathBuf,
+    };
 
     use serial_test::serial;
 
@@ -212,7 +229,10 @@ mod tests {
         WORDCHIPPER_CACHE_CONFIG,
         WORDCHIPPER_CACHE_DIR,
         WORDCHIPPER_DATA_DIR,
-        disk_cache::{WordchipperDiskCache, WordchipperDiskCacheOptions},
+        disk_cache::{
+            WordchipperDiskCache,
+            WordchipperDiskCacheOptions,
+        },
     };
 
     #[test]

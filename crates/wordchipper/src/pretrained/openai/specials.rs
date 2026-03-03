@@ -3,11 +3,17 @@
 use crate::{
     TokenType,
     alloc::{
-        string::{String, ToString},
+        string::{
+            String,
+            ToString,
+        },
         vec::Vec,
     },
     declare_carrot_special,
-    vocab::utility::{ToTokenList, format_reserved_carrot},
+    vocab::utility::{
+        ToTokenList,
+        format_reserved_carrot,
+    },
 };
 
 declare_carrot_special!(
@@ -137,7 +143,11 @@ pub fn oa_o200k_harmony_special_tokens<T: TokenType>() -> Vec<(String, T)> {
 mod tests {
     use super::*;
     use crate::{
-        alloc::{string::ToString, vec, vec::Vec},
+        alloc::{
+            string::ToString,
+            vec,
+            vec::Vec,
+        },
         vocab::utility::format_reserved_carrot,
     };
 

@@ -4,9 +4,20 @@ use core::fmt::Debug;
 
 use crate::{
     WCResult,
-    alloc::{vec, vec::Vec},
-    types::{TokenType, WCHashSet},
-    vocab::{ByteTokenArray, ByteTokenMap, TokenByteMap, VocabIndex},
+    alloc::{
+        vec,
+        vec::Vec,
+    },
+    types::{
+        TokenType,
+        WCHashSet,
+    },
+    vocab::{
+        ByteTokenArray,
+        ByteTokenMap,
+        TokenByteMap,
+        VocabIndex,
+    },
 };
 
 /// ``0..=255`` Rank Byte/Token Bijection Table
@@ -48,7 +59,8 @@ impl<T: TokenType> ByteMapVocab<T> {
     /// Build a `ByteTable` from a byte-ord => token table.
     ///
     /// ## Arguments
-    /// * `byte_to_token` - A slice of tokens where the index corresponds to the byte value.
+    /// * `byte_to_token` - A slice of tokens where the index corresponds to the
+    ///   byte value.
     ///
     /// ## Returns
     /// A new `ByteMapVocab` instance.
@@ -201,7 +213,10 @@ impl<T: TokenType> VocabIndex<T> for ByteMapVocab<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{alloc::format, vocab::utility::testing::build_test_shift_byte_vocab};
+    use crate::{
+        alloc::format,
+        vocab::utility::testing::build_test_shift_byte_vocab,
+    };
 
     #[test]
     fn test_byte_vocab_default() {

@@ -4,7 +4,11 @@ use core::ops::Range;
 
 use crate::{
     alloc::sync::Arc,
-    spanners::{SpanRef, TextSpanner, span_lexers::SpanLexer},
+    spanners::{
+        SpanRef,
+        TextSpanner,
+        span_lexers::SpanLexer,
+    },
     support::ranges::offset_range,
 };
 
@@ -48,7 +52,8 @@ impl LexerTextSpanner {
             .and_then(|s| s.find_span_iter(text).next())
     }
 
-    /// Scan `text` into [`Word`](SpanRef::Word) and [`Gap`](SpanRef::Gap) spans.
+    /// Scan `text` into [`Word`](SpanRef::Word) and [`Gap`](SpanRef::Gap)
+    /// spans.
     ///
     /// Loops over [`next_span`](Self::next_span),
     /// classifying matched regions as `Word` and unmatched regions as `Gap`.
@@ -132,9 +137,16 @@ mod tests {
     use super::*;
     use crate::{
         TokenType,
-        alloc::{boxed::Box, vec, vec::Vec},
+        alloc::{
+            boxed::Box,
+            vec,
+            vec::Vec,
+        },
         pretrained::openai::OA_CL100K_BASE_PATTERN,
-        spanners::{SpanRef, TextSpanningConfig},
+        spanners::{
+            SpanRef,
+            TextSpanningConfig,
+        },
     };
 
     const _LEXER_SPANNER_BOX_CHECK: Option<Box<LexerTextSpanner>> = None;

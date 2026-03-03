@@ -2,7 +2,10 @@
 
 use crate::{
     alloc::vec::Vec,
-    types::{TokenType, WCHashSet},
+    types::{
+        TokenType,
+        WCHashSet,
+    },
 };
 
 /// Common traits for token vocabularies.

@@ -1,8 +1,14 @@
 use std::sync::Arc;
 
-use tiktoken_rs::{CoreBPE, Rank};
+use tiktoken_rs::{
+    CoreBPE,
+    Rank,
+};
 
-use crate::engines::{BoxError, EncDecEngine};
+use crate::engines::{
+    BoxError,
+    EncDecEngine,
+};
 
 /// [`EncDecEngine`] implementation for [`CoreBPE`].
 pub struct TiktokenRsEngine {

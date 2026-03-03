@@ -3,7 +3,8 @@
 //! Support for training token vocabularies.
 //!
 //! Training requires:
-//! * [`wordchipper::vocab::ByteMapVocab`] - a choice of ``{ u8 -> T }` byte mappings.
+//! * [`wordchipper::vocab::ByteMapVocab`] - a choice of ``{ u8 -> T }` byte
+//!   mappings.
 //!   * The default is ``T::from(u8)``.
 //! * [`wordchipper::spanners::TextSpanningConfig`] - a text splitting config.
 //!   * This can be built from just a regex pattern.
@@ -23,7 +24,8 @@
 //! of supporting many different training data sources could be hidden in
 //! the isolated deps of such a tool.
 //!
-//! Consider the following, to train a tokenizer and export it a "*.tiktoken" file.
+//! Consider the following, to train a tokenizer and export it a "*.tiktoken"
+//! file.
 //!
 //! - The iterator stream for samples may be quite large.
 //! - Training a `nanochat` equivalent tokenizer takes ~80 CPU minutes.
@@ -36,9 +38,15 @@
 //!     TokenizerOptions,
 //!     UnifiedTokenVocab,
 //!     pretrained::openai::OA_CL100K_BASE_PATTERN,
-//!     vocab::{ByteMapVocab, io::save_base64_span_map_path},
+//!     vocab::{
+//!         ByteMapVocab,
+//!         io::save_base64_span_map_path,
+//!     },
 //! };
-//! use wordchipper_training::{BPETRainerOptions, BPETrainer};
+//! use wordchipper_training::{
+//!     BPETRainerOptions,
+//!     BPETrainer,
+//! };
 //!
 //! fn example<I, S>(
 //!     vocab_size: usize,
@@ -54,7 +62,8 @@
 //!     // See [`wordchipper::TokenType`].
 //!     type T = u32;
 //!
-//!     let mut trainer = BPETRainerOptions::new(OA_CL100K_BASE_PATTERN, vocab_size).init();
+//!     let mut trainer =
+//!         BPETRainerOptions::new(OA_CL100K_BASE_PATTERN, vocab_size).init();
 //!
 //!     for batch in batches {
 //!         // The trainer has no parallelism.
@@ -90,6 +99,10 @@ mod bpe_trainer;
 mod training_types;
 
 #[doc(inline)]
-pub use bpe_trainer::{BPETRainerOptions, BPETrainer};
+pub use bpe_trainer::BPETRainerOptions;
 #[doc(inline)]
-pub use training_types::{CountType, StringChunkType};
+pub use bpe_trainer::BPETrainer;
+#[doc(inline)]
+pub use training_types::CountType;
+#[doc(inline)]
+pub use training_types::StringChunkType;

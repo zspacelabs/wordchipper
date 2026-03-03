@@ -4,7 +4,10 @@
 
 use std::{
     env,
-    path::{Path, PathBuf},
+    path::{
+        Path,
+        PathBuf,
+    },
 };
 
 use directories_next::ProjectDirs;

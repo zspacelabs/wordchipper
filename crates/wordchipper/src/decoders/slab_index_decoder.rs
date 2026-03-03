@@ -5,9 +5,20 @@ use core::marker::PhantomData;
 use crate::{
     TokenType,
     WCResult,
-    alloc::{sync::Arc, vec, vec::Vec},
-    decoders::{DecodeResult, TokenDecoder},
-    vocab::{DEFAULT_BYTE_PER_TOKEN_RATIO, TokenSpanMap, UnifiedTokenVocab},
+    alloc::{
+        sync::Arc,
+        vec,
+        vec::Vec,
+    },
+    decoders::{
+        DecodeResult,
+        TokenDecoder,
+    },
+    vocab::{
+        DEFAULT_BYTE_PER_TOKEN_RATIO,
+        TokenSpanMap,
+        UnifiedTokenVocab,
+    },
 };
 
 /// A [`TokenDecoder<T>`] which keeps a dense array index into a shared slab.
@@ -32,7 +43,8 @@ impl<T: TokenType> SlabIndexDecoder<T> {
     /// Build a [`SlabIndexDecoder`] from this [`UnifiedTokenVocab`].
     ///
     /// ## Arguments
-    /// * `unified_vocab` - The unified token vocabulary to build the decoder from.
+    /// * `unified_vocab` - The unified token vocabulary to build the decoder
+    ///   from.
     pub fn from_vocab(vocab: Arc<UnifiedTokenVocab<T>>) -> Self {
         Self::new(vocab.unified_dictionary())
     }
@@ -73,7 +85,8 @@ impl<T: TokenType> SlabIndexDecoder<T> {
 
     /// Sets the expected bytes per token.
     ///
-    /// This is used to bias the capacity of the output buffer in `try_decode_to_bytes`.
+    /// This is used to bias the capacity of the output buffer in
+    /// `try_decode_to_bytes`.
     pub fn with_expected_bytes_per_token(
         mut self,
         expected: f32,
@@ -140,7 +153,10 @@ mod tests {
         spanners::TextSpanningConfig,
         vocab::{
             UnifiedTokenVocab,
-            utility::testing::{build_test_shift_byte_vocab, build_test_vocab},
+            utility::testing::{
+                build_test_shift_byte_vocab,
+                build_test_vocab,
+            },
         },
     };
 

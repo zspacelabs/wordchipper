@@ -1,4 +1,7 @@
-use pyo3::{prelude::*, pymodule};
+use pyo3::{
+    prelude::*,
+    pymodule,
+};
 
 pub(crate) mod wc {
     pub use wordchipper::{
@@ -6,7 +9,10 @@ pub(crate) mod wc {
         TokenizerOptions,
         disk_cache::WordchipperDiskCache,
         support::{
-            slices::{inner_slice_view, inner_str_view},
+            slices::{
+                inner_slice_view,
+                inner_str_view,
+            },
             strings::string_from_utf8_lossy,
         },
         vocab::io::save_base64_span_map_path,

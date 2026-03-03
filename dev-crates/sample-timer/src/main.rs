@@ -1,7 +1,10 @@
 extern crate core;
 
 use std::{
-    fmt::{Display, Formatter},
+    fmt::{
+        Display,
+        Formatter,
+    },
     io,
     io::IsTerminal,
     iter::Iterator,
@@ -9,14 +12,29 @@ use std::{
     time::Duration,
 };
 
-use arrow::array::{Array, StringArray};
-use batch_stats::{BatchStats, EngineBatchTimes};
-use clap::{Parser, ValueEnum};
-use engines::{BoxError, EncDecEngine};
+use arrow::array::{
+    Array,
+    StringArray,
+};
+use batch_stats::{
+    BatchStats,
+    EngineBatchTimes,
+};
+use clap::{
+    Parser,
+    ValueEnum,
+};
+use engines::{
+    BoxError,
+    EncDecEngine,
+};
 use indicatif::ProgressBar;
 use rand::prelude::SliceRandom;
 use similar::TextDiff;
-use tiktoken_rs::{CoreBPE, Rank};
+use tiktoken_rs::{
+    CoreBPE,
+    Rank,
+};
 use tiktoken_support::TiktokenRsEngine;
 use wordchipper::{
     TokenEncoderOptions,
@@ -27,11 +45,17 @@ use wordchipper::{
     disk_cache::WordchipperDiskCache,
     pretrained::openai::OATokenizer,
     support::{
-        slices::{inner_slice_view, inner_str_view},
+        slices::{
+            inner_slice_view,
+            inner_str_view,
+        },
         timers::timeit,
     },
 };
-use wordchipper_data::dataset::{DatasetCache, DatasetCacheConfig};
+use wordchipper_data::dataset::{
+    DatasetCache,
+    DatasetCacheConfig,
+};
 use wordchipper_support::WordchipperEngine;
 
 mod engines;
@@ -43,7 +67,9 @@ mod wordchipper_support;
 #[cfg(feature = "tokenizers")]
 mod tokenizers_support;
 #[cfg(feature = "tokenizers")]
-use tokenizers_support::{TokenizersEngine, load_tokenizers_tok};
+use tokenizers_support::TokenizersEngine;
+#[cfg(feature = "tokenizers")]
+use tokenizers_support::load_tokenizers_tok;
 use wordchipper::spanners::span_lexers::accelerators::get_regex_accelerator;
 
 /// Wordchipper Encode/Decode Side-by-Side Benchmarks.
@@ -69,34 +95,34 @@ pub struct Args {
     pub model: ModelSelector,
 
     /// Ignore missing models?
-    /* hack: 3-state boolean */
+    // hack: 3-state boolean
     #[arg(long, num_args = 0..=1, default_value_t = true, default_missing_value = "true")]
     pub ignore_missing: bool,
 
     /// Test against tiktoken-rs?
-    /* hack: 3-state boolean */
+    // hack: 3-state boolean
     #[arg(long, num_args = 0..=1, default_value_t = true, default_missing_value = "true")]
     pub tiktoken: bool,
 
     #[cfg(feature = "tokenizers")]
     /// Test against HF tokenizers?
-    /* hack: 3-state boolean */
+    // hack: 3-state boolean
     #[arg(long, num_args = 0..=1, default_value_t = true, default_missing_value = "true")]
     pub tokenizers: bool,
 
     /// Time decoding as well.
-    /* hack: 3-state boolean */
+    // hack: 3-state boolean
     #[arg(long, num_args = 0..=1, default_value_t = false, default_missing_value = "true")]
     pub decode: bool,
 
     /// Validate encoders against each other, decoders against input.
-    /* hack: 3-state boolean */
+    // hack: 3-state boolean
     #[arg(long, num_args = 0..=1, default_value_t = true, default_missing_value = "true")]
     pub validate: bool,
 
     /// Re-span text when verifying?
     /// Slower, but works around span configs which leave gaps in the text.
-    /* hack: 3-state boolean */
+    // hack: 3-state boolean
     #[arg(long,
     num_args = 0..=1,
     default_value_t = false,
@@ -196,7 +222,8 @@ fn main() -> Result<(), BoxError> {
     // println!("Loading wordchipper...");
     let (_desc, vocab) = wordchipper::load_vocab(args.model.to_string().as_str(), &mut disk_cache)?;
 
-    // TODO: complete batch-observer inversion of control for additional tokenizer wrappers.
+    // TODO: complete batch-observer inversion of control for additional tokenizer
+    // wrappers.
 
     let mut candidate_engines: Vec<Arc<dyn EncDecEngine<Rank>>> = Vec::new();
 

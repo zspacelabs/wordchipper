@@ -7,7 +7,10 @@ use crate::{
     TokenType,
     UnifiedTokenVocab,
     alloc::sync::Arc,
-    encoders::token_span_encoder::{SpanEncoderSelector, TokenSpanEncoder},
+    encoders::token_span_encoder::{
+        SpanEncoderSelector,
+        TokenSpanEncoder,
+    },
     spanners::TextSpannerBuilder,
 };
 

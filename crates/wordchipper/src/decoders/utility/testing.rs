@@ -3,10 +3,20 @@
 use crate::{
     TokenEncoderOptions,
     TokenType,
-    alloc::{sync::Arc, vec, vec::Vec},
+    alloc::{
+        sync::Arc,
+        vec,
+        vec::Vec,
+    },
     decoders::TokenDecoder,
-    support::{strings::string_from_utf8_lossy, traits::static_is_send_sync_check},
-    vocab::{UnifiedTokenVocab, VocabIndex},
+    support::{
+        strings::string_from_utf8_lossy,
+        traits::static_is_send_sync_check,
+    },
+    vocab::{
+        UnifiedTokenVocab,
+        VocabIndex,
+    },
 };
 
 /// Common Unittest for TokenDecoder implementations.

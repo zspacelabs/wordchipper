@@ -64,8 +64,14 @@ mod tests {
         TokenType,
         alloc::sync::Arc,
         encoders::{
-            testing::{common_encoder_test_vocab, common_encoder_tests},
-            token_span_encoder::{SpanEncoderSelector, TokenSpanEncoder},
+            testing::{
+                common_encoder_test_vocab,
+                common_encoder_tests,
+            },
+            token_span_encoder::{
+                SpanEncoderSelector,
+                TokenSpanEncoder,
+            },
         },
         spanners::TextSpannerBuilder,
     };

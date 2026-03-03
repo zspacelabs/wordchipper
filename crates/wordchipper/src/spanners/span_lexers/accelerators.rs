@@ -71,11 +71,15 @@ pub mod testutil {
 
     use super::*;
     use crate::{
-        alloc::{format, vec},
+        alloc::{
+            format,
+            vec,
+        },
         prelude::*,
     };
 
-    /// Testing utility for checking that a sample and an accelerated span lexer match.
+    /// Testing utility for checking that a sample and an accelerated span lexer
+    /// match.
     pub fn assert_matches_reference_lexer(
         sample: &str,
         ref_lexer: &dyn SpanLexer,

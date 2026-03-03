@@ -1,11 +1,17 @@
 //! # Thread Pool Toy
 
-use core::{fmt::Debug, ops::Deref};
+use core::{
+    fmt::Debug,
+    ops::Deref,
+};
 use std::num::NonZeroUsize;
 
 use crate::{
     prelude::*,
-    support::concurrency::threads::{resolve_max_pool, unstable_current_thread_id_hash},
+    support::concurrency::threads::{
+        resolve_max_pool,
+        unstable_current_thread_id_hash,
+    },
 };
 
 /// Current Thread -> T Pool.
@@ -53,7 +59,8 @@ impl<T> PoolToy<T>
 where
     T: Clone + Send,
 {
-    /// Initialize a new thread-local pool with the given item and maximum pool size.
+    /// Initialize a new thread-local pool with the given item and maximum pool
+    /// size.
     ///
     /// ## Arguments
     /// * `pool` - the pool of items.

@@ -1,15 +1,28 @@
 use std::{
-    io::{BufRead, Write},
+    io::{
+        BufRead,
+        Write,
+    },
     sync::Arc,
 };
 
-use wordchipper::{TokenDecoder, TokenEncoder, Tokenizer};
+use wordchipper::{
+    TokenDecoder,
+    TokenEncoder,
+    Tokenizer,
+};
 
 use crate::util::{
     disk_cache,
-    input_output::{InputArgs, OutputArgs},
+    input_output::{
+        InputArgs,
+        OutputArgs,
+    },
     model_selector::ModelSelectorArgs,
-    tokenizer_mode::{TokenizerMode, TokenizerModeArgs},
+    tokenizer_mode::{
+        TokenizerMode,
+        TokenizerModeArgs,
+    },
 };
 
 /// Args for the cat command.

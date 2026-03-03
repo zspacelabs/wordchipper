@@ -1,5 +1,9 @@
 use wordchipper::{
-    pretrained::openai::{OA_CL100K_BASE_PATTERN, OA_GPT2_PATTERN, OA_O200K_BASE_PATTERN},
+    pretrained::openai::{
+        OA_CL100K_BASE_PATTERN,
+        OA_GPT2_PATTERN,
+        OA_O200K_BASE_PATTERN,
+    },
     spanners::span_lexers::accelerators::get_regex_accelerator,
 };
 

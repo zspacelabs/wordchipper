@@ -5,7 +5,10 @@ use crate::{
     UnifiedTokenVocab,
     WCResult,
     alloc::sync::Arc,
-    decoders::{BatchDecodeResult, DecodeResult},
+    decoders::{
+        BatchDecodeResult,
+        DecodeResult,
+    },
     prelude::*,
     spanners::TextSpanner,
 };

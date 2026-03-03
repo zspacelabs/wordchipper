@@ -2,16 +2,30 @@
 
 use crate::{
     TokenType,
-    alloc::{string::String, sync::Arc, vec, vec::Vec},
-    decoders::{TokenDecoder, TokenDictDecoder},
+    alloc::{
+        string::String,
+        sync::Arc,
+        vec,
+        vec::Vec,
+    },
+    decoders::{
+        TokenDecoder,
+        TokenDictDecoder,
+    },
     encoders::TokenEncoder,
     pretrained::openai::OA_CL100K_BASE_PATTERN,
     spanners::TextSpanningConfig,
-    support::{slices::inner_slice_view, traits::static_is_send_sync_check},
+    support::{
+        slices::inner_slice_view,
+        traits::static_is_send_sync_check,
+    },
     vocab::{
         UnifiedTokenVocab,
         VocabIndex,
-        utility::testing::{build_test_shift_byte_vocab, build_test_vocab},
+        utility::testing::{
+            build_test_shift_byte_vocab,
+            build_test_vocab,
+        },
     },
 };
 

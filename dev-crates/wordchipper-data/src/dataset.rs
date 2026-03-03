@@ -1,9 +1,19 @@
 //! # Nanochat Dataset Loader
 
-use std::{fs, fs::File, path::PathBuf};
+use std::{
+    fs,
+    fs::File,
+    path::PathBuf,
+};
 
-use downloader::{Download, Downloader};
-use parquet::arrow::arrow_reader::{ParquetRecordBatchReader, ParquetRecordBatchReaderBuilder};
+use downloader::{
+    Download,
+    Downloader,
+};
+use parquet::arrow::arrow_reader::{
+    ParquetRecordBatchReader,
+    ParquetRecordBatchReaderBuilder,
+};
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -55,8 +65,8 @@ impl DatasetSource {
 
     /// Construct a shard filename.
     ///
-    /// Substitutes the ``Self::format_index(index)`` result in for `"{index}"` in
-    /// the [`Self::shard_template`].
+    /// Substitutes the ``Self::format_index(index)`` result in for `"{index}"`
+    /// in the [`Self::shard_template`].
     pub fn format_shard_filename(
         &self,
         index: usize,

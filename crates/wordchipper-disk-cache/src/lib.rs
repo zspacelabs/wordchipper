@@ -6,7 +6,9 @@ mod path_resolver;
 mod path_utils;
 
 #[doc(inline)]
-pub use disk_cache::{WordchipperDiskCache, WordchipperDiskCacheOptions};
+pub use disk_cache::WordchipperDiskCache;
+#[doc(inline)]
+pub use disk_cache::WordchipperDiskCacheOptions;
 #[doc(inline)]
 pub use path_resolver::PathResolver;
 #[doc(inline)]

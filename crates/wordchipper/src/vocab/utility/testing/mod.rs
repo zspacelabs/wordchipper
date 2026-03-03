@@ -4,7 +4,12 @@ use crate::{
     TokenType,
     alloc::vec::Vec,
     spanners::TextSpanningConfig,
-    vocab::{ByteMapVocab, SpanMapVocab, SpanTokenMap, UnifiedTokenVocab},
+    vocab::{
+        ByteMapVocab,
+        SpanMapVocab,
+        SpanTokenMap,
+        UnifiedTokenVocab,
+    },
 };
 
 /// Create a test [`UnifiedTokenVocab`].

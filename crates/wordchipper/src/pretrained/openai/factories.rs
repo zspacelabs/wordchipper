@@ -1,39 +1,54 @@
 //! # `OpenAI` Pretrained Vocabulary Loaders
 
 #[cfg(feature = "std")]
-use std::{io::BufRead, path::Path};
+use std::io::BufRead;
+#[cfg(feature = "std")]
+use std::path::Path;
 
+#[allow(unused_imports)]
+use crate::TokenType;
+#[allow(unused_imports)]
+use crate::UnifiedTokenVocab;
+#[allow(unused_imports)]
+use crate::prelude::*;
+#[allow(unused_imports)]
+use crate::pretrained::openai::OA_CL100K_BASE_PATTERN;
+#[allow(unused_imports)]
+use crate::pretrained::openai::OA_O200K_BASE_PATTERN;
+#[allow(unused_imports)]
+use crate::pretrained::openai::OA_P50K_BASE_PATTERN;
+#[allow(unused_imports)]
+use crate::pretrained::openai::OA_R50K_BASE_PATTERN;
+#[allow(unused_imports)]
+use crate::pretrained::openai::resources::OA_CL100K_BASE_TIKTOKEN_RESOURCE;
+#[allow(unused_imports)]
+use crate::pretrained::openai::resources::OA_O200K_BASE_TIKTOKEN_RESOURCE;
+#[allow(unused_imports)]
+use crate::pretrained::openai::resources::OA_P50K_BASE_TIKTOKEN_RESOURCE;
+#[allow(unused_imports)]
+use crate::pretrained::openai::resources::OA_R50K_BASE_TIKTOKEN_RESOURCE;
+#[allow(unused_imports)]
+use crate::pretrained::openai::specials::oa_cl100k_edit_special_tokens;
+#[allow(unused_imports)]
+use crate::pretrained::openai::specials::oa_o200k_base_special_tokens;
+#[allow(unused_imports)]
+use crate::pretrained::openai::specials::oa_o200k_harmony_special_tokens;
+#[allow(unused_imports)]
+use crate::pretrained::openai::specials::oa_p50k_base_special_tokens;
+#[allow(unused_imports)]
+use crate::pretrained::openai::specials::oa_p50k_edit_special_tokens;
+#[allow(unused_imports)]
+use crate::pretrained::openai::specials::oa_r50k_base_special_tokens;
+#[allow(unused_imports)]
+use crate::spanners::TextSpanningConfig;
+#[allow(unused_imports)]
+use crate::support::regex::RegexPattern;
+#[allow(unused_imports)]
+use crate::support::resources::ConstKeyedResource;
 #[cfg(feature = "std")]
 use crate::support::resources::ResourceLoader;
 #[allow(unused_imports)]
-use crate::{
-    TokenType,
-    UnifiedTokenVocab,
-    prelude::*,
-    pretrained::openai::{
-        OA_CL100K_BASE_PATTERN,
-        OA_O200K_BASE_PATTERN,
-        OA_P50K_BASE_PATTERN,
-        OA_R50K_BASE_PATTERN,
-        resources::{
-            OA_CL100K_BASE_TIKTOKEN_RESOURCE,
-            OA_O200K_BASE_TIKTOKEN_RESOURCE,
-            OA_P50K_BASE_TIKTOKEN_RESOURCE,
-            OA_R50K_BASE_TIKTOKEN_RESOURCE,
-        },
-        specials::{
-            oa_cl100k_edit_special_tokens,
-            oa_o200k_base_special_tokens,
-            oa_o200k_harmony_special_tokens,
-            oa_p50k_base_special_tokens,
-            oa_p50k_edit_special_tokens,
-            oa_r50k_base_special_tokens,
-        },
-    },
-    spanners::TextSpanningConfig,
-    support::{regex::RegexPattern, resources::ConstKeyedResource},
-    vocab::utility::factories::ConstVocabularyFactory,
-};
+use crate::vocab::utility::factories::ConstVocabularyFactory;
 
 /// Load the `DataGym` GPT-2 span map vocabulary.
 #[cfg(all(feature = "std", feature = "datagym"))]
@@ -45,9 +60,15 @@ pub fn load_gpt2_vocab<T: TokenType>(
     use crate::{
         pretrained::openai::{
             oa_r50k_base_spanning_config,
-            resources::{OA_GPT2_ENCODER_JSON_KEYED_RESOURCE, OA_GPT2_VOCAB_BPE_KEYED_RESOURCE},
+            resources::{
+                OA_GPT2_ENCODER_JSON_KEYED_RESOURCE,
+                OA_GPT2_VOCAB_BPE_KEYED_RESOURCE,
+            },
         },
-        vocab::{SpanMapVocab, io::read_datagym_vocab},
+        vocab::{
+            SpanMapVocab,
+            io::read_datagym_vocab,
+        },
     };
 
     let vocab_path = loader.load_resource_path(&OA_GPT2_VOCAB_BPE_KEYED_RESOURCE.into())?;

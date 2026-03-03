@@ -4,7 +4,10 @@ use core::cmp::Ordering;
 
 use compact_str::CompactString;
 use dary_heap::OctonaryHeap;
-use num_traits::{One, Zero};
+use num_traits::{
+    One,
+    Zero,
+};
 use wordchipper::{
     Pair,
     TokenType,
@@ -19,13 +22,22 @@ use wordchipper::{
         ByteMapVocab,
         PairMapVocab,
         PairTokenMap,
-        utility::validators::{U8_SIZE, expect_vocab_size},
+        utility::validators::{
+            U8_SIZE,
+            expect_vocab_size,
+        },
     },
 };
 
 use crate::{
     CountType,
-    utility::{PairIndexMap, PairSpanIndex, TextSpanCounter, TextSpanCounterOptions, TokenSpanBuf},
+    utility::{
+        PairIndexMap,
+        PairSpanIndex,
+        TextSpanCounter,
+        TextSpanCounterOptions,
+        TokenSpanBuf,
+    },
 };
 
 /// Options for [`BPETrainer`].
@@ -62,7 +74,8 @@ impl BPETRainerOptions {
     /// Sets the vocab size.
     ///
     /// ## Arguments
-    /// * `vocab_size` - The desired vocabulary size; must be >= 256 (the size of the u8 space).
+    /// * `vocab_size` - The desired vocabulary size; must be >= 256 (the size
+    ///   of the u8 space).
     ///
     /// ## Returns
     /// The updated `BinaryPairVocabTrainerOptions` instance.
@@ -215,7 +228,8 @@ impl BPETrainer {
     ///
     /// The resulting vocab will contain:
     /// * the trainer's word split pattern,
-    /// * a ``{(T, T) -> T}`` pair map vocab with the learned binary pair merges,
+    /// * a ``{(T, T) -> T}`` pair map vocab with the learned binary pair
+    ///   merges,
     /// * a ``{Vec<u8> -> T}`` word map that is empty.
     ///
     /// ## Arguments
@@ -377,7 +391,8 @@ impl BPETrainer {
     ///
     /// The resulting vocab will contain:
     /// * the trainer's word split pattern,
-    /// * a ``{(T, T) -> T}`` pair map vocab with the learned binary pair merges,
+    /// * a ``{(T, T) -> T}`` pair map vocab with the learned binary pair
+    ///   merges,
     /// * a ``{Vec<u8> -> T}`` word map that is empty.
     ///
     /// ## Arguments
@@ -412,7 +427,10 @@ mod tests {
         vocab::ByteMapVocab,
     };
 
-    use crate::{BPETRainerOptions, bpe_trainer::MergeJob};
+    use crate::{
+        BPETRainerOptions,
+        bpe_trainer::MergeJob,
+    };
 
     #[test]
     fn test_tokenizer_options() {

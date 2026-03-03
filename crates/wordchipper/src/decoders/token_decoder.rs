@@ -3,8 +3,14 @@
 use crate::{
     TokenType,
     WCResult,
-    alloc::{string::String, vec::Vec},
-    decoders::{BatchDecodeResult, DecodeResult},
+    alloc::{
+        string::String,
+        vec::Vec,
+    },
+    decoders::{
+        BatchDecodeResult,
+        DecodeResult,
+    },
     support::strings::string_from_utf8_lossy,
 };
 
@@ -91,7 +97,10 @@ mod tests {
 
     use super::*;
     use crate::{
-        alloc::{string::ToString, vec},
+        alloc::{
+            string::ToString,
+            vec,
+        },
         decoders::utility::ByteDecoder,
     };
 

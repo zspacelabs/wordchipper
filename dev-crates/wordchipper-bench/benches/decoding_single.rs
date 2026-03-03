@@ -1,9 +1,19 @@
 #![allow(missing_docs)]
 
-use std::sync::{Arc, LazyLock};
+use std::sync::{
+    Arc,
+    LazyLock,
+};
 
-use divan::{Bencher, black_box, counter::BytesCount};
-use tiktoken_rs::{CoreBPE, Rank};
+use divan::{
+    Bencher,
+    black_box,
+    counter::BytesCount,
+};
+use tiktoken_rs::{
+    CoreBPE,
+    Rank,
+};
 use tokenizers::Tokenizer;
 use wordchipper::{
     TokenDecoder,

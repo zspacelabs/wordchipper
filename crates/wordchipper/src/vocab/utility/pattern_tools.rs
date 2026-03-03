@@ -22,9 +22,11 @@
 ///
 /// # Parameters
 ///
-/// - `$sep`: A string literal used as a separator between the provided string literals.
-/// - `($first $(, $rest)*)`: A tuple of at least one string literal. The first string literal
-///   is mandatory, and the rest are optional. A trailing comma is allowed but not required.
+/// - `$sep`: A string literal used as a separator between the provided string
+///   literals.
+/// - `($first $(, $rest)*)`: A tuple of at least one string literal. The first
+///   string literal is mandatory, and the rest are optional. A trailing comma
+///   is allowed but not required.
 #[macro_export]
 macro_rules! join_strs {
     ($sep:literal, ($first:literal $(, $rest:literal)* $(,)?)) => {

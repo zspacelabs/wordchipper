@@ -4,11 +4,21 @@ use crate::{
     WCResult,
     alloc::vec::Vec,
     support::{
-        regex::{RegexPattern, alternate_choice_regex_pattern},
+        regex::{
+            RegexPattern,
+            alternate_choice_regex_pattern,
+        },
         strings::string_from_utf8_lossy,
     },
-    types::{TokenType, WCHashSet},
-    vocab::{SpanTokenMap, VocabIndex, utility::validators::try_vocab_size},
+    types::{
+        TokenType,
+        WCHashSet,
+    },
+    vocab::{
+        SpanTokenMap,
+        VocabIndex,
+        utility::validators::try_vocab_size,
+    },
 };
 
 /// Token vocabulary for special words.
@@ -108,7 +118,8 @@ impl<T: TokenType> SpecialVocab<T> {
     /// * `chunk` - The byte slice to look up.
     ///
     /// ## Returns
-    /// An `Option` containing the token if the span exists in the special vocabulary.
+    /// An `Option` containing the token if the span exists in the special
+    /// vocabulary.
     pub fn lookup_token(
         &self,
         chunk: &[u8],

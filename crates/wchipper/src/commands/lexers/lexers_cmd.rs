@@ -1,4 +1,7 @@
-use crate::commands::lexers::{lexers_list_cmd, lexers_stress_cmd};
+use crate::commands::lexers::{
+    lexers_list_cmd,
+    lexers_stress_cmd,
+};
 
 /// Subcommands for the lexers command.
 #[derive(clap::Subcommand, Debug)]

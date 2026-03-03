@@ -3,19 +3,27 @@
 //! Compile-time DFA lexer for the `r50k_base` pattern (GPT-2).
 //!
 //! This serves as a reference implementation showing how to build an
-//! accelerated lexer using [`Gpt2FamilyTokenRole`] and [`for_each_classified_span`].
+//! accelerated lexer using [`Gpt2FamilyTokenRole`] and
+//! [`for_each_classified_span`].
 
 use core::ops::Range;
 
 use logos::Logos;
 
 use crate::{
-    alloc::{boxed::Box, sync::Arc},
+    alloc::{
+        boxed::Box,
+        sync::Arc,
+    },
     pretrained::openai::OA_R50K_BASE_PATTERN,
     spanners::span_lexers::{
         SpanLexer,
         accelerators::RegexAcceleratorHook,
-        logos::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilySpanIter, Gpt2FamilyTokenRole},
+        logos::gpt2_family::{
+            Gpt2FamilyLogos,
+            Gpt2FamilySpanIter,
+            Gpt2FamilyTokenRole,
+        },
     },
 };
 
@@ -92,8 +100,17 @@ impl SpanLexer for R50kLexer {
 mod tests {
     use super::*;
     use crate::{
-        alloc::{string::ToString, sync::Arc, vec, vec::Vec},
-        spanners::{SpanRef, TextSpanner, span_lexers::LexerTextSpanner},
+        alloc::{
+            string::ToString,
+            sync::Arc,
+            vec,
+            vec::Vec,
+        },
+        spanners::{
+            SpanRef,
+            TextSpanner,
+            span_lexers::LexerTextSpanner,
+        },
     };
 
     /// Build a `TextSpanner` from a logos lexer with no specials.
@@ -194,7 +211,10 @@ mod tests {
     fn test_logos_r50k_unicode() {
         use crate::{
             pretrained::openai::OA_R50K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -232,7 +252,10 @@ mod tests {
     fn test_logos_r50k_realworld() {
         use crate::{
             pretrained::openai::OA_R50K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -295,7 +318,10 @@ mod tests {
     fn test_logos_r50k_long_text() {
         use crate::{
             pretrained::openai::OA_R50K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -452,7 +478,10 @@ mod tests {
 
         use crate::{
             pretrained::openai::OA_R50K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =

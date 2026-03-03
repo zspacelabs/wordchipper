@@ -2,7 +2,11 @@
 
 use core::hash::Hash;
 
-use wordchipper::{Pair, TokenType, vocab::ByteMapVocab};
+use wordchipper::{
+    Pair,
+    TokenType,
+    vocab::ByteMapVocab,
+};
 
 /// A mutable span of tokens (a chunk or "word").
 ///
@@ -53,7 +57,8 @@ impl<T: TokenType> TokenSpanBuf<T> {
     /// Create a new span buf from a string slice.
     ///
     /// # Arguments
-    /// * `text` - the text to turn into UTF-8 bytes, and translate to byte-level tokens.
+    /// * `text` - the text to turn into UTF-8 bytes, and translate to
+    ///   byte-level tokens.
     /// * `byte_vocab` - the translation for the byte tokens.
     pub fn from_string<S: AsRef<str>>(
         text: S,
@@ -92,10 +97,11 @@ impl<T: TokenType> TokenSpanBuf<T> {
     /// # Arguments
     /// * `pair` - the pair to merge.
     /// * `replacement` - the token to replace `pair` with.
-    /// * `on_merge` - a callback function to invoke for each incremental pair delta.
-    ///   The function is called with:
+    /// * `on_merge` - a callback function to invoke for each incremental pair
+    ///   delta. The function is called with:
     ///   - `pair` - the pair that was merged.
-    ///   - `delta` - the pair count delta: `+1` for an added pair, `-1` for a removed pair.
+    ///   - `delta` - the pair count delta: `+1` for an added pair, `-1` for a
+    ///     removed pair.
     pub fn merge_pair_cb<F>(
         &mut self,
         pair: Pair<T>,

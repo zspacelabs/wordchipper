@@ -1,8 +1,17 @@
 //! # `PairIndex` Builder
 
-use wordchipper::{Pair, TokenType, WCHashMap, WCHashSet, hash_map_with_capacity};
+use wordchipper::{
+    Pair,
+    TokenType,
+    WCHashMap,
+    WCHashSet,
+    hash_map_with_capacity,
+};
 
-use crate::{CountType, utility::TokenSpanBuf};
+use crate::{
+    CountType,
+    utility::TokenSpanBuf,
+};
 
 /// A map from [`Pair`] to its occurrence count.
 pub type PairCountMap<T, C> = WCHashMap<Pair<T>, C>;
@@ -10,7 +19,8 @@ pub type PairCountMap<T, C> = WCHashMap<Pair<T>, C>;
 /// A map from [`Pair`] to indices over ``words``.
 pub type PairIndexMap<T> = WCHashMap<Pair<T>, WCHashSet<usize>>;
 
-/// An index of ``(T, T)`` pair information relative to a ``&[TokenSpanBuf<T>]``.
+/// An index of ``(T, T)`` pair information relative to a
+/// ``&[TokenSpanBuf<T>]``.
 #[derive(Debug, Clone)]
 pub struct PairSpanIndex<T: TokenType, C: CountType> {
     /// A map from [`Pair`] to its occurrence count.
@@ -23,7 +33,8 @@ pub struct PairSpanIndex<T: TokenType, C: CountType> {
 }
 
 impl<T: TokenType, C: CountType> PairSpanIndex<T, C> {
-    /// Build a [`PairSpanIndex`] from a slice of [`TokenSpanBuf`]s, using a count table.
+    /// Build a [`PairSpanIndex`] from a slice of [`TokenSpanBuf`]s, using a
+    /// count table.
     ///
     /// # Arguments
     /// * `spans` - a sequence of text spans; assumed to be unique.

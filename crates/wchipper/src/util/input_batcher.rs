@@ -1,6 +1,12 @@
-use std::io::{BufRead, BufReader};
+use std::io::{
+    BufRead,
+    BufReader,
+};
 
-use arrow::array::{Array, StringArray};
+use arrow::array::{
+    Array,
+    StringArray,
+};
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 
 use crate::commands::train_cmd::FileFormat;

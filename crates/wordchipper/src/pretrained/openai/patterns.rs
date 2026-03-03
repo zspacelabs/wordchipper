@@ -1,6 +1,9 @@
 //! # `OpenAI` Patterns
 
-use crate::{join_patterns, support::regex::ConstRegexPattern};
+use crate::{
+    join_patterns,
+    support::regex::ConstRegexPattern,
+};
 
 /// The original "`gpt2`" vocabulary word pattern.
 ///

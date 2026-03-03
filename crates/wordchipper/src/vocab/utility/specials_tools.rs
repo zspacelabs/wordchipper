@@ -1,6 +1,9 @@
 //! # Special Tokens Tools
 
-use crate::alloc::{format, string::String};
+use crate::alloc::{
+    format,
+    string::String,
+};
 
 /// Generate a "<|$name|>" string literal.
 #[macro_export]

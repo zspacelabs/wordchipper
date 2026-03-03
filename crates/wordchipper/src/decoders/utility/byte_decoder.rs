@@ -6,8 +6,14 @@ use crate::{
     TokenType,
     WCResult,
     alloc::vec::Vec,
-    decoders::{DecodeResult, TokenDecoder},
-    vocab::{ByteMapVocab, DEFAULT_BYTE_PER_TOKEN_RATIO},
+    decoders::{
+        DecodeResult,
+        TokenDecoder,
+    },
+    vocab::{
+        ByteMapVocab,
+        DEFAULT_BYTE_PER_TOKEN_RATIO,
+    },
 };
 
 /// A [`ByteMapVocab`] based [`TokenDecoder`].
@@ -67,7 +73,10 @@ impl<T: TokenType> TokenDecoder<T> for ByteDecoder<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{alloc::vec, vocab::ByteMapVocab};
+    use crate::{
+        alloc::vec,
+        vocab::ByteMapVocab,
+    };
 
     #[test]
     fn test_decode_context() {

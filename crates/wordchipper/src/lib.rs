@@ -7,21 +7,26 @@
 //! ## Client Summary
 //!
 //! ### Core Client Types
-//! * [`TokenType`] - the parameterized integer type used for tokens; choose from `{ u16, u32, u64 }`.
+//! * [`TokenType`] - the parameterized integer type used for tokens; choose
+//!   from `{ u16, u32, u64 }`.
 //! * [`UnifiedTokenVocab<T>`] - the unified vocabulary type.
-//! * [`TokenEncoder<T>`] and [`TokenDecoder<T>`] - the encoder and decoder interfaces.
+//! * [`TokenEncoder<T>`] and [`TokenDecoder<T>`] - the encoder and decoder
+//!   interfaces.
 //!
 //! ### Pre-Trained Models
-//! * [`WordchipperDiskCache`](`disk_cache::WordchipperDiskCache`) - the disk cache for loading models.
-//! * [`OATokenizer`](`pretrained::openai::OATokenizer`) - public pre-trained `OpenAI` tokenizers.
+//! * [`WordchipperDiskCache`](`disk_cache::WordchipperDiskCache`) - the disk
+//!   cache for loading models.
+//! * [`OATokenizer`](`pretrained::openai::OATokenizer`) - public pre-trained
+//!   `OpenAI` tokenizers.
 //!
 //! ## `TokenType` and `WCHash`* Types
 //!
-//! `wordchipper` is parameterized over an abstract primitive integer [`TokenType`].
-//! This permits vocabularies and tokenizers in the `{ u16, u32, u64 }` types.
+//! `wordchipper` is parameterized over an abstract primitive integer
+//! [`TokenType`]. This permits vocabularies and tokenizers in the `{ u16, u32,
+//! u64 }` types.
 //!
-//! It is also feature-parameterized over the [`WCHashSet`] and [`WCHashMap`] types,
-//! which are used to represent sets and maps of tokens.
+//! It is also feature-parameterized over the [`WCHashSet`] and [`WCHashMap`]
+//! types, which are used to represent sets and maps of tokens.
 //! These are provided for convenience and are not required for correctness.
 //!
 //! ## Unified Vocabulary
@@ -29,7 +34,8 @@
 //! The core user-facing vocabulary type is [`UnifiedTokenVocab<T>`].
 //!
 //! Pre-trained vocabulary loaders return [`UnifiedTokenVocab<T>`] instances,
-//! which can be converted between [`TokenType`]s via [`UnifiedTokenVocab::to_token_type`].
+//! which can be converted between [`TokenType`]s via
+//! [`UnifiedTokenVocab::to_token_type`].
 //!
 //! ## Loading and Saving Models
 //!
@@ -69,7 +75,8 @@
 //!
 //! fn example() -> WCResult<Arc<Tokenizer<u32>>> {
 //!     let mut disk_cache = WordchipperDiskCache::default();
-//!     let (_desc, vocab) = load_vocab("openai::o200k_harmony", &mut disk_cache)?;
+//!     let (_desc, vocab) =
+//!         load_vocab("openai::o200k_harmony", &mut disk_cache)?;
 //!     Ok(TokenizerOptions::default().build(vocab))
 //! }
 //! ```
@@ -93,7 +100,10 @@ extern crate alloc;
 pub(crate) mod prelude {
     pub use alloc::{
         boxed::Box,
-        string::{String, ToString},
+        string::{
+            String,
+            ToString,
+        },
         vec::Vec,
     };
 }
@@ -113,16 +123,26 @@ mod tokenizer;
 mod types;
 
 #[doc(inline)]
-pub use decoders::{TokenDecoder, TokenDecoderOptions};
+pub use decoders::TokenDecoder;
 #[doc(inline)]
-pub use encoders::{TokenEncoder, TokenEncoderOptions};
+pub use decoders::TokenDecoderOptions;
+#[doc(inline)]
+pub use encoders::TokenEncoder;
+#[doc(inline)]
+pub use encoders::TokenEncoderOptions;
 #[doc(inline)]
 pub use errors::*;
 #[doc(inline)]
-pub use pretrained::{list_models, list_vocabs, load_vocab};
+pub use pretrained::list_models;
+#[doc(inline)]
+pub use pretrained::list_vocabs;
+#[doc(inline)]
+pub use pretrained::load_vocab;
 #[doc(inline)]
 pub use tokenizer::*;
 #[doc(inline)]
 pub use types::*;
 #[doc(inline)]
-pub use vocab::{UnifiedTokenVocab, VocabIndex};
+pub use vocab::UnifiedTokenVocab;
+#[doc(inline)]
+pub use vocab::VocabIndex;

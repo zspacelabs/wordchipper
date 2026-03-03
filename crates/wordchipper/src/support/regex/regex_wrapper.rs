@@ -1,9 +1,16 @@
 //! # Regex Wrapper
 //! This modules provides mechanisms to mix `regex` and `fancy_regex` types.
 
-use core::{fmt::Debug, ops::Range};
+use core::{
+    fmt::Debug,
+    ops::Range,
+};
 
-use crate::{alloc::boxed::Box, spanners::span_lexers::SpanLexer, support::regex::RegexPattern};
+use crate::{
+    alloc::boxed::Box,
+    spanners::span_lexers::SpanLexer,
+    support::regex::RegexPattern,
+};
 
 /// Error wrapper for regex patterns.
 #[non_exhaustive]
@@ -182,7 +189,10 @@ impl<'r, 'h> Iterator for MatchesWrapper<'r, 'h> {
 mod tests {
     use super::*;
     use crate::{
-        alloc::{format, string::ToString},
+        alloc::{
+            format,
+            string::ToString,
+        },
         join_patterns,
         support::regex::regex_pattern::ConstRegexPattern,
     };

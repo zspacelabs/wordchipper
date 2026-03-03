@@ -1,8 +1,15 @@
 //! Run `cargo bench` and convert divan output to JSON.
 
 use std::{
-    io::{BufRead, BufReader, Write},
-    process::{Command, Stdio},
+    io::{
+        BufRead,
+        BufReader,
+        Write,
+    },
+    process::{
+        Command,
+        Stdio,
+    },
     sync::Mutex,
     thread,
 };

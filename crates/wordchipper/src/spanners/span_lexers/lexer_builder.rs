@@ -4,8 +4,14 @@ use core::num::NonZeroUsize;
 
 use crate::{
     alloc::sync::Arc,
-    spanners::span_lexers::{SpanLexer, accelerators},
-    support::regex::{RegexPattern, RegexWrapper},
+    spanners::span_lexers::{
+        SpanLexer,
+        accelerators,
+    },
+    support::regex::{
+        RegexPattern,
+        RegexWrapper,
+    },
 };
 
 /// Build a regex-based [`SpanLexer`] with the given configuration.
@@ -13,8 +19,8 @@ use crate::{
 /// ## Arguments
 /// * `pattern` - the pattern.
 /// * `concurrent` - whether to use a concurrent pool.
-/// * `max_pool` - the max size of the concurrent pool;
-///   `None` will use system/environment defaults.
+/// * `max_pool` - the max size of the concurrent pool; `None` will use
+///   system/environment defaults.
 pub fn build_regex_lexer(
     pattern: RegexPattern,
     accelerated: bool,

@@ -1,10 +1,22 @@
 use std::sync::Arc;
 
-use pyo3::{PyResult, Python, pyclass, pymethods};
-use wordchipper::{TokenDecoder, TokenEncoder, VocabIndex};
+use pyo3::{
+    PyResult,
+    Python,
+    pyclass,
+    pymethods,
+};
+use wordchipper::{
+    TokenDecoder,
+    TokenEncoder,
+    VocabIndex,
+};
 
 use super::TokenizerOptions;
-use crate::{support::to_pyerr, wc};
+use crate::{
+    support::to_pyerr,
+    wc,
+};
 
 #[pyclass]
 pub struct Tokenizer {

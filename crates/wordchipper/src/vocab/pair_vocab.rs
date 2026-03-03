@@ -3,9 +3,21 @@
 use crate::{
     WCResult,
     alloc::vec::Vec,
-    decoders::{TokenDecoder, utility::PairExpansionDecoder},
-    types::{Pair, TokenType, WCHashSet},
-    vocab::{ByteMapVocab, PairTokenMap, VocabIndex, utility::validators::try_vocab_size},
+    decoders::{
+        TokenDecoder,
+        utility::PairExpansionDecoder,
+    },
+    types::{
+        Pair,
+        TokenType,
+        WCHashSet,
+    },
+    vocab::{
+        ByteMapVocab,
+        PairTokenMap,
+        VocabIndex,
+        utility::validators::try_vocab_size,
+    },
 };
 
 /// Validate that a [`ByteMapVocab`] and [`PairTokenMap`] are compatible.
@@ -169,7 +181,10 @@ impl<T: TokenType> VocabIndex<T> for PairMapVocab<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::vocab::{ByteMapVocab, PairTokenMap};
+    use crate::vocab::{
+        ByteMapVocab,
+        PairTokenMap,
+    };
 
     #[test]
     fn test_tokens_sorted() {

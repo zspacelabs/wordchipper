@@ -9,6 +9,8 @@ pub mod testing;
 pub mod validators;
 
 #[doc(inline)]
-pub use specials_tools::{format_carrot, format_reserved_carrot};
+pub use specials_tools::format_carrot;
+#[doc(inline)]
+pub use specials_tools::format_reserved_carrot;
 #[doc(inline)]
 pub use token_list::*;

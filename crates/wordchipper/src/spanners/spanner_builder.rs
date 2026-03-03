@@ -9,14 +9,19 @@ use crate::{
     spanners::{
         TextSpanner,
         TextSpanningConfig,
-        span_lexers::{LexerTextSpanner, SpanLexer, build_regex_lexer},
+        span_lexers::{
+            LexerTextSpanner,
+            SpanLexer,
+            build_regex_lexer,
+        },
     },
 };
 
 /// Builder for [`TextSpanner`]s.
 ///
 /// The primary tuning knobs here are:
-/// * [`set_concurrent`](Self::set_concurrent) - whether to request a concurrency support.
+/// * [`set_concurrent`](Self::set_concurrent) - whether to request a
+///   concurrency support.
 #[derive(Clone, PartialEq)]
 pub struct TextSpannerBuilder<T: TokenType> {
     config: TextSpanningConfig<T>,

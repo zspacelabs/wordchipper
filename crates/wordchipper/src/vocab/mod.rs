@@ -15,12 +15,13 @@
 //! * [`ByteMapVocab`] - bidirectional byte⟷token mapping
 //! * [`PairMapVocab`] - BPE merge pair mapping: `(T, T) → T`
 //! * [`SpanMapVocab`] - span dictionary mapping: `Vec<u8> → T`
-//! * [`crate::spanners::TextSpanningConfig`] - text spanners configuration
-//!   that defines how text is split into spans for encoding, including
-//!   special token words
+//! * [`crate::spanners::TextSpanningConfig`] - text spanners configuration that
+//!   defines how text is split into spans for encoding, including special token
+//!   words
 //!
 //! Pre-trained vocabulary loaders return [`UnifiedTokenVocab<T>`] instances,
-//! which can be converted between [`crate::TokenType`]s via [`UnifiedTokenVocab::to_token_type`].
+//! which can be converted between [`crate::TokenType`]s via
+//! [`UnifiedTokenVocab::to_token_type`].
 //!
 //! ## Loading and Saving Models
 //!

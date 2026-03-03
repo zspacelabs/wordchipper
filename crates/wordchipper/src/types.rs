@@ -1,10 +1,18 @@
 //! # Common Types and Traits
 use core::{
-    fmt::{Debug, Display},
+    fmt::{
+        Debug,
+        Display,
+    },
     hash::Hash,
 };
 
-use num_traits::{FromPrimitive, PrimInt, ToPrimitive, Unsigned};
+use num_traits::{
+    FromPrimitive,
+    PrimInt,
+    ToPrimitive,
+    Unsigned,
+};
 
 /// A type that can be used as a token in a BPE-based encoders.
 ///

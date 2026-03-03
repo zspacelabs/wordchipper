@@ -3,7 +3,10 @@
 use core::ops::Range;
 
 use crate::{
-    alloc::{string::String, vec::Vec},
+    alloc::{
+        string::String,
+        vec::Vec,
+    },
     vocab::DEFAULT_BYTE_PER_TOKEN_RATIO,
 };
 
@@ -61,8 +64,8 @@ pub trait TextSpanner: Send + Sync {
     ///
     /// # Arguments
     /// * `text` - the text to split.
-    /// * `f` - the function to apply to each span;
-    ///   halts when the function returns `false`.
+    /// * `f` - the function to apply to each span; halts when the function
+    ///   returns `false`.
     ///
     /// Note: a byte is consumed *only if* the function returns `true`;
     /// if the function returns `false`, the byte is not consumed.
@@ -131,7 +134,10 @@ pub trait TextSpanner: Send + Sync {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::alloc::{boxed::Box, sync::Arc};
+    use crate::alloc::{
+        boxed::Box,
+        sync::Arc,
+    };
 
     const _TEXT_SPANNER_BOX_CHECK: Option<Box<dyn TextSpanner>> = None;
     const _TEXT_SPANNER_ARC_CHECK: Option<Arc<dyn TextSpanner>> = None;

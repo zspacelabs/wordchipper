@@ -55,7 +55,8 @@ impl TokenizerOptions {
 
     /// Gets the configured parallelism value.
     ///
-    /// Returns true if either encoder or decoder are configured for parallelism.
+    /// Returns true if either encoder or decoder are configured for
+    /// parallelism.
     ///
     /// Enabling parallelism will request threaded implementations.
     pub fn parallel(&self) -> bool {

@@ -1,6 +1,9 @@
 use pyo3::{
     PyErr,
-    exceptions::{PyIOError, PyValueError},
+    exceptions::{
+        PyIOError,
+        PyValueError,
+    },
 };
 
 pub fn to_pyerr(err: wordchipper::WCError) -> PyErr {

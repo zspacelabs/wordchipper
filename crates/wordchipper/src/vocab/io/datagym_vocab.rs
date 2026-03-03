@@ -1,6 +1,9 @@
 //! # `DataGym` Vocabulary
 
-use std::io::{BufRead, BufReader};
+use std::io::{
+    BufRead,
+    BufReader,
+};
 
 use serde_json::Value;
 
@@ -11,10 +14,16 @@ use crate::{
     prelude::*,
     pretrained::openai::{
         oa_r50k_base_spanning_config,
-        resources::{OA_GPT2_ENCODER_JSON_KEYED_RESOURCE, OA_GPT2_VOCAB_BPE_KEYED_RESOURCE},
+        resources::{
+            OA_GPT2_ENCODER_JSON_KEYED_RESOURCE,
+            OA_GPT2_VOCAB_BPE_KEYED_RESOURCE,
+        },
     },
     support::resources::ResourceLoader,
-    vocab::{SpanMapVocab, SpanTokenMap},
+    vocab::{
+        SpanMapVocab,
+        SpanTokenMap,
+    },
 };
 
 /// A map from mojibake characters to their byte representation.
@@ -41,7 +50,8 @@ impl MojibakeDecoder for MojibakeMap {
     }
 }
 
-/// Builds the default byte vocabulary and mojibake map for datagym vocabularies.
+/// Builds the default byte vocabulary and mojibake map for datagym
+/// vocabularies.
 ///
 /// Datagym was encoded using ISO/IEC 8859-1; and so the [`MojibakeMap`] is used
 /// to translate scrambled ("mojibake") UTF-8 decoded characters into the
@@ -131,8 +141,8 @@ where
     R: BufRead,
 {
     // check that the encoder file matches the merges file
-    // this sanity check is important since tiktoken assumes that ranks are ordered the same
-    // as merge priority
+    // this sanity check is important since tiktoken assumes that ranks are ordered
+    // the same as merge priority
     let encoder_json: Value = serde_json::from_reader(encoder_json_reader)
         .unwrap_or(Value::Object(serde_json::Map::default()));
     let mut encoder_json_loaded: SpanTokenMap<usize> = encoder_json
@@ -200,12 +210,19 @@ pub fn load_gpt2_vocab<T: TokenType>(
 
 #[cfg(test)]
 mod tests {
-    use std::{println, sync::Arc};
+    use std::{
+        println,
+        sync::Arc,
+    };
 
     use wordchipper_disk_cache::WordchipperDiskCache;
 
     use super::*;
-    use crate::{TokenEncoderOptions, UnifiedTokenVocab, encoders::testing::common_encoder_tests};
+    use crate::{
+        TokenEncoderOptions,
+        UnifiedTokenVocab,
+        encoders::testing::common_encoder_tests,
+    };
 
     #[test]
     #[cfg(all(feature = "std", feature = "datagym", feature = "download"))]

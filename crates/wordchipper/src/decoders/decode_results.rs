@@ -2,7 +2,10 @@
 
 use core::fmt::Debug;
 
-use crate::{WCResult, alloc::vec::Vec};
+use crate::{
+    WCResult,
+    alloc::vec::Vec,
+};
 
 /// The result of decoding tokens into bytes.
 #[derive(Debug)]
@@ -54,7 +57,8 @@ where
         Self { value, remaining }
     }
 
-    /// Try to unwrap the result, returning an error if the decoding is incomplete.
+    /// Try to unwrap the result, returning an error if the decoding is
+    /// incomplete.
     pub fn try_result(self) -> WCResult<V> {
         if let Some(remaining) = self.remaining
             && remaining > 0
@@ -123,7 +127,8 @@ where
         self.results.iter().all(|r| r.is_complete())
     }
 
-    /// Try to unwrap the results, returning an error if any decoding is incomplete.
+    /// Try to unwrap the results, returning an error if any decoding is
+    /// incomplete.
     pub fn try_results(self) -> WCResult<Vec<V>> {
         self.results.into_iter().map(|r| r.try_result()).collect()
     }
@@ -151,7 +156,10 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::alloc::{string::ToString, vec};
+    use crate::alloc::{
+        string::ToString,
+        vec,
+    };
 
     #[test]
     fn test_decode_result_new() {

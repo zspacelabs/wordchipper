@@ -1,8 +1,21 @@
 #![allow(missing_docs)]
 
-use divan::{Bencher, black_box, counter::BytesCount};
-use wordchipper::{TokenEncoderOptions, encoders::token_span_encoder::SpanEncoderSelector};
-use wordchipper_bench::{HF_CL100K, HF_O200K, OA_CL100K_BASE, OA_O200K_BASE, OA_R50K_BASE};
+use divan::{
+    Bencher,
+    black_box,
+    counter::BytesCount,
+};
+use wordchipper::{
+    TokenEncoderOptions,
+    encoders::token_span_encoder::SpanEncoderSelector,
+};
+use wordchipper_bench::{
+    HF_CL100K,
+    HF_O200K,
+    OA_CL100K_BASE,
+    OA_O200K_BASE,
+    OA_R50K_BASE,
+};
 
 #[global_allocator]
 static ALLOC: divan::AllocProfiler = divan::AllocProfiler::system();

@@ -2,11 +2,19 @@
 
 use std::{
     fs::File,
-    io::{BufRead, BufReader, BufWriter, Write},
+    io::{
+        BufRead,
+        BufReader,
+        BufWriter,
+        Write,
+    },
     path::Path,
 };
 
-use base64::{Engine, prelude::BASE64_STANDARD};
+use base64::{
+    Engine,
+    prelude::BASE64_STANDARD,
+};
 
 use crate::{
     TokenType,
@@ -14,7 +22,11 @@ use crate::{
     WCResult,
     prelude::*,
     spanners::TextSpanningConfig,
-    vocab::{SpanMapVocab, UnifiedTokenVocab, vocab_types::SpanTokenMap},
+    vocab::{
+        SpanMapVocab,
+        UnifiedTokenVocab,
+        vocab_types::SpanTokenMap,
+    },
 };
 
 /// Build a [`UnifiedTokenVocab`] from a pretrained bas64 vocab file.

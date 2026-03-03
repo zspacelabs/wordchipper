@@ -3,7 +3,10 @@
 use crate::{
     TokenType,
     alloc::{
-        string::{String, ToString},
+        string::{
+            String,
+            ToString,
+        },
         vec::Vec,
     },
 };

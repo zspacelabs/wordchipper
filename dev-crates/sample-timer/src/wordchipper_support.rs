@@ -1,8 +1,17 @@
 use std::sync::Arc;
 
-use wordchipper::{TokenDecoder, TokenEncoder, TokenType, Tokenizer, spanners::TextSpanner};
+use wordchipper::{
+    TokenDecoder,
+    TokenEncoder,
+    TokenType,
+    Tokenizer,
+    spanners::TextSpanner,
+};
 
-use crate::engines::{BoxError, EncDecEngine};
+use crate::engines::{
+    BoxError,
+    EncDecEngine,
+};
 
 /// [`EncDecEngine`] implementation for [`TokenEncoder`] + [`TokenDecoder`].
 pub struct WordchipperEngine<T: TokenType> {

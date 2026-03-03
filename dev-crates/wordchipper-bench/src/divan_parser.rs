@@ -1,7 +1,8 @@
 //! Parse divan benchmark output into structured results.
 //!
 //! Divan has no machine-readable output format. This module parses the
-//! human-readable table output line by line and produces [`BenchResult`] values.
+//! human-readable table output line by line and produces [`BenchResult`]
+//! values.
 
 use std::collections::BTreeMap;
 
@@ -272,7 +273,8 @@ const TIME_NS: &[(&str, f64)] = &[
     ("s", 1e9),
 ];
 
-/// Byte size unit to bytes (also used for throughput by stripping the "/s" suffix).
+/// Byte size unit to bytes (also used for throughput by stripping the "/s"
+/// suffix).
 const BYTE_UNITS: &[(&str, f64)] = &[
     ("", 1.0),
     ("B", 1.0),
@@ -373,14 +375,15 @@ fn table_lookup(
     table.iter().find(|&&(u, _)| u == unit).map(|&(_, m)| m)
 }
 
-/// Look up a throughput unit (e.g. "MB/s") by stripping "/s" and checking byte units.
+/// Look up a throughput unit (e.g. "MB/s") by stripping "/s" and checking byte
+/// units.
 fn throughput_lookup(unit: &str) -> Option<f64> {
     unit.strip_suffix("/s")
         .and_then(|b| table_lookup(b, BYTE_UNITS))
 }
 
-/// Build [`StatValues`] from raw parsed values, using a lookup function for unit conversion.
-/// Returns `None` if no values matched.
+/// Build [`StatValues`] from raw parsed values, using a lookup function for
+/// unit conversion. Returns `None` if no values matched.
 fn convert_row(
     row: &[Option<(f64, String)>; 4],
     lookup: impl Fn(&str) -> Option<f64>,

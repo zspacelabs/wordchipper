@@ -3,13 +3,19 @@
 //! Classification of logos tokens for whitespace post-processing.
 //!
 //! When building a custom accelerated lexer, each logos token variant maps
-//! to a [`Gpt2FamilyTokenRole`] that tells the post-processing engine how the token
-//! interacts with preceding whitespace.
+//! to a [`Gpt2FamilyTokenRole`] that tells the post-processing engine how the
+//! token interacts with preceding whitespace.
 
 use core::ops::Range;
 
-use logos::{Logos, SpannedIter};
-use ringbuf::traits::{Consumer, Producer};
+use logos::{
+    Logos,
+    SpannedIter,
+};
+use ringbuf::traits::{
+    Consumer,
+    Producer,
+};
 
 use crate::spanners::SpanRef;
 
@@ -38,9 +44,9 @@ pub enum Gpt2FamilyTokenRole {
     Whitespace,
     /// Punctuation with ` ?` prefix. Always absorbs a preceding ASCII space.
     Punctuation,
-    /// Letter/word token. Absorbs preceding space if token starts with a letter.
-    /// When `check_contraction` is true, applies contraction-prefix splitting
-    /// (e.g. `'The` -> `'T` + `he` for cl100k compatibility).
+    /// Letter/word token. Absorbs preceding space if token starts with a
+    /// letter. When `check_contraction` is true, applies contraction-prefix
+    /// splitting (e.g. `'The` -> `'T` + `he` for cl100k compatibility).
     Word {
         /// Whether to check for and split contraction prefixes.
         check_contraction: bool,
@@ -344,13 +350,13 @@ where
 ///
 /// 2. **Prefix handling**: with 2+ whitespace chars before a token starting
 ///    with a non-letter, we merge the last whitespace byte + the non-letter
-///    prefix into one span (matching how Punctuation's ` ?` absorbs a space
-///    in the regex). With 1 whitespace char, it stays standalone.
+///    prefix into one span (matching how Punctuation's ` ?` absorbs a space in
+///    the regex). With 1 whitespace char, it stays standalone.
 ///
 /// 3. **Contraction splitting** (when `check_contraction` is true): regex
 ///    first-match picks Contraction `'T` over Letters `'The`, but logos
-///    longest-match picks Letters. We detect the contraction prefix and
-///    split the token.
+///    longest-match picks Letters. We detect the contraction prefix and split
+///    the token.
 ///
 /// # Arguments
 ///
@@ -369,7 +375,10 @@ where
 /// ```
 /// use wordchipper::spanners::{
 ///     SpanRef,
-///     span_lexers::logos::gpt2_family::{Gpt2FamilyTokenRole, for_each_classified_span},
+///     span_lexers::logos::gpt2_family::{
+///         Gpt2FamilyTokenRole,
+///         for_each_classified_span,
+///     },
 /// };
 ///
 /// let text = "hello world";
@@ -579,7 +588,10 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::{alloc::vec::Vec, spanners::span_lexers::logos::gpt2_family::Gpt2FamilyTokenRole};
+    use crate::{
+        alloc::vec::Vec,
+        spanners::span_lexers::logos::gpt2_family::Gpt2FamilyTokenRole,
+    };
 
     /// Collect spans from for_each_classified_span for testing.
     fn collect_spans(

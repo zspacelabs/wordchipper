@@ -15,12 +15,13 @@
 //! };
 //!
 //! fn example() -> wordchipper::WCResult<Arc<Tokenizer<u32>>> {
-//!     let vocab: Arc<UnifiedTokenVocab<u32>> = load_base64_unified_vocab_path(
-//!         "vocab.tiktoken",
-//!         TextSpanningConfig::from_pattern(OA_O200K_BASE_PATTERN),
-//!     )
-//!     .expect("failed to load vocab")
-//!     .into();
+//!     let vocab: Arc<UnifiedTokenVocab<u32>> =
+//!         load_base64_unified_vocab_path(
+//!             "vocab.tiktoken",
+//!             TextSpanningConfig::from_pattern(OA_O200K_BASE_PATTERN),
+//!         )
+//!         .expect("failed to load vocab")
+//!         .into();
 //!
 //!     let tokenizer: Arc<Tokenizer<u32>> =
 //!         TokenizerOptions::default().with_parallel(true).build(vocab);

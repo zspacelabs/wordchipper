@@ -1,7 +1,10 @@
 //! # Remote Resource Tools
 
 use crate::alloc::{
-    string::{String, ToString},
+    string::{
+        String,
+        ToString,
+    },
     vec::Vec,
 };
 
@@ -72,7 +75,10 @@ impl From<ConstKeyedResource> for KeyedResource {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::alloc::{string::ToString, vec};
+    use crate::alloc::{
+        string::ToString,
+        vec,
+    };
 
     #[test]
     fn test_keyed_resource() {

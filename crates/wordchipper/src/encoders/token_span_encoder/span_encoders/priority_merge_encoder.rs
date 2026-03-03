@@ -1,7 +1,8 @@
 //! # Priority-merge [`SpanEncoder`].
 //!
 //! Uses a binary min-heap over a doubly-linked list for O(n log n) BPE merging,
-//! replacing the O(n^2) linear-scan approach in [`super::TailSweepSpanEncoder`].
+//! replacing the O(n^2) linear-scan approach in
+//! [`super::TailSweepSpanEncoder`].
 
 use alloc::collections::BinaryHeap;
 use core::cmp::Reverse;
@@ -23,8 +24,8 @@ struct Node<T> {
 
 /// Heap entry representing a potential merge.
 ///
-/// Ordered by (rank, `left_idx`) so the lowest-rank, leftmost pair is popped first.
-/// `left_tok` and `right_tok` are stored for O(1) stale-entry detection.
+/// Ordered by (rank, `left_idx`) so the lowest-rank, leftmost pair is popped
+/// first. `left_tok` and `right_tok` are stored for O(1) stale-entry detection.
 #[derive(Eq)]
 struct MergeEntry<T: Ord> {
     rank: T,
@@ -209,8 +210,14 @@ mod tests {
         TokenType,
         alloc::sync::Arc,
         encoders::{
-            testing::{common_encoder_test_vocab, common_encoder_tests},
-            token_span_encoder::{SpanEncoderSelector, TokenSpanEncoder},
+            testing::{
+                common_encoder_test_vocab,
+                common_encoder_tests,
+            },
+            token_span_encoder::{
+                SpanEncoderSelector,
+                TokenSpanEncoder,
+            },
         },
         spanners::TextSpannerBuilder,
     };

@@ -3,19 +3,27 @@
 //! Compile-time DFA lexer for the `o200k_base` pattern (GPT-4o).
 //!
 //! This serves as a reference implementation showing how to build an
-//! accelerated lexer using [`Gpt2FamilyTokenRole`] and [`for_each_classified_span`].
+//! accelerated lexer using [`Gpt2FamilyTokenRole`] and
+//! [`for_each_classified_span`].
 
 use core::ops::Range;
 
 use logos::Logos;
 
 use crate::{
-    alloc::{boxed::Box, sync::Arc},
+    alloc::{
+        boxed::Box,
+        sync::Arc,
+    },
     pretrained::openai::OA_O200K_BASE_PATTERN,
     spanners::span_lexers::{
         SpanLexer,
         accelerators::RegexAcceleratorHook,
-        logos::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilySpanIter, Gpt2FamilyTokenRole},
+        logos::gpt2_family::{
+            Gpt2FamilyLogos,
+            Gpt2FamilySpanIter,
+            Gpt2FamilyTokenRole,
+        },
     },
 };
 // Shorthand aliases for the character classes used in o200k:
@@ -29,9 +37,9 @@ use crate::{
 /// Logos token for the `o200k_base` pattern.
 ///
 /// Key difference from cl100k: contractions are attached to the preceding word.
-/// The two word regex branches are split into separate variants (`WordLower` and
-/// `WordUpper`) to avoid DFA longest-match merging characters like `º` (Lo) with
-/// following uppercase letters. `WordUpper` restricts its leading chars to
+/// The two word regex branches are split into separate variants (`WordLower`
+/// and `WordUpper`) to avoid DFA longest-match merging characters like `º` (Lo)
+/// with following uppercase letters. `WordUpper` restricts its leading chars to
 /// `[\p{Lu}\p{Lt}]` so Lo/Lm/M chars can only match via `WordLower`.
 ///
 /// | Regex branch                                         | Logos variant  |
@@ -116,8 +124,15 @@ impl SpanLexer for O200kLexer {
 mod tests {
     use super::*;
     use crate::{
-        alloc::{sync::Arc, vec::Vec},
-        spanners::{SpanRef, TextSpanner, span_lexers::LexerTextSpanner},
+        alloc::{
+            sync::Arc,
+            vec::Vec,
+        },
+        spanners::{
+            SpanRef,
+            TextSpanner,
+            span_lexers::LexerTextSpanner,
+        },
     };
 
     /// Build a `TextSpanner` from a logos lexer with no specials.
@@ -187,7 +202,10 @@ mod tests {
     fn test_o200k_unicode() {
         use crate::{
             pretrained::openai::OA_O200K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -224,7 +242,10 @@ mod tests {
     fn test_o200k_realworld() {
         use crate::{
             pretrained::openai::OA_O200K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -365,7 +386,10 @@ mod tests {
 
         use crate::{
             pretrained::openai::OA_O200K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =

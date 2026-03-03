@@ -2,7 +2,10 @@
 
 use crate::{
     TokenType,
-    alloc::{boxed::Box, sync::Arc},
+    alloc::{
+        boxed::Box,
+        sync::Arc,
+    },
     encoders::token_span_encoder::{
         SpanEncoder,
         span_encoders::{
@@ -10,7 +13,10 @@ use crate::{
             MergeHeapSpanEncoder,
             PriorityMergeSpanEncoder,
             TailSweepSpanEncoder,
-            bpe_backtrack_encoder::{BpeBacktrackSpanEncoder, BpeVocab},
+            bpe_backtrack_encoder::{
+                BpeBacktrackSpanEncoder,
+                BpeVocab,
+            },
         },
     },
     vocab::UnifiedTokenVocab,
@@ -25,7 +31,8 @@ use crate::{
 pub enum SpanEncoderSelector {
     /// This is the canonical best concurrent encoder.
     ///
-    /// It is benchmarked to be the fastest and most efficient encoder for concurrent use.
+    /// It is benchmarked to be the fastest and most efficient encoder for
+    /// concurrent use.
     ///
     /// This is currently an alias for: [`MergeHeap`](`Self::MergeHeap`)
     #[default]
@@ -33,15 +40,17 @@ pub enum SpanEncoderSelector {
 
     /// This the canonical best single-threaded encoder.
     ///
-    /// It is benchmarked to be the fastest and most efficient encoder for single-threaded use.
+    /// It is benchmarked to be the fastest and most efficient encoder for
+    /// single-threaded use.
     ///
     /// This is currently an alias for: [`PriorityMerge`](`Self::PriorityMerge`)
     SingleThreadDefault,
 
     /// The canonical reference encoder, [`BufferSweepSpanEncoder`].
     ///
-    /// This encoder is meant to be used as a reference implementation for testing and comparison.
-    /// The code and behavior are as simple as possible, but it is not optimized for performance.
+    /// This encoder is meant to be used as a reference implementation for
+    /// testing and comparison. The code and behavior are as simple as
+    /// possible, but it is not optimized for performance.
     ///
     /// This is currently an alias for: [`BufferSweep`](`Self::BufferSweep`)
     Reference,
@@ -65,8 +74,8 @@ pub enum SpanEncoderSelector {
 impl SpanEncoderSelector {
     /// Get a builder for the configured [`SpanEncoder`].
     ///
-    /// The `vocab` parameter is needed by encoders that pre-build data structures
-    /// from the vocabulary (e.g. BPE automaton).
+    /// The `vocab` parameter is needed by encoders that pre-build data
+    /// structures from the vocabulary (e.g. BPE automaton).
     pub fn span_encoder_builder<T: TokenType>(
         &self,
         vocab: &UnifiedTokenVocab<T>,

@@ -1,6 +1,9 @@
 //! # Public `OpenAI` Resources
 
-use crate::support::resources::{ConstKeyedResource, ConstUrlResource};
+use crate::support::resources::{
+    ConstKeyedResource,
+    ConstUrlResource,
+};
 
 /// Cache-keyed GPT-2 `DataGym` "vocab.bpe" vocabulary resource.
 pub const OA_GPT2_VOCAB_BPE_KEYED_RESOURCE: ConstKeyedResource = ConstKeyedResource {

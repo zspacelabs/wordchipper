@@ -4,9 +4,11 @@
 //!
 //! [`TextSpanningConfig`] describes the declarative needs of a tokenizer:
 //! * `pattern` - the word/span split pattern.
-//! * `specials` - a map of `{ Vec<u8> -> T }` special tokens to handle out-of-band.
+//! * `specials` - a map of `{ Vec<u8> -> T }` special tokens to handle
+//!   out-of-band.
 //!
-//! Most users will want to use the [`TextSpannerBuilder`] to construct a [`TextSpanner`].
+//! Most users will want to use the [`TextSpannerBuilder`] to construct a
+//! [`TextSpanner`].
 
 pub mod span_lexers;
 

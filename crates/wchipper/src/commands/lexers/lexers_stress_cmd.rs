@@ -1,17 +1,29 @@
 use std::{
-    cmp::{max, min},
+    cmp::{
+        max,
+        min,
+    },
     sync::Arc,
 };
 
 use rayon::prelude::*;
 use wordchipper::{
-    spanners::span_lexers::{SpanLexer, accelerators::get_regex_accelerator},
-    support::regex::{RegexPattern, RegexWrapper},
+    spanners::span_lexers::{
+        SpanLexer,
+        accelerators::get_regex_accelerator,
+    },
+    support::regex::{
+        RegexPattern,
+        RegexWrapper,
+    },
 };
 
 use crate::{
     commands::lexers::LexerSelectorArgs,
-    util::{input_batcher::BatchedInputArgs, logging::LogArgs},
+    util::{
+        input_batcher::BatchedInputArgs,
+        logging::LogArgs,
+    },
 };
 
 #[derive(clap::Args, Debug)]

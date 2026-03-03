@@ -1,8 +1,14 @@
 use std::sync::Arc;
 
-use tokenizers::{Encoding, tokenizer::Tokenizer};
+use tokenizers::{
+    Encoding,
+    tokenizer::Tokenizer,
+};
 
-use crate::engines::{BoxError, EncDecEngine};
+use crate::engines::{
+    BoxError,
+    EncDecEngine,
+};
 
 /// [`EncDecEngine`] implementation for [`Tokenizer`].
 pub struct TokenizersEngine {

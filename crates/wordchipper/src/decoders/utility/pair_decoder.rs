@@ -3,9 +3,20 @@
 use crate::{
     TokenType,
     WCResult,
-    alloc::{vec, vec::Vec},
-    decoders::{DecodeResult, TokenDecoder},
-    vocab::{ByteMapVocab, DEFAULT_BYTE_PER_TOKEN_RATIO, PairMapVocab, TokenPairMap},
+    alloc::{
+        vec,
+        vec::Vec,
+    },
+    decoders::{
+        DecodeResult,
+        TokenDecoder,
+    },
+    vocab::{
+        ByteMapVocab,
+        DEFAULT_BYTE_PER_TOKEN_RATIO,
+        PairMapVocab,
+        TokenPairMap,
+    },
 };
 
 /// A stack-based pair map `{T -> (T, T) }` incremental stack [`TokenDecoder`].
@@ -115,7 +126,10 @@ mod tests {
         spanners::TextSpanningConfig,
         vocab::{
             UnifiedTokenVocab,
-            utility::testing::{build_test_shift_byte_vocab, build_test_vocab},
+            utility::testing::{
+                build_test_shift_byte_vocab,
+                build_test_vocab,
+            },
         },
     };
 

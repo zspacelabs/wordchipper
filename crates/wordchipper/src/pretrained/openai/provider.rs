@@ -2,9 +2,16 @@ use crate::{
     UnifiedTokenVocab,
     WCError,
     WCResult,
-    alloc::{sync::Arc, vec::Vec},
+    alloc::{
+        sync::Arc,
+        vec::Vec,
+    },
     prelude::*,
-    pretrained::{VocabDescription, VocabProvider, VocabProviderInventoryHook},
+    pretrained::{
+        VocabDescription,
+        VocabProvider,
+        VocabProviderInventoryHook,
+    },
     support::resources::ResourceLoader,
 };
 

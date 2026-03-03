@@ -1,8 +1,14 @@
 //! # Regex Pattern Labeled Wrapper
 
 use crate::{
-    alloc::string::{String, ToString},
-    support::regex::{ErrorWrapper, RegexWrapper},
+    alloc::string::{
+        String,
+        ToString,
+    },
+    support::regex::{
+        ErrorWrapper,
+        RegexWrapper,
+    },
 };
 
 /// Const Regex Wrapper Pattern

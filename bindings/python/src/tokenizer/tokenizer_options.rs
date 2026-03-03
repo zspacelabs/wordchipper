@@ -1,4 +1,7 @@
-use pyo3::{pyclass, pymethods};
+use pyo3::{
+    pyclass,
+    pymethods,
+};
 
 use crate::wc;
 
@@ -57,7 +60,8 @@ impl TokenizerOptions {
 
     /// Gets the configured parallelism value.
     ///
-    /// Returns true if either encoder or decoder are configured for parallelism.
+    /// Returns true if either encoder or decoder are configured for
+    /// parallelism.
     ///
     /// Enabling parallelism will request threaded implementations.
     fn parallel(&self) -> bool {

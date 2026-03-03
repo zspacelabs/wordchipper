@@ -1,11 +1,21 @@
 //! # Training Types
 use core::{
-    fmt::{Debug, Display},
+    fmt::{
+        Debug,
+        Display,
+    },
     hash::Hash,
-    ops::{AddAssign, SubAssign},
+    ops::{
+        AddAssign,
+        SubAssign,
+    },
 };
 
-use num_traits::{FromPrimitive, PrimInt, ToPrimitive};
+use num_traits::{
+    FromPrimitive,
+    PrimInt,
+    ToPrimitive,
+};
 
 /// A type that can be used as a string key.
 pub trait StringChunkType:

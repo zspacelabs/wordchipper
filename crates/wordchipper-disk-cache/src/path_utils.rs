@@ -1,6 +1,9 @@
 //! # Path Utilities
 
-use std::path::{Path, PathBuf};
+use std::path::{
+    Path,
+    PathBuf,
+};
 
 /// Extend a path with a context and filename.
 ///

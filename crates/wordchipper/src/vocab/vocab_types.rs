@@ -2,7 +2,10 @@
 
 use crate::{
     alloc::vec::Vec,
-    types::{Pair, WCHashMap},
+    types::{
+        Pair,
+        WCHashMap,
+    },
 };
 
 /// `{ Pair<T> -> T}` map.

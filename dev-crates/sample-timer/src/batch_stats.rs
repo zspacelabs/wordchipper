@@ -1,4 +1,7 @@
-use std::{collections::HashMap, time::Duration};
+use std::{
+    collections::HashMap,
+    time::Duration,
+};
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct EngineBatchTimes {

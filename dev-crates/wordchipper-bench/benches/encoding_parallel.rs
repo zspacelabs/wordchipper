@@ -3,7 +3,11 @@
 use std::sync::LazyLock;
 
 use arrow::array::Array;
-use divan::{Bencher, black_box, counter::BytesCount};
+use divan::{
+    Bencher,
+    black_box,
+    counter::BytesCount,
+};
 use wordchipper_data::dataset::DatasetCacheConfig;
 
 #[global_allocator]
@@ -67,8 +71,15 @@ fn load_batch() -> Batch {
 static BATCH: LazyLock<Batch> = LazyLock::new(load_batch);
 
 mod wordchipper {
-    use ::wordchipper::{TokenEncoderOptions, encoders::token_span_encoder::SpanEncoderSelector};
-    use wordchipper_bench::{OA_CL100K_BASE, OA_O200K_BASE, OA_R50K_BASE};
+    use ::wordchipper::{
+        TokenEncoderOptions,
+        encoders::token_span_encoder::SpanEncoderSelector,
+    };
+    use wordchipper_bench::{
+        OA_CL100K_BASE,
+        OA_O200K_BASE,
+        OA_R50K_BASE,
+    };
 
     use super::*;
 
@@ -366,7 +377,12 @@ mod wordchipper {
 
 mod tiktoken {
     use rayon::prelude::*;
-    use tiktoken_rs::{CoreBPE, cl100k_base, o200k_base, r50k_base};
+    use tiktoken_rs::{
+        CoreBPE,
+        cl100k_base,
+        o200k_base,
+        r50k_base,
+    };
 
     use super::*;
 
@@ -401,7 +417,10 @@ mod tiktoken {
 }
 
 mod tokenizers {
-    use wordchipper_bench::{HF_CL100K, HF_O200K};
+    use wordchipper_bench::{
+        HF_CL100K,
+        HF_O200K,
+    };
 
     use super::*;
 

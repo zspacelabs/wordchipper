@@ -1,5 +1,10 @@
 //! # Text Spanner Configuration
-use crate::{TokenType, WCResult, support::regex::RegexPattern, vocab::SpecialVocab};
+use crate::{
+    TokenType,
+    WCResult,
+    support::regex::RegexPattern,
+    vocab::SpecialVocab,
+};
 
 /// Description of text spanners configuration.
 ///
@@ -123,7 +128,10 @@ impl<T: TokenType> TextSpanningConfig<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{alloc::string::ToString, vocab::SpecialVocab};
+    use crate::{
+        alloc::string::ToString,
+        vocab::SpecialVocab,
+    };
 
     #[test]
     fn test_from_pattern() {

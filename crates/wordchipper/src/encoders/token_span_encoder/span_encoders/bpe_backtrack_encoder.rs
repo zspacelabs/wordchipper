@@ -6,15 +6,28 @@
 //! Uses an Aho-Corasick automaton for leftmost-longest token matching,
 //! combined with a backtracking loop that validates BPE merge boundaries.
 
-use alloc::{sync::Arc, vec, vec::Vec};
+use alloc::{
+    sync::Arc,
+    vec,
+    vec::Vec,
+};
 
-use aho_corasick::{AhoCorasick, MatchKind};
+use aho_corasick::{
+    AhoCorasick,
+    MatchKind,
+};
 
 use crate::{
     TokenType,
     encoders::token_span_encoder::SpanEncoder,
-    types::{Pair, WCHashMap},
-    vocab::{UnifiedTokenVocab, VocabIndex},
+    types::{
+        Pair,
+        WCHashMap,
+    },
+    vocab::{
+        UnifiedTokenVocab,
+        VocabIndex,
+    },
 };
 
 /// Precomputed BPE vocabulary data for the backtracking encoder.
@@ -26,7 +39,8 @@ pub struct BpeVocab<T> {
     /// Indexed by `T.to_usize()`. Inverse of `pair_lookup`.
     /// Byte-level tokens map to `(self, self)`.
     split_table: Vec<Pair<T>>,
-    /// For each token, the next-longest prefix token (or `T::max_value()` sentinel).
+    /// For each token, the next-longest prefix token (or `T::max_value()`
+    /// sentinel).
     next_prefix: Vec<T>,
     /// Aho-Corasick automaton over all token byte sequences.
     ac: AhoCorasick,
@@ -63,7 +77,8 @@ impl<T: TokenType> BpeVocab<T> {
             .build(&patterns)
             .expect("failed to build AhoCorasick automaton");
 
-        // Build next_prefix: for each token, the longest prefix token shorter by 1+ bytes.
+        // Build next_prefix: for each token, the longest prefix token shorter by 1+
+        // bytes.
         let mut next_prefix = vec![T::max_value(); table_size];
         for (bytes, tok) in &span_pairs {
             if bytes.len() > 1
@@ -336,8 +351,14 @@ mod tests {
         TokenEncoder,
         TokenType,
         encoders::{
-            testing::{common_encoder_test_vocab, common_encoder_tests},
-            token_span_encoder::{SpanEncoderSelector, TokenSpanEncoder},
+            testing::{
+                common_encoder_test_vocab,
+                common_encoder_tests,
+            },
+            token_span_encoder::{
+                SpanEncoderSelector,
+                TokenSpanEncoder,
+            },
         },
         spanners::TextSpannerBuilder,
         vocab::UnifiedTokenVocab,

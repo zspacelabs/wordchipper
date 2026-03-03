@@ -10,7 +10,11 @@ use wordchipper::{
     vocab::ByteMapVocab,
 };
 
-use crate::{CountType, StringChunkType, utility::TokenSpanBuf};
+use crate::{
+    CountType,
+    StringChunkType,
+    utility::TokenSpanBuf,
+};
 
 /// Expected average word length in characters.
 pub const EXPECTED_WORD_LENGTH: usize = 5;
@@ -123,7 +127,11 @@ where
 
 #[cfg(test)]
 mod tests {
-    use wordchipper::{WCHashMap, hash_map_new, support::regex::RegexPattern};
+    use wordchipper::{
+        WCHashMap,
+        hash_map_new,
+        support::regex::RegexPattern,
+    };
 
     use super::*;
 

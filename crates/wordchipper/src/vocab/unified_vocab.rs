@@ -20,25 +20,28 @@ use crate::{
     },
 };
 
-/// A unified vocabulary structure for BPE tokenization that provides coherent views
-/// of vocabulary components through multiple mapping interfaces.
+/// A unified vocabulary structure for BPE tokenization that provides coherent
+/// views of vocabulary components through multiple mapping interfaces.
 ///
 /// # Overview
 ///
-/// [`UnifiedTokenVocab<T>`] is the primary user-facing vocabulary type, generic over
-/// `T: TokenType` (unsigned integer types like `u16`, `u32`, `u64`). It provides
-/// several complementary views of the same vocabulary data:
+/// [`UnifiedTokenVocab<T>`] is the primary user-facing vocabulary type, generic
+/// over `T: TokenType` (unsigned integer types like `u16`, `u32`, `u64`). It
+/// provides several complementary views of the same vocabulary data:
 ///
 /// * [`ByteMapVocab`] - Bijective `u8 ↔ T` byte-to-token mapping (256 entries)
-/// * [`SpanMapVocab`] - Dictionary mapping `Vec<u8> → T` for multi-byte sequences
+/// * [`SpanMapVocab`] - Dictionary mapping `Vec<u8> → T` for multi-byte
+///   sequences
 /// * [`PairMapVocab`] - BPE merge rules mapping `(T, T) → T` for token pairs
-/// * [`TextSpanningConfig`] - Text segmentation rules (regex patterns, special tokens)
+/// * [`TextSpanningConfig`] - Text segmentation rules (regex patterns, special
+///   tokens)
 ///
 /// # Typical Usage
 ///
 /// Pre-trained vocabulary loaders return `UnifiedTokenVocab<T>`, which can be
 /// accessed via `Arc<UnifiedTokenVocab<T>>`:
-/// - Converted to different token types via [`to_token_type`](Self::to_token_type)
+/// - Converted to different token types via
+///   [`to_token_type`](Self::to_token_type)
 ///
 /// # Example
 ///
@@ -143,9 +146,11 @@ impl<T: TokenType> UnifiedTokenVocab<T> {
         })
     }
 
-    /// Create a copy of this [`UnifiedTokenVocab`] with a different [`TokenType`].
+    /// Create a copy of this [`UnifiedTokenVocab`] with a different
+    /// [`TokenType`].
     ///
-    /// This will fail if the maximum token index for the new token type is exceeded.
+    /// This will fail if the maximum token index for the new token type is
+    /// exceeded.
     pub fn to_token_type<G: TokenType>(&self) -> WCResult<UnifiedTokenVocab<G>> {
         Ok(UnifiedTokenVocab::<G> {
             spanning: self.spanning.to_token_type::<G>()?,
@@ -214,12 +219,13 @@ impl<T: TokenType> UnifiedTokenVocab<T> {
     /// Looks up a token in the vocabulary using the provided byte slice.
     ///
     /// ## Arguments
-    /// * `span` - A byte slice (`&[u8]`) representing the token to be looked up in the vocabulary.
+    /// * `span` - A byte slice (`&[u8]`) representing the token to be looked up
+    ///   in the vocabulary.
     ///
     /// ## Returns
-    /// * `Option<T>` - Returns `Some(T)` if the token is found in the vocabulary,
-    ///   where `T` is the type of the value associated with the token. Returns
-    ///   `None` if the token is not found.
+    /// * `Option<T>` - Returns `Some(T)` if the token is found in the
+    ///   vocabulary, where `T` is the type of the value associated with the
+    ///   token. Returns `None` if the token is not found.
     pub fn lookup_token(
         &self,
         span: &[u8],
@@ -227,13 +233,16 @@ impl<T: TokenType> UnifiedTokenVocab<T> {
         self.span_vocab.lookup_token(span)
     }
 
-    /// Looks up a given pair in the pair vocabulary and retrieves its associated data, if present.
+    /// Looks up a given pair in the pair vocabulary and retrieves its
+    /// associated data, if present.
     ///
     /// ## Arguments
-    /// * `pair` - A reference to the `Pair<T>` to be looked up in the pair vocabulary.
+    /// * `pair` - A reference to the `Pair<T>` to be looked up in the pair
+    ///   vocabulary.
     ///
     /// ## Returns
-    /// * `Option<&T>` - Returns `Some(&T)` if the pair is found in the pair vocabulary, otherwise returns `None`.
+    /// * `Option<&T>` - Returns `Some(&T)` if the pair is found in the pair
+    ///   vocabulary, otherwise returns `None`.
     pub fn lookup_pair(
         &self,
         pair: &Pair<T>,
@@ -269,7 +278,10 @@ mod tests {
     use super::*;
     use crate::{
         spanners::TextSpanningConfig,
-        vocab::{PairTokenMap, SpanMapVocab},
+        vocab::{
+            PairTokenMap,
+            SpanMapVocab,
+        },
     };
 
     #[test]

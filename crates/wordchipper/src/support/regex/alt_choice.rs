@@ -1,7 +1,11 @@
 //! Exact Match Union Patterns
 
 use crate::{
-    alloc::{format, string::ToString, vec::Vec},
+    alloc::{
+        format,
+        string::ToString,
+        vec::Vec,
+    },
     support::regex::regex_pattern::RegexPattern,
 };
 
@@ -27,7 +31,10 @@ pub fn alternate_choice_regex_pattern<S: AsRef<str>>(alts: &[S]) -> RegexPattern
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{alloc::vec, support::regex::RegexWrapper};
+    use crate::{
+        alloc::vec,
+        support::regex::RegexWrapper,
+    };
 
     #[test]
     fn test_fixed_alternative_list() {

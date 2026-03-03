@@ -1,11 +1,19 @@
 use std::sync::Arc;
 
-use wordchipper::{UnifiedTokenVocab, VocabIndex, vocab::io::write_base64_span_map};
+use wordchipper::{
+    UnifiedTokenVocab,
+    VocabIndex,
+    vocab::io::write_base64_span_map,
+};
 use wordchipper_training::BPETRainerOptions;
 
 use crate::{
     commands::lexers::LexerSelectorArgs,
-    util::{input_batcher::BatchedInputArgs, input_output::OutputArgs, logging::LogArgs},
+    util::{
+        input_batcher::BatchedInputArgs,
+        input_output::OutputArgs,
+        logging::LogArgs,
+    },
 };
 
 /// File formats for the train command.

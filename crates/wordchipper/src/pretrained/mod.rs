@@ -24,7 +24,8 @@
 //!
 //! fn example() -> wordchipper::WCResult<Arc<Tokenizer<u32>>> {
 //!     let mut disk_cache = WordchipperDiskCache::default();
-//!     let (_desc, vocab) = load_vocab("openai::o200k_harmony", &mut disk_cache)?;
+//!     let (_desc, vocab) =
+//!         load_vocab("openai::o200k_harmony", &mut disk_cache)?;
 //!
 //!     let tokenizer = TokenizerOptions::default().build(vocab.into());
 //!

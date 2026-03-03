@@ -5,7 +5,12 @@
 //! ```rust,no_run
 //! use std::sync::Arc;
 //!
-//! use wordchipper::{TokenDecoder, TokenDecoderOptions, TokenType, UnifiedTokenVocab};
+//! use wordchipper::{
+//!     TokenDecoder,
+//!     TokenDecoderOptions,
+//!     TokenType,
+//!     UnifiedTokenVocab,
+//! };
 //!
 //! fn example<T: TokenType>(
 //!     vocab: Arc<UnifiedTokenVocab<T>>,

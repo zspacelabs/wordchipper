@@ -7,7 +7,11 @@ use crate::{
     UnifiedTokenVocab,
     WCError,
     WCResult,
-    alloc::{format, string::String, sync::Arc},
+    alloc::{
+        format,
+        string::String,
+        sync::Arc,
+    },
     prelude::*,
     support::resources::ResourceLoader,
 };
@@ -197,7 +201,8 @@ impl VocabFactory {
     ///
     /// ## Returns
     /// * `Ok(())` - on success,
-    /// * `Err(WCError::DuplicatedResource)` - if a provider with the same name already exists
+    /// * `Err(WCError::DuplicatedResource)` - if a provider with the same name
+    ///   already exists
     pub fn register_provider(
         &mut self,
         provider: Arc<dyn VocabProvider>,

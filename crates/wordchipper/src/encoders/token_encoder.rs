@@ -3,7 +3,10 @@
 use crate::{
     TokenType,
     WCResult,
-    alloc::{sync::Arc, vec::Vec},
+    alloc::{
+        sync::Arc,
+        vec::Vec,
+    },
     spanners::TextSpanner,
     vocab::SpecialVocab,
 };
@@ -46,8 +49,8 @@ pub trait TokenEncoder<T: TokenType>: Send + Sync {
 
     /// Encode bytes into tokens.
     ///
-    /// There are significant performance gains to pre-allocating the target buffer
-    /// to an appropriate size.
+    /// There are significant performance gains to pre-allocating the target
+    /// buffer to an appropriate size.
     ///
     /// ## Arguments
     /// * `text` - The string slice to encode.
@@ -76,7 +79,8 @@ pub trait TokenEncoder<T: TokenType>: Send + Sync {
         Ok(tokens)
     }
 
-    /// Encode a batch of text into tokens, returning an error if the encoding fails.
+    /// Encode a batch of text into tokens, returning an error if the encoding
+    /// fails.
     ///
     /// ## Arguments
     /// * `batch` - A slice of strings to encode.

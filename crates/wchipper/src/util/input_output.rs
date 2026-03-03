@@ -1,6 +1,10 @@
 use std::{
     fs::File,
-    io::{BufRead, BufReader, BufWriter},
+    io::{
+        BufRead,
+        BufReader,
+        BufWriter,
+    },
 };
 
 fn squash_standard_io(path: &Option<String>) -> Option<String> {

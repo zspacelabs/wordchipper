@@ -3,17 +3,28 @@
 //! Compile-time DFA lexer for the `cl100k_base` pattern (GPT-4, GPT-3.5).
 //!
 //! This serves as a reference implementation showing how to build an
-//! accelerated lexer using [`Gpt2FamilyTokenRole`] and [`for_each_classified_span`].
+//! accelerated lexer using [`Gpt2FamilyTokenRole`] and
+//! [`for_each_classified_span`].
 
 use core::ops::Range;
 
 use logos::Logos;
 
-use super::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilySpanIter, Gpt2FamilyTokenRole};
+use super::gpt2_family::{
+    Gpt2FamilyLogos,
+    Gpt2FamilySpanIter,
+    Gpt2FamilyTokenRole,
+};
 use crate::{
-    alloc::{boxed::Box, sync::Arc},
+    alloc::{
+        boxed::Box,
+        sync::Arc,
+    },
     pretrained::openai::OA_CL100K_BASE_PATTERN,
-    spanners::span_lexers::{SpanLexer, accelerators::RegexAcceleratorHook},
+    spanners::span_lexers::{
+        SpanLexer,
+        accelerators::RegexAcceleratorHook,
+    },
 };
 
 /// Logos token for the `cl100k_base` pattern.
@@ -91,8 +102,17 @@ impl SpanLexer for Cl100kLexer {
 mod tests {
     use super::*;
     use crate::{
-        alloc::{string::ToString, sync::Arc, vec, vec::Vec},
-        spanners::{SpanRef, TextSpanner, span_lexers::LexerTextSpanner},
+        alloc::{
+            string::ToString,
+            sync::Arc,
+            vec,
+            vec::Vec,
+        },
+        spanners::{
+            SpanRef,
+            TextSpanner,
+            span_lexers::LexerTextSpanner,
+        },
     };
 
     /// Build a `TextSpanner` from a logos lexer with no specials.
@@ -197,7 +217,10 @@ mod tests {
     fn test_logos_cl100k_unicode() {
         use crate::{
             pretrained::openai::OA_CL100K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -233,7 +256,10 @@ mod tests {
     fn test_logos_cl100k_realworld() {
         use crate::{
             pretrained::openai::OA_CL100K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -281,7 +307,10 @@ mod tests {
     fn test_logos_cl100k_long_text() {
         use crate::{
             pretrained::openai::OA_CL100K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =
@@ -434,7 +463,10 @@ mod tests {
 
         use crate::{
             pretrained::openai::OA_CL100K_BASE_PATTERN,
-            spanners::{TextSpannerBuilder, TextSpanningConfig},
+            spanners::{
+                TextSpannerBuilder,
+                TextSpanningConfig,
+            },
         };
 
         let config: TextSpanningConfig<u32> =

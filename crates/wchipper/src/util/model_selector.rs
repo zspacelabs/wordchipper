@@ -1,6 +1,10 @@
 use std::sync::Arc;
 
-use wordchipper::{Tokenizer, UnifiedTokenVocab, disk_cache::WordchipperDiskCache};
+use wordchipper::{
+    Tokenizer,
+    UnifiedTokenVocab,
+    disk_cache::WordchipperDiskCache,
+};
 
 /// Model selector arg group.
 #[derive(clap::Args, Debug)]

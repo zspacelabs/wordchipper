@@ -4,7 +4,11 @@ use crate::{
     TokenType,
     WCResult,
     alloc::sync::Arc,
-    decoders::{BatchDecodeResult, DecodeResult, TokenDecoder},
+    decoders::{
+        BatchDecodeResult,
+        DecodeResult,
+        TokenDecoder,
+    },
     prelude::*,
 };
 
@@ -84,7 +88,10 @@ mod tests {
         decoders::utility::testing::common_decoder_unit_test,
         pretrained::openai::OA_CL100K_BASE_PATTERN,
         spanners::TextSpanningConfig,
-        vocab::utility::testing::{build_test_shift_byte_vocab, build_test_vocab},
+        vocab::utility::testing::{
+            build_test_shift_byte_vocab,
+            build_test_vocab,
+        },
     };
 
     #[test]
