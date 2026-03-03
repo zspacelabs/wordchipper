@@ -31,19 +31,23 @@ use crate::{
 ///
 /// | Regex branch                      | Logos variant  |
 /// |-----------------------------------|----------------|
-/// | `'(?i:[sdmt]\|ll\|ve\|re)`        | Contraction    |
-/// | `[^\r\n\p{L}\p{N}]?\p{L}+`        | Letters        |
+/// | `'(?i:[sdmt]\|ll\|ve\|re)`        | Contraction      |
+/// | `\p{L}+`                          | Letters          |
+/// | `[^\r\n\p{L}\p{N}]\p{L}+`        | PrefixedLetters  |
 /// | `\p{N}{1,3}`                      | Digits         |
 /// | ` ?[^\s\p{L}\p{N}]+[\r\n]*`       | Punctuation    |
 /// | `\s*[\r\n]`                       | Newline        |
 /// | `\s+(?!\S)` / `\s`                | Whitespace     |
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub(crate) enum Cl100kToken {
-    #[regex(r"'[sStTdDmM]|'[rR][eE]|'[vV][eE]|'[lL][lL]")]
+    #[regex(r"'[sStTdDmM]|'[rR][eE]|'[vV][eE]|'[lL][lL]", priority = 5)]
     Contraction,
 
-    #[regex(r"[^\r\n\p{Letter}\p{Number}]?\p{Letter}+")]
+    #[regex(r"\p{Letter}+")]
     Letters,
+
+    #[regex(r"[^\r\n\p{Letter}\p{Number}]\p{Letter}+")]
+    PrefixedLetters,
 
     #[regex(r"\p{Number}{1,3}")]
     Digits,
@@ -67,9 +71,19 @@ impl Gpt2FamilyLogos<'_> for Cl100kToken {
             Self::Whitespace => Gpt2FamilyTokenRole::Whitespace,
             Self::Letters => Gpt2FamilyTokenRole::Word {
                 check_contraction: true,
+                first_char_is_letter: true,
+            },
+            Self::PrefixedLetters => Gpt2FamilyTokenRole::Word {
+                check_contraction: true,
+                first_char_is_letter: false,
+            },
+            Self::Contraction => Gpt2FamilyTokenRole::Word {
+                check_contraction: false,
+                first_char_is_letter: false,
             },
             Self::Punctuation => Gpt2FamilyTokenRole::Punctuation,
-            Self::Contraction | Self::Digits | Self::Newline => Gpt2FamilyTokenRole::Standalone,
+            Self::Newline => Gpt2FamilyTokenRole::Newline,
+            Self::Digits => Gpt2FamilyTokenRole::Standalone,
         }
     }
 }

@@ -52,22 +52,34 @@ use crate::{
 /// | `\s+`                                                | Whitespace     |
 #[derive(Logos, Debug, PartialEq, Clone)]
 pub(crate) enum O200kToken {
-    // Regex Branch 1: UPPER*LOWER+ (with optional prefix and contraction).
-    // Higher priority wins equal-length ties against WordUpper.
+    // Regex Branch 1: UPPER*LOWER+ (no prefix, first char is letter/mark).
+    // Highest priority so marks in LOWER are claimed here, not as prefix.
     #[regex(
-        r"[^\r\n\p{Letter}\p{Number}]?[\p{Lu}\p{Lt}\p{Lm}\p{Lo}\p{M}]*[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(?i:'(?:s|t|d|m|re|ve|ll))?",
+        r"[\p{Lu}\p{Lt}\p{Lm}\p{Lo}\p{M}]*[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(?i:'(?:s|t|d|m|re|ve|ll))?",
         priority = 4
     )]
     WordLower,
 
-    // Regex Branch 2: UPPER_ONLY+LOWER* (with optional prefix and contraction).
-    // Leading chars restricted to [\p{Lu}\p{Lt}] so that Lo/Lm/M chars (which
-    // are in both UPPER and LOWER sets) can only be claimed by WordLower.
+    // Regex Branch 1 with non-letter prefix.
     #[regex(
-        r"[^\r\n\p{Letter}\p{Number}]?[\p{Lu}\p{Lt}]+[\p{Ll}\p{Lm}\p{Lo}\p{M}]*(?i:'(?:s|t|d|m|re|ve|ll))?",
+        r"[^\r\n\p{Letter}\p{Number}][\p{Lu}\p{Lt}\p{Lm}\p{Lo}\p{M}]*[\p{Ll}\p{Lm}\p{Lo}\p{M}]+(?i:'(?:s|t|d|m|re|ve|ll))?",
         priority = 3
     )]
+    PrefixedWordLower,
+
+    // Regex Branch 2: UPPER_ONLY+LOWER* (no prefix).
+    #[regex(
+        r"[\p{Lu}\p{Lt}]+[\p{Ll}\p{Lm}\p{Lo}\p{M}]*(?i:'(?:s|t|d|m|re|ve|ll))?",
+        priority = 2
+    )]
     WordUpper,
+
+    // Regex Branch 2 with non-letter prefix.
+    #[regex(
+        r"[^\r\n\p{Letter}\p{Number}][\p{Lu}\p{Lt}]+[\p{Ll}\p{Lm}\p{Lo}\p{M}]*(?i:'(?:s|t|d|m|re|ve|ll))?",
+        priority = 1
+    )]
+    PrefixedWordUpper,
 
     #[regex(r"\p{Number}{1,3}")]
     Digits,
@@ -89,6 +101,11 @@ impl Gpt2FamilyLogos<'_> for O200kToken {
             Self::Whitespace => Gpt2FamilyTokenRole::Whitespace,
             Self::WordLower | Self::WordUpper => Gpt2FamilyTokenRole::Word {
                 check_contraction: false,
+                first_char_is_letter: true,
+            },
+            Self::PrefixedWordLower | Self::PrefixedWordUpper => Gpt2FamilyTokenRole::Word {
+                check_contraction: false,
+                first_char_is_letter: false,
             },
             Self::Punctuation => Gpt2FamilyTokenRole::Punctuation,
             Self::Digits | Self::Newline => Gpt2FamilyTokenRole::Standalone,

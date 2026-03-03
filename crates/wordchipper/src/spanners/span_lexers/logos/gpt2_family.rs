@@ -36,6 +36,7 @@ use crate::spanners::SpanRef;
 /// // Map your logos token to a role:
 /// let role = Gpt2FamilyTokenRole::Word {
 ///     check_contraction: false,
+///     first_char_is_letter: true,
 /// };
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -50,9 +51,26 @@ pub enum Gpt2FamilyTokenRole {
     Word {
         /// Whether to check for and split contraction prefixes.
         check_contraction: bool,
+        /// Whether the first character is a Unicode Letter (`\p{L}`).
+        ///
+        /// When true, preceding whitespace is merged into this span.
+        /// When false, the token starts with a non-letter prefix (e.g. Mark,
+        /// apostrophe, symbol) so whitespace stays separate.
+        ///
+        /// This replaces the runtime `char::is_alphabetic` check which is
+        /// incorrect for combining marks (Mc/Mn) that have the Unicode
+        /// Alphabetic derived property but are NOT in `\p{L}`.
+        first_char_is_letter: bool,
     },
-    /// Token that never absorbs whitespace (digits, contractions, newlines).
+    /// Token that never absorbs whitespace (digits, standalone punctuation).
     Standalone,
+    /// Newline-containing whitespace (e.g. `\s*[\r\n]+`).
+    ///
+    /// Buffered separately from [`Whitespace`](Self::Whitespace). At end of
+    /// string, adjacent Newline + Whitespace merge into one span (matching
+    /// the regex `\s++$` behavior). Mid-string, the newline is emitted as
+    /// its own span (matching `\s*[\r\n]`).
+    Newline,
     /// Unrecognized bytes.
     Gap,
 }
@@ -115,10 +133,9 @@ pub fn contraction_split(bytes: &[u8]) -> Option<usize> {
 
 /// `.next_span()` iterator for `Gpt2FamilyLogos`.
 ///
-/// Uses a small inline ring buffer (capacity 3) instead of a heap-allocated
-/// `VecDeque`. The maximum spans emitted per token is 4 (`flush_ws_split` +
-/// merge + contraction split); the first is returned directly, so 3 stash
-/// slots suffice.
+/// Uses a small inline ring buffer (capacity 5) instead of a heap-allocated
+/// `VecDeque`. The maximum spans emitted per token is 4 (gap: flush newline +
+/// flush ws; then Word: `flush_ws_split` + merge + contraction split).
 pub struct Gpt2FamilySpanIter<'source, Token>
 where
     Token: Gpt2FamilyLogos<'source>,
@@ -126,8 +143,9 @@ where
     text: &'source str,
     last: usize,
     pending_ws: Option<Range<usize>>,
+    pending_newline: Option<Range<usize>>,
 
-    ring: ringbuf::StaticRb<Range<usize>, 3>,
+    ring: ringbuf::StaticRb<Range<usize>, 5>,
 
     iter: Option<SpannedIter<'source, Token>>,
 }
@@ -145,6 +163,7 @@ where
             text,
             last: 0,
             pending_ws: None,
+            pending_newline: None,
             ring: Default::default(),
             iter: Some(iter),
         }
@@ -234,19 +253,53 @@ where
                 return Some(range);
             }
             if self.iter.is_none() {
+                // End of stream: merge pending_newline + pending_ws
+                // into one span (matching regex `\s++$`).
+                if let Some(nl) = self.pending_newline.take() {
+                    if let Some(ws) = self.pending_ws.take() {
+                        if nl.end == ws.start {
+                            return Some(nl.start..ws.end);
+                        }
+                        self.push(ws);
+                    }
+                    return Some(nl);
+                }
                 return self.pending_ws.take();
             }
 
             if let Some((role, Range { start, end })) = self.next_tok() {
                 if self.last < start {
                     // We skipped over a gap.
-                    // If there was a pending ws, emit it.
+                    if let Some(nl) = self.pending_newline.take() {
+                        emit!(nl);
+                    }
                     if let Some(ws) = self.pending_ws.take() {
                         emit!(ws);
                     }
                 }
 
                 self.last = end;
+
+                // Flush pending_newline for non-ws/non-newline tokens.
+                // For Whitespace: keep pending_newline (may merge at EOF).
+                // For Newline: handled in its own arm below.
+                if let Some(nl) = self.pending_newline.take() {
+                    match role {
+                        Gpt2FamilyTokenRole::Whitespace if nl.end == start => {
+                            // Adjacent Newline + Whitespace: keep both
+                            // buffered separately for potential EOF merge.
+                            self.pending_newline = Some(nl);
+                        }
+                        Gpt2FamilyTokenRole::Newline if nl.end == start => {
+                            // Chain adjacent newlines.
+                            self.pending_newline = Some(nl.start..end);
+                            continue;
+                        }
+                        _ => {
+                            emit!(nl);
+                        }
+                    }
+                }
 
                 match role {
                     Gpt2FamilyTokenRole::Whitespace => {
@@ -274,32 +327,17 @@ where
                             emit!(start..end);
                         }
                     }
-                    Gpt2FamilyTokenRole::Word { check_contraction } => {
+                    Gpt2FamilyTokenRole::Word {
+                        check_contraction,
+                        first_char_is_letter,
+                    } => {
                         if let Some(ws) = self.pending_ws.take() {
                             let ws_start = ws.start;
                             let ws_end = ws.end;
                             let trim = flush_ws_split!(ws);
                             let single_char = trim == ws_start;
 
-                            // Decode only the first UTF-8 char from bytes to avoid
-                            // validating the entire tail (which would be O(n^2) overall).
-                            let first_is_letter = {
-                                let tail = &bytes[start..];
-                                let char_len = match tail.first() {
-                                    Some(&b) if b < 0x80 => 1,
-                                    Some(&b) if b < 0xE0 => 2,
-                                    Some(&b) if b < 0xF0 => 3,
-                                    Some(_) => 4,
-                                    None => 0,
-                                };
-                                char_len > 0
-                                    && core::str::from_utf8(&tail[..char_len])
-                                        .ok()
-                                        .and_then(|s| s.chars().next())
-                                        .is_some_and(char::is_alphabetic)
-                            };
-
-                            if first_is_letter {
+                            if first_char_is_letter {
                                 // Token has no existing prefix; merge last ws char.
                                 emit_absorbing!(trim, end, check_contraction);
                             } else if single_char {
@@ -334,6 +372,21 @@ where
                             emit!(trim..ws_end);
                         }
                         emit!(start..end);
+                    }
+                    Gpt2FamilyTokenRole::Newline => {
+                        if let Some(ws) = self.pending_ws.take() {
+                            emit!(ws);
+                        }
+                        if let Some(nl) = self.pending_newline.take() {
+                            if nl.end == start {
+                                self.pending_newline = Some(nl.start..end);
+                            } else {
+                                emit!(nl);
+                                self.pending_newline = Some(start..end);
+                            }
+                        } else {
+                            self.pending_newline = Some(start..end);
+                        }
                     }
                     Gpt2FamilyTokenRole::Gap => {
                         if let Some(ws) = self.pending_ws.take() {
@@ -391,6 +444,7 @@ where
 ///     (
 ///         Gpt2FamilyTokenRole::Word {
 ///             check_contraction: false,
+///             first_char_is_letter: true,
 ///         },
 ///         0..5,
 ///     ), // "hello"
@@ -398,6 +452,7 @@ where
 ///     (
 ///         Gpt2FamilyTokenRole::Word {
 ///             check_contraction: false,
+///             first_char_is_letter: true,
 ///         },
 ///         6..11,
 ///     ), // "world"
@@ -472,10 +527,15 @@ pub fn for_each_classified_span(
         };
     }
 
+    let mut pending_newline: Option<Range<usize>> = None;
+
     for (kind, span) in iter {
         let Range { start, end } = span;
 
         if last < start {
+            if let Some(nl) = pending_newline.take() {
+                emit!(word nl);
+            }
             if let Some(ws) = pending_ws.take() {
                 emit!(word ws);
             }
@@ -483,6 +543,22 @@ pub fn for_each_classified_span(
         }
 
         last = end;
+
+        // Flush pending_newline for non-ws/non-newline tokens.
+        if let Some(nl) = pending_newline.take() {
+            match kind {
+                Gpt2FamilyTokenRole::Whitespace if nl.end == start => {
+                    pending_newline = Some(nl);
+                }
+                Gpt2FamilyTokenRole::Newline if nl.end == start => {
+                    pending_newline = Some(nl.start..end);
+                    continue;
+                }
+                _ => {
+                    emit!(word nl);
+                }
+            }
+        }
 
         match kind {
             Gpt2FamilyTokenRole::Whitespace => {
@@ -510,32 +586,17 @@ pub fn for_each_classified_span(
                     emit!(word(start..end));
                 }
             }
-            Gpt2FamilyTokenRole::Word { check_contraction } => {
+            Gpt2FamilyTokenRole::Word {
+                check_contraction,
+                first_char_is_letter,
+            } => {
                 if let Some(ws) = pending_ws.take() {
                     let ws_start = ws.start;
                     let ws_end = ws.end;
                     let trim = flush_ws_split!(ws);
                     let single_char = trim == ws_start;
 
-                    // Decode only the first UTF-8 char from bytes to avoid
-                    // validating the entire tail (which would be O(n^2) overall).
-                    let first_is_letter = {
-                        let tail = &text[start..];
-                        let char_len = match tail.first() {
-                            Some(&b) if b < 0x80 => 1,
-                            Some(&b) if b < 0xE0 => 2,
-                            Some(&b) if b < 0xF0 => 3,
-                            Some(_) => 4,
-                            None => 0,
-                        };
-                        char_len > 0
-                            && core::str::from_utf8(&tail[..char_len])
-                                .ok()
-                                .and_then(|s| s.chars().next())
-                                .is_some_and(char::is_alphabetic)
-                    };
-
-                    if first_is_letter {
+                    if first_char_is_letter {
                         // Token has no existing prefix; merge last ws char.
                         emit_absorbing!(trim, end, check_contraction);
                     } else if single_char {
@@ -571,6 +632,21 @@ pub fn for_each_classified_span(
                 }
                 emit!(word(start..end));
             }
+            Gpt2FamilyTokenRole::Newline => {
+                if let Some(ws) = pending_ws.take() {
+                    emit!(word ws);
+                }
+                if let Some(nl) = pending_newline.take() {
+                    if nl.end == start {
+                        pending_newline = Some(nl.start..end);
+                    } else {
+                        emit!(word nl);
+                        pending_newline = Some(start..end);
+                    }
+                } else {
+                    pending_newline = Some(start..end);
+                }
+            }
             Gpt2FamilyTokenRole::Gap => {
                 if let Some(ws) = pending_ws.take() {
                     emit!(word ws);
@@ -580,7 +656,22 @@ pub fn for_each_classified_span(
         }
     }
 
-    if let Some(ws) = pending_ws.take() {
+    // End of stream: merge pending_newline + pending_ws (regex `\s++$`).
+    if let Some(nl) = pending_newline.take() {
+        if let Some(ws) = pending_ws.take() {
+            if nl.end == ws.start {
+                last = ws.end;
+                emit!(word(nl.start..ws.end));
+            } else {
+                emit!(word nl);
+                last = ws.end;
+                emit!(word ws);
+            }
+        } else {
+            last = nl.end;
+            emit!(word nl);
+        }
+    } else if let Some(ws) = pending_ws.take() {
         last = ws.end;
         emit!(word ws);
     }
@@ -685,9 +776,11 @@ mod tests {
             Gpt2FamilyTokenRole::Punctuation,
             Gpt2FamilyTokenRole::Word {
                 check_contraction: false,
+                first_char_is_letter: true,
             },
             Gpt2FamilyTokenRole::Word {
                 check_contraction: true,
+                first_char_is_letter: false,
             },
             Gpt2FamilyTokenRole::Standalone,
             Gpt2FamilyTokenRole::Gap,
@@ -722,6 +815,7 @@ mod tests {
                 tokens.push((
                     Gpt2FamilyTokenRole::Word {
                         check_contraction: false,
+                        first_char_is_letter: true,
                     },
                     pos..end,
                 ));

@@ -32,29 +32,29 @@
 /// See module-level docs for the derivation.
 pub const REPRESENTATIVES: &[(char, &str)] = &[
     // Letters - base categories (5 cells from o200k GC subdivision)
-    ('A', "Lu"),             // Uppercase Letter (non-contraction)
-    ('a', "Ll"),             // Lowercase Letter (non-contraction)
-    ('\u{01C5}', "Lt"),      // Titlecase Letter (Dz with caron)
-    ('\u{02B0}', "Lm"),      // Modifier Letter
-    ('\u{00BA}', "Lo"),      // Other Letter (masculine ordinal)
+    ('A', "Lu"),        // Uppercase Letter (non-contraction)
+    ('a', "Ll"),        // Lowercase Letter (non-contraction)
+    ('\u{01C5}', "Lt"), // Titlecase Letter (Dz with caron)
+    ('\u{02B0}', "Lm"), // Modifier Letter
+    ('\u{00BA}', "Lo"), // Other Letter (masculine ordinal)
     // Letters - contraction sub-cells within Ll (4 cells)
-    ('s', "Ll_ctr"),         // Single-char contraction: 's/'d/'m/'t
-    ('l', "Ll_ll"),          // Double-char contraction: 'll
-    ('r', "Ll_rv"),          // Multi-char contraction start: 're/'ve
-    ('e', "Ll_e"),           // Multi-char contraction end: 're/'ve
+    ('s', "Ll_ctr"), // Single-char contraction: 's/'d/'m/'t
+    ('l', "Ll_ll"),  // Double-char contraction: 'll
+    ('r', "Ll_rv"),  // Multi-char contraction start: 're/'ve
+    ('e', "Ll_e"),   // Multi-char contraction end: 're/'ve
     // Letters - contraction sub-cells within Lu (4 cells, case-insensitive)
-    ('S', "Lu_ctr"),         // Uppercase single-char contraction (cl100k/o200k)
-    ('L', "Lu_ll"),          // Uppercase double-char contraction
-    ('R', "Lu_rv"),          // Uppercase multi-char contraction start
-    ('E', "Lu_e"),           // Uppercase multi-char contraction end
+    ('S', "Lu_ctr"), // Uppercase single-char contraction (cl100k/o200k)
+    ('L', "Lu_ll"),  // Uppercase double-char contraction
+    ('R', "Lu_rv"),  // Uppercase multi-char contraction start
+    ('E', "Lu_e"),   // Uppercase multi-char contraction end
     // Marks (1 regex cell, 3 sub-cells for logos coverage)
-    ('\u{0300}', "Mn"),      // Nonspacing Mark (combining grave)
-    ('\u{0B3E}', "Mc"),      // Spacing Combining Mark (Oriya AA)
-    ('\u{20DD}', "Me"),      // Enclosing Mark (combining circle)
+    ('\u{0300}', "Mn"), // Nonspacing Mark (combining grave)
+    ('\u{0B3E}', "Mc"), // Spacing Combining Mark (Oriya AA)
+    ('\u{20DD}', "Me"), // Enclosing Mark (combining circle)
     // Numbers (3 cells)
-    ('1', "Nd"),             // Decimal Digit Number
-    ('\u{2160}', "Nl"),      // Letter Number (Roman numeral one)
-    ('\u{00B2}', "No"),      // Other Number (superscript two)
+    ('1', "Nd"),        // Decimal Digit Number
+    ('\u{2160}', "Nl"), // Letter Number (Roman numeral one)
+    ('\u{00B2}', "No"), // Other Number (superscript two)
     // Whitespace (4 cells; tab and NBSP are same regex cell, both kept for logos)
     (' ', "Zs_ascii"),       // ASCII space (distinct: r50k ` ?` prefix)
     ('\u{00A0}', "Zs_nbsp"), // Non-breaking space (same cell as tab)
@@ -62,11 +62,11 @@ pub const REPRESENTATIVES: &[(char, &str)] = &[
     ('\r', "Cc_cr"),         // Carriage return (distinct: `[\r\n]` patterns)
     ('\n', "Cc_lf"),         // Line feed (distinct: `[\r\n]` patterns)
     // Punctuation/symbols (3 cells; !/$/registered are same regex cell, extras for logos)
-    ('!', "Po"),             // Other Punctuation
-    ('$', "Sc"),             // Currency Symbol
-    ('\u{00AE}', "So"),      // Other Symbol (registered sign)
-    ('\'', "apos"),          // Apostrophe (contraction trigger)
-    ('/', "slash"),          // Slash (punctuation trailer in o200k)
+    ('!', "Po"),        // Other Punctuation
+    ('$', "Sc"),        // Currency Symbol
+    ('\u{00AE}', "So"), // Other Symbol (registered sign)
+    ('\'', "apos"),     // Apostrophe (contraction trigger)
+    ('/', "slash"),     // Slash (punctuation trailer in o200k)
 ];
 
 /// Strict representatives for r50k: excludes contraction Ll sub-cells

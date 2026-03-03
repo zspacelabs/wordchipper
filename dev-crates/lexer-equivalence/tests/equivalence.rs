@@ -3,7 +3,9 @@ use std::sync::Arc;
 use lexer_equivalence::{
     harness::{assert_k_tuple_equivalence, regex_lexer},
     representatives::{
-        REPRESENTATIVES, REPRESENTATIVES_STRICT_CL100K, REPRESENTATIVES_STRICT_O200K,
+        REPRESENTATIVES,
+        REPRESENTATIVES_STRICT_CL100K,
+        REPRESENTATIVES_STRICT_O200K,
         REPRESENTATIVES_STRICT_R50K,
     },
 };
@@ -25,8 +27,9 @@ use wordchipper::{
 // =====================================================================
 
 mod predicates {
-    use regex::Regex;
     use std::collections::BTreeMap;
+
+    use regex::Regex;
 
     /// Compiled regex patterns for Unicode General Category testing.
     pub struct Predicates {
@@ -41,10 +44,8 @@ mod predicates {
 
     /// Names for each predicate bit position. Used for diagnostics.
     pub const PREDICATE_NAMES: &[&str] = &[
-        "Lu", "Lt", "Ll", "Lm", "Lo", "M", "N", "ws",
-        "CR", "LF", "space", "apos", "slash",
-        "sdmt", "l", "rv", "e",
-        "SDMT", "L_up", "RV_up", "E_up",
+        "Lu", "Lt", "Ll", "Lm", "Lo", "M", "N", "ws", "CR", "LF", "space", "apos", "slash", "sdmt",
+        "l", "rv", "e", "SDMT", "L_up", "RV_up", "E_up",
     ];
 
     impl Predicates {
@@ -64,7 +65,10 @@ mod predicates {
         ///
         /// Two chars with identical signatures are interchangeable at the
         /// single-character level across all three `OpenAI` regex patterns.
-        pub fn signature(&self, c: char) -> u32 {
+        pub fn signature(
+            &self,
+            c: char,
+        ) -> u32 {
             let s = c.to_string();
             let mut sig = 0u32;
             let mut bit = 0u32;
@@ -75,7 +79,9 @@ mod predicates {
                         sig |= 1 << bit;
                     }
                     #[allow(unused_assignments)]
-                    { bit += 1; }
+                    {
+                        bit += 1;
+                    }
                 }};
             }
 
@@ -112,7 +118,10 @@ mod predicates {
         }
 
         /// Format a signature as a human-readable predicate list.
-        pub fn format_signature(&self, sig: u32) -> String {
+        pub fn format_signature(
+            &self,
+            sig: u32,
+        ) -> String {
             let active: Vec<&str> = PREDICATE_NAMES
                 .iter()
                 .enumerate()
@@ -170,9 +179,8 @@ mod predicates {
     /// Verify that every candidate char's signature is covered by at least
     /// one representative. Returns a map of (signature -> representative labels).
     pub fn validate_coverage(
-        representatives: &[(char, &str)],
-    ) -> Result<BTreeMap<u32, Vec<(char, String)>>, Vec<(char, u32)>>
-    {
+        representatives: &[(char, &str)]
+    ) -> Result<BTreeMap<u32, Vec<(char, String)>>, Vec<(char, u32)>> {
         #![allow(clippy::type_complexity)]
         let preds = Predicates::new();
 
@@ -228,10 +236,7 @@ fn validate_representative_completeness() {
             }
         }
         Err(uncovered) => {
-            let mut msg = format!(
-                "REPRESENTATIVES missing {} cell(s):\n",
-                uncovered.len()
-            );
+            let mut msg = format!("REPRESENTATIVES missing {} cell(s):\n", uncovered.len());
             for (c, sig) in &uncovered {
                 msg.push_str(&format!(
                     "  {:?} (U+{:04X}) sig={sig:#07x} [{}]\n",

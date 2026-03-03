@@ -84,8 +84,14 @@ pub fn run_k_tuple_equivalence(
             divergences.push(Divergence {
                 rep_indices,
                 text: text.clone(),
-                regex_strs: expected.iter().map(|r| text[r.clone()].to_string()).collect(),
-                logos_strs: observed.iter().map(|r| text[r.clone()].to_string()).collect(),
+                regex_strs: expected
+                    .iter()
+                    .map(|r| text[r.clone()].to_string())
+                    .collect(),
+                logos_strs: observed
+                    .iter()
+                    .map(|r| text[r.clone()].to_string())
+                    .collect(),
                 regex_groups: to_groups(&expected),
                 logos_groups: to_groups(&observed),
             });
@@ -98,7 +104,7 @@ pub fn run_k_tuple_equivalence(
 /// Group divergences by span-boundary pattern and format as classes.
 ///
 /// Two divergences are in the same class if they have identical
-/// (regex_groups, logos_groups). Positions where multiple labels appear
+/// (`regex_groups`, `logos_groups`). Positions where multiple labels appear
 /// are shown as wildcards.
 fn format_divergence_classes(
     divergences: &[Divergence],

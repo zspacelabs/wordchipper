@@ -74,6 +74,7 @@ impl Gpt2FamilyLogos<'_> for R50kToken {
             // with the apostrophe and emits the suffix separately.
             Self::Contraction => Gpt2FamilyTokenRole::Word {
                 check_contraction: false,
+                first_char_is_letter: false,
             },
         }
     }
