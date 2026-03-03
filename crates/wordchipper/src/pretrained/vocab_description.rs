@@ -1,10 +1,7 @@
-use std::prelude::rust_2015::{
-    String,
-    ToString,
-    Vec,
+use crate::{
+    prelude::*,
+    pretrained::vocab_query::VocabQuery,
 };
-
-use crate::pretrained::vocab_query::VocabQuery;
 
 /// A description of a pretrained tokenizer.
 #[derive(Debug, Clone)]

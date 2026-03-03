@@ -84,15 +84,16 @@ impl VocabProvider for OpenaiVocabProvider {
         query: &VocabQuery,
         loader: &mut dyn ResourceLoader,
     ) -> WCResult<LabeledVocab<u32>> {
-        let descr = self.resolve_vocab(query)?;
+        let _descr = self.resolve_vocab(query)?;
+        let _ = loader;
 
         #[cfg(feature = "datagym")]
         {
             use super::load_gpt2_vocab;
 
-            if descr.id().name() == "gpt2" {
+            if _descr.id().name() == "gpt2" {
                 let vocab = load_gpt2_vocab(loader)?;
-                return Ok(LabeledVocab::new(descr, vocab.into()));
+                return Ok(LabeledVocab::new(_descr, vocab.into()));
             }
         }
 
@@ -101,9 +102,9 @@ impl VocabProvider for OpenaiVocabProvider {
             use core::str::FromStr;
 
             use crate::pretrained::openai::OATokenizer;
-            if let Ok(oat) = OATokenizer::from_str(descr.id().name()) {
+            if let Ok(oat) = OATokenizer::from_str(_descr.id().name()) {
                 let vocab = oat.load_vocab(loader)?;
-                return Ok(LabeledVocab::new(descr, vocab.into()));
+                return Ok(LabeledVocab::new(_descr, vocab.into()));
             }
         }
 
