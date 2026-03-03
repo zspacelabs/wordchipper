@@ -256,8 +256,9 @@ mod tests {
     // DIVERGENCE INVENTORY (informational, always passes)
     //
     // Documents the known divergence counts when ALL representatives are
-    // included. These are expected to fail and the counts are recorded for
-    // regression tracking.
+    // included. Some individual comparisons diverge between logos and regex;
+    // the counts are printed to stderr for manual review. These tests
+    // themselves always pass.
     // =====================================================================
 
     #[test]
