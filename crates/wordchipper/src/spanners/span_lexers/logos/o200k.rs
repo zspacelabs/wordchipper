@@ -109,7 +109,14 @@ mod tests {
     use super::*;
     use crate::{
         alloc::{sync::Arc, vec::Vec},
-        spanners::{SpanRef, TextSpanner, span_lexers::LexerTextSpanner},
+        spanners::{
+            SpanRef,
+            TextSpanner,
+            span_lexers::{
+                LexerTextSpanner,
+                accelerators::testutil::assert_matches_reference_lexer,
+            },
+        },
         support::regex::RegexWrapper,
     };
 
@@ -146,16 +153,15 @@ mod tests {
 
     #[test]
     #[cfg(feature = "std")]
-    fn test_regression() {
+    fn test_o200k_regression() {
         let sample = " average temperature of 21°C (70ºF) during the winter.
 Owing to";
 
-        let regex = RegexWrapper::from(OA_O200K_BASE_PATTERN.to_pattern());
-        let expected_spans = regex.find_span_iter(&sample).collect::<Vec<_>>();
+        let ref_lexer: Box<dyn SpanLexer> =
+            Box::new(RegexWrapper::from(OA_O200K_BASE_PATTERN.to_pattern()));
+        let accel_lexer: Box<dyn SpanLexer> = Box::new(O200kLexer);
 
-        let observed_spans = O200kLexer.find_span_iter(&sample).collect::<Vec<_>>();
-
-        assert_eq!(observed_spans, expected_spans);
+        assert_matches_reference_lexer(sample, &ref_lexer, &accel_lexer);
     }
 
     #[test]

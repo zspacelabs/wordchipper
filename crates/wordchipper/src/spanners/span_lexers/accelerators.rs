@@ -1,4 +1,5 @@
 //! Accelerated custom [`SpanLexer`] machinery.
+
 use crate::{
     alloc::sync::Arc,
     spanners::span_lexers::SpanLexer,
@@ -61,4 +62,69 @@ pub fn get_regex_accelerator(pattern: &str) -> Option<Arc<dyn SpanLexer>> {
         }
     }
     None
+}
+
+/// Testing utilities for developing accelerated replacement [`SpanLexer`]s.
+#[cfg(any(test, feature = "testing"))]
+pub mod testutil {
+    use core::cmp::max;
+
+    use super::*;
+    use crate::prelude::*;
+
+    /// Testing utility for checking that a sample and an accelerated span lexer match.
+    pub fn assert_matches_reference_lexer(
+        sample: &str,
+        ref_lexer: &dyn SpanLexer,
+        test_lexer: &dyn SpanLexer,
+    ) {
+        let expected_spans = ref_lexer.find_span_iter(sample).collect::<Vec<_>>();
+        let observed_spans = test_lexer.find_span_iter(sample).collect::<Vec<_>>();
+
+        if observed_spans == expected_spans {
+            return;
+        }
+
+        let mut first_diff = None;
+        for i in 0..max(observed_spans.len(), expected_spans.len()) {
+            if observed_spans[i] != expected_spans[i] {
+                first_diff = Some(i);
+                break;
+            }
+        }
+        let first_diff = first_diff.unwrap();
+
+        let mut parts: Vec<String> = vec![
+            "Accelerated lexer failed to match reference lexer.".to_string(),
+            format!("sample: <<<{}>>>", sample),
+            format!("expected: {:?}", expected_spans),
+        ];
+
+        for (i, span) in expected_spans.iter().enumerate() {
+            parts.push(format!(
+                " {}{}: {:?}: <<<{}>>>",
+                if i == first_diff { "*" } else { " " },
+                i,
+                span,
+                &sample[span.clone()]
+            ));
+        }
+        log::error!("observed: {:?}", observed_spans);
+        for (i, span) in observed_spans.iter().enumerate() {
+            parts.push(format!(
+                " {}{}: {:?}: <<<{}>>>",
+                if i == first_diff { "*" } else { " " },
+                i,
+                span,
+                &sample[span.clone()]
+            ));
+        }
+
+        for part in &parts {
+            log::error!("{}", part);
+        }
+
+        let msg = parts.join("\n");
+        panic!("{}", msg);
+    }
 }
