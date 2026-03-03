@@ -11,3 +11,6 @@ workspace = true
 
 [dependencies]
 wordchipper = { path = "../../crates/wordchipper", features = ["default", "testing"] }
+
+[dev-dependencies]
+regex = { workspace = true, features = ["std", "unicode-perl", "unicode-gencat"] }
