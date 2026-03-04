@@ -71,6 +71,26 @@ pub enum SpanEncoderSelector {
     BpeBacktrack,
 }
 
+#[cfg(test)]
+mod tests {
+    use core::str::FromStr;
+
+    use super::*;
+    use crate::prelude::*;
+
+    #[test]
+    fn test_span_encoder_selector_strum_roundtrip() {
+        for variant in <SpanEncoderSelector as strum::IntoEnumIterator>::iter() {
+            let s = variant.to_string();
+            assert_eq!(
+                SpanEncoderSelector::from_str(&s).unwrap(),
+                variant,
+                "roundtrip failed for variant string: {s}"
+            );
+        }
+    }
+}
+
 impl SpanEncoderSelector {
     /// Get a builder for the configured [`SpanEncoder`].
     ///
