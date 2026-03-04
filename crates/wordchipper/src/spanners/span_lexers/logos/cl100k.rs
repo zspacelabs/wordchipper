@@ -182,5 +182,4 @@ mod tests {
 
         assert_eq!(spans, vec![SpanRef::Word(0..3)]);
     }
-
 }

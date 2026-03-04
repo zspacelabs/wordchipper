@@ -7,16 +7,13 @@ use logos::{
     Logos,
     SpannedIter,
 };
-use ringbuf::traits::{
-    Consumer,
-    Producer,
-};
+use ringbuffer::RingBuffer;
 
 use crate::spanners::SpanRef;
 
 /// How a logos token interacts with whitespace splitting.
 ///
-/// The OpenAI regex patterns use `\s+(?!\S)` which backtracks so the last
+/// The `OpenAI` regex patterns use `\s+(?!\S)` which backtracks so the last
 /// whitespace character can be absorbed as a prefix by the next pattern.
 /// Logos DFA can't express lookaheads, so we post-process: when a
 /// [`Whitespace`](Self::Whitespace) token precedes certain token kinds,
@@ -99,16 +96,17 @@ pub fn contraction_split(bytes: &[u8]) -> Option<usize> {
 /// Word-range iterator with whitespace post-processing for GPT-2 family
 /// patterns.
 ///
-/// Uses a small inline ring buffer (capacity 5) instead of a heap-allocated
-/// `VecDeque`. The maximum spans emitted per token is 4 (gap: flush newline +
-/// flush ws; then Word: `flush_ws_split` + merge + contraction split).
+/// Uses `ConstGenericRingBuffer` (power-of-2 bitmask indexing, ~10% faster
+/// than `ringbuf::StaticRb` which uses atomics). Max spans per token is 4.
 pub struct Gpt2FamilySpanIter<'source, I> {
     text: &'source str,
     last: usize,
     pending_ws: Option<Range<usize>>,
     pending_newline: Option<Range<usize>>,
 
-    ring: ringbuf::StaticRb<Range<usize>, 5>,
+    /// Capacity 8 (next power-of-2 above the 5 slots needed) because
+    /// `ConstGenericRingBuffer` requires power-of-2 for bitmask indexing.
+    ring: ringbuffer::ConstGenericRingBuffer<Range<usize>, 8>,
 
     iter: Option<I>,
 }
@@ -127,7 +125,7 @@ where
             last: 0,
             pending_ws: None,
             pending_newline: None,
-            ring: Default::default(),
+            ring: ringbuffer::ConstGenericRingBuffer::new(),
             iter: Some(iter),
         }
     }
@@ -136,11 +134,11 @@ where
         &mut self,
         range: Range<usize>,
     ) {
-        self.ring.try_push(range).unwrap();
+        self.ring.push(range);
     }
 
     fn pop(&mut self) -> Option<Range<usize>> {
-        self.ring.try_pop()
+        self.ring.dequeue()
     }
 
     fn next_tok(&mut self) -> Option<(Gpt2FamilyTokenRole, Range<usize>)> {
