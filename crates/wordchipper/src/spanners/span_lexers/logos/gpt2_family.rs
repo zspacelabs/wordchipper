@@ -283,65 +283,61 @@ where
             }
 
             if let Some((role, Range { start, end })) = self.next_tok() {
-                // Try to absorb the next token into pending_punct.
-                // The regex punct branch ` ?[^\s\p{L}\p{N}]+[\r\n/]*`
-                // has a body that greedily matches non-L/N/ws chars, then
-                // a trailer that matches `[\r\n/]`. Mark-extension creates
-                // pending_punct for the initial body (punct + marks). Here
-                // we continue matching body chars from PunctuationBare
-                // tokens and trailer chars from Newline tokens.
+                // Try to extend pending_punct with this token.
+                // Regex: ` ?[^\s\p{L}\p{N}]+[\r\n/]*`
+                //         ^body              ^trailer
                 if let Some(pp) = self.pending_punct.take() {
                     if pp.end == start {
-                        let first = bytes[start];
-                        let absorb = if self.punct_in_trailer {
-                            // Trailer mode: only continue with pure
-                            // [\r\n/] content.
-                            bytes[start..end]
+                        if self.punct_in_trailer {
+                            if bytes[start..end]
                                 .iter()
                                 .all(|&b| matches!(b, b'\r' | b'\n' | b'/'))
-                        } else if matches!(role, Gpt2FamilyTokenRole::Punctuation) {
-                            // Body mode: absorb bare punctuation
-                            // (not PunctuationSpaced which starts
-                            // a new regex match with its ` ?` prefix).
-                            first != b' '
-                        } else {
-                            // Body mode: absorb a newline-starting
-                            // token (the [\r\n/]* trailer).
-                            matches!(first, b'\r' | b'\n')
-                        };
-                        if absorb {
-                            if !self.punct_in_trailer
-                                && bytes[start..end]
-                                    .iter()
-                                    .any(|&b| matches!(b, b'\r' | b'\n'))
                             {
-                                self.punct_in_trailer = true;
-                            }
-                            self.pending_punct = Some(pp.start..end);
-                            self.last = end;
-                            continue;
-                        }
-                        // Body mode: PrefixedWord adjacent to pending
-                        // punct. The regex `[^\s\p{L}\p{N}]+` keeps
-                        // matching non-L/N/ws chars, so the non-letter
-                        // prefix and marks belong in pending_punct.
-                        if !self.punct_in_trailer
-                            && let Gpt2FamilyTokenRole::Word {
-                                first_char_is_letter: false,
-                                check_contraction,
-                            } = role
-                            && !self.text[start..].starts_with(char::is_whitespace)
-                        {
-                            let prefix_len = non_letter_prefix_len(&self.text[start..end]);
-                            if start + prefix_len >= end {
                                 self.pending_punct = Some(pp.start..end);
                                 self.last = end;
                                 continue;
                             }
-                            emit!(pp.start..start + prefix_len);
-                            emit_absorbing!(start + prefix_len, end, check_contraction);
-                            self.last = end;
-                            continue;
+                        } else {
+                            let first = bytes[start];
+                            // Bare punctuation extends the body.
+                            if matches!(role, Gpt2FamilyTokenRole::Punctuation)
+                                && first != b' '
+                            {
+                                self.pending_punct = Some(pp.start..end);
+                                self.last = end;
+                                continue;
+                            }
+                            // \r/\n starts the trailer.
+                            if matches!(first, b'\r' | b'\n') {
+                                self.punct_in_trailer = true;
+                                self.pending_punct = Some(pp.start..end);
+                                self.last = end;
+                                continue;
+                            }
+                            // Non-letter word prefix extends the body.
+                            if let Gpt2FamilyTokenRole::Word {
+                                first_char_is_letter: false,
+                                check_contraction,
+                            } = role
+                            {
+                                if !self.text[start..].starts_with(char::is_whitespace) {
+                                    let prefix_len =
+                                        non_letter_prefix_len(&self.text[start..end]);
+                                    if start + prefix_len >= end {
+                                        self.pending_punct = Some(pp.start..end);
+                                        self.last = end;
+                                        continue;
+                                    }
+                                    emit!(pp.start..start + prefix_len);
+                                    emit_absorbing!(
+                                        start + prefix_len,
+                                        end,
+                                        check_contraction
+                                    );
+                                    self.last = end;
+                                    continue;
+                                }
+                            }
                         }
                     }
                     // Not absorbed: flush pending_punct.
