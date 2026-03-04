@@ -51,7 +51,6 @@ std = [
     "log/std",
     "num-traits/std",
     "regex/default",
-    "ringbuf/std",
 ]
 
 ## Enables datagym io.
@@ -97,9 +96,9 @@ thiserror = { workspace = true }
 logos = { workspace = true, features = ["export_derive"] }
 base64 = { workspace = true, features = ["alloc"] }
 fancy-regex = { workspace = true, features = ["unicode"] }
-ringbuf = { workspace = true, features = ["alloc"] }
 log = { workspace = true }
 num-traits = { workspace = true }
+ringbuffer = { workspace = true }
 regex = { workspace = true, features = ["unicode"] }
 strum = { workspace = true }
 
