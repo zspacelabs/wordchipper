@@ -207,7 +207,6 @@ fn main() -> Result<(), BoxError> {
     // println!("Loading wordchipper...");
     let loaded = wordchipper::load_vocab(args.model.to_string().as_str(), &mut disk_cache)?;
 
-    println!("Loaded: {:?}", loaded.description());
     let vocab = loaded.vocab().clone();
 
     // TODO: complete batch-observer inversion of control for additional tokenizer
@@ -216,7 +215,7 @@ fn main() -> Result<(), BoxError> {
     let mut candidate_engines: Vec<Arc<dyn EncDecEngine<Rank>>> = Vec::new();
 
     let wc_engine = Arc::new(WordchipperEngine::<Rank>::new(
-        args.model.to_string(),
+        loaded.description().id().to_string(),
         TokenizerOptions::default()
             .with_parallel(true)
             .with_accelerated_lexers(false)
@@ -231,7 +230,7 @@ fn main() -> Result<(), BoxError> {
             .build(vocab.clone());
 
         candidate_engines.push(Arc::new(WordchipperEngine::<Rank>::new(
-            format!("{}/accel", args.model),
+            format!("{}/accel", loaded.description().id(),),
             Tokenizer::new(
                 vocab.clone(),
                 encoder,
