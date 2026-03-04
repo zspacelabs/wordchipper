@@ -3,15 +3,9 @@
 
 use core::ops::Range;
 
-use logos::{
-    Logos,
-    SpannedIter,
-};
+use logos::{Logos, SpannedIter};
 use ringbuffer::RingBuffer;
-use unicode_general_category::{
-    GeneralCategory,
-    get_general_category,
-};
+use unicode_general_category::{GeneralCategory, get_general_category};
 
 use crate::spanners::SpanRef;
 
@@ -38,15 +32,11 @@ fn is_unicode_letter(c: char) -> bool {
 /// mark-extension: the DFA's `PrefixedWord` absorbs combining marks into
 /// the word token, but the regex punct branch `[^\s\p{L}\p{N}]+` keeps
 /// them with punctuation.
+#[inline]
 fn non_letter_prefix_len(token: &str) -> usize {
-    let mut len = 0;
-    for c in token.chars() {
-        if is_unicode_letter(c) {
-            break;
-        }
-        len += c.len_utf8();
-    }
-    len
+    token
+        .find(|c: char| is_unicode_letter(c))
+        .unwrap_or(token.len())
 }
 
 /// How a logos token interacts with whitespace splitting.
@@ -135,7 +125,9 @@ pub fn contraction_split(bytes: &[u8]) -> Option<usize> {
 /// patterns.
 ///
 /// Uses `ConstGenericRingBuffer` (power-of-2 bitmask indexing, ~10% faster
-/// than `ringbuf::StaticRb` which uses atomics). Max spans per token is 4.
+/// than `ringbuf::StaticRb` which uses atomics). Max spans per iteration is
+/// 5 (pending_newline flush + ws_split prefix + punct/word emit +
+/// contraction split = 1+1+1+2).
 pub struct Gpt2FamilySpanIter<'source, I> {
     text: &'source str,
     last: usize,
@@ -573,10 +565,7 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::{
-        alloc::vec::Vec,
-        spanners::span_lexers::logos::gpt2_family::Gpt2FamilyTokenRole,
-    };
+    use crate::{alloc::vec::Vec, spanners::span_lexers::logos::gpt2_family::Gpt2FamilyTokenRole};
 
     /// Collect spans from for_each_classified_span for testing.
     fn collect_spans(
