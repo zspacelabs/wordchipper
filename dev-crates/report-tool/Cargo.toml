@@ -15,7 +15,8 @@ divan-parser = { path = "../divan-parser" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 humansize = { workspace = true }
-plotters = { workspace = true }
+# fontlib issues, investigate wasm install.
+# plotters = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
 regex = { workspace = true }
 log = { workspace = true }
