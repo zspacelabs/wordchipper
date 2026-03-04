@@ -34,13 +34,10 @@ The test generates all k-character strings (k=1..4) from 29 representative codep
 sub-cell extras for logos DFA edge cases) and compares the span output of each logos lexer against
 the regex reference.
 
-### Test tiers
+### Tests
 
-- **Strict tests** (`*_equivalence_k1_to_k4`): use a reduced representative set that excludes
-  character classes with known residual divergences. These must always pass.
-- **Full tests** (`*_full_equivalence`): use all 29 representatives. These fail until the
-  corresponding logos lexer handles every divergence class.
-- **Known tricky inputs**: regression tests from real-world text that exposed past divergences.
+Each lexer (r50k, cl100k, o200k) has a single equivalence test that runs all 29 representatives at
+k=1..4 and panics on any divergence from the regex reference.
 
 ### Representative validation
 
