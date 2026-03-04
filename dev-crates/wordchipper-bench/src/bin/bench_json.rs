@@ -96,6 +96,11 @@ fn main() {
     let json = serde_json::to_string_pretty(&results).expect("failed to serialize JSON");
 
     if let Some(ref path) = cli.output {
+        let path = std::path::Path::new(path);
+        if let Some(dir) = path.parent() {
+            std::fs::create_dir_all(dir).expect("failed to create output directory");
+        }
+
         std::fs::write(path, format!("{json}\n")).expect("failed to write output file");
     } else {
         println!("{json}");
