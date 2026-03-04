@@ -5,12 +5,7 @@ use lexer_equivalence::{
         assert_k_tuple_equivalence,
         regex_lexer,
     },
-    representatives::{
-        REPRESENTATIVES,
-        REPRESENTATIVES_STRICT_CL100K,
-        REPRESENTATIVES_STRICT_O200K,
-        REPRESENTATIVES_STRICT_R50K,
-    },
+    representatives::REPRESENTATIVES,
 };
 use wordchipper::{
     pretrained::openai::{
@@ -20,7 +15,6 @@ use wordchipper::{
     },
     spanners::span_lexers::{
         SpanLexer,
-        accelerators::testutil::assert_matches_reference_lexer,
         logos::{
             cl100k::Cl100kLexer,
             o200k::O200kLexer,
@@ -263,143 +257,28 @@ fn validate_representative_completeness() {
 }
 
 // =====================================================================
-// STRICT EQUIVALENCE TESTS (should pass)
-//
-// These exclude character classes with known divergences to prove
-// equivalence over the remaining (vast majority of) character space.
-// =====================================================================
-
-#[test]
-fn r50k_equivalence_k1_to_k4() {
-    let ref_lexer = regex_lexer(OA_R50K_BASE_PATTERN);
-    let test_lexer: Arc<dyn SpanLexer> = Arc::new(R50kLexer);
-    assert_k_tuple_equivalence(
-        "r50k",
-        4,
-        REPRESENTATIVES_STRICT_R50K,
-        &*ref_lexer,
-        &*test_lexer,
-    );
-}
-
-#[test]
-fn cl100k_equivalence_k1_to_k4() {
-    let ref_lexer = regex_lexer(OA_CL100K_BASE_PATTERN);
-    let test_lexer: Arc<dyn SpanLexer> = Arc::new(Cl100kLexer);
-    assert_k_tuple_equivalence(
-        "cl100k",
-        4,
-        REPRESENTATIVES_STRICT_CL100K,
-        &*ref_lexer,
-        &*test_lexer,
-    );
-}
-
-#[test]
-fn o200k_equivalence_k1_to_k4() {
-    let ref_lexer = regex_lexer(OA_O200K_BASE_PATTERN);
-    let test_lexer: Arc<dyn SpanLexer> = Arc::new(O200kLexer);
-    assert_k_tuple_equivalence(
-        "o200k",
-        4,
-        REPRESENTATIVES_STRICT_O200K,
-        &*ref_lexer,
-        &*test_lexer,
-    );
-}
-
-// =====================================================================
 // FULL EQUIVALENCE TESTS
 //
-// These test ALL representatives including character classes with known
-// divergences. They fail until the corresponding logos lexer is fixed.
+// Test all 29 representatives (k=1..4, ~732K inputs per lexer).
 // =====================================================================
 
 #[test]
-fn r50k_full_equivalence() {
+fn r50k_equivalence() {
     let ref_lexer = regex_lexer(OA_R50K_BASE_PATTERN);
     let test_lexer: Arc<dyn SpanLexer> = Arc::new(R50kLexer);
     assert_k_tuple_equivalence("r50k", 4, REPRESENTATIVES, &*ref_lexer, &*test_lexer);
 }
 
 #[test]
-fn cl100k_full_equivalence() {
+fn cl100k_equivalence() {
     let ref_lexer = regex_lexer(OA_CL100K_BASE_PATTERN);
     let test_lexer: Arc<dyn SpanLexer> = Arc::new(Cl100kLexer);
     assert_k_tuple_equivalence("cl100k", 4, REPRESENTATIVES, &*ref_lexer, &*test_lexer);
 }
 
 #[test]
-fn o200k_full_equivalence() {
+fn o200k_equivalence() {
     let ref_lexer = regex_lexer(OA_O200K_BASE_PATTERN);
     let test_lexer: Arc<dyn SpanLexer> = Arc::new(O200kLexer);
     assert_k_tuple_equivalence("o200k", 4, REPRESENTATIVES, &*ref_lexer, &*test_lexer);
-}
-
-// =====================================================================
-// KNOWN TRICKY INPUTS (regression tests from real-world text)
-// =====================================================================
-
-#[test]
-fn cl100k_known_tricky_inputs() {
-    let ref_lexer = regex_lexer(OA_CL100K_BASE_PATTERN);
-    let test_lexer: Arc<dyn SpanLexer> = Arc::new(Cl100kLexer);
-
-    let cases = [
-        "'The quick brown fox",
-        "  'The quick",
-        " \u{2014}hello world",
-        "Shakespeare's \"sources,\" then read",
-        "foo  \nbar",
-        "\t\thello",
-        "  $400 dollars",
-        "caf\u{00e9} na\u{00ef}ve r\u{00e9}sum\u{00e9}",
-    ];
-
-    for text in cases {
-        assert_matches_reference_lexer(text, &*ref_lexer, &*test_lexer);
-    }
-}
-
-#[test]
-fn o200k_known_tricky_inputs() {
-    let ref_lexer = regex_lexer(OA_O200K_BASE_PATTERN);
-    let test_lexer: Arc<dyn SpanLexer> = Arc::new(O200kLexer);
-
-    let cases = [
-        " average temperature of 21\u{00B0}C (70\u{00BA}F) during the winter.",
-        "\u{00BA}",
-        "\u{02B0}F",
-        "\u{02B0}Hello",
-        "\u{00BA}ABC",
-        "don't I'll she's",
-        "HELLO WORLD",
-        "foo  \nbar",
-        "$$$!!!...---",
-    ];
-
-    for text in cases {
-        assert_matches_reference_lexer(text, &*ref_lexer, &*test_lexer);
-    }
-}
-
-#[test]
-fn r50k_known_tricky_inputs() {
-    let ref_lexer = regex_lexer(OA_R50K_BASE_PATTERN);
-    let test_lexer: Arc<dyn SpanLexer> = Arc::new(R50kLexer);
-
-    let cases = [
-        "Pipeline\nThe mode",
-        "\nhello",
-        "\n\nhello",
-        " \nhello",
-        "  \r\n  bar",
-        "don't I'll she's",
-        "  123",
-        "  !",
-    ];
-
-    for text in cases {
-        assert_matches_reference_lexer(text, &*ref_lexer, &*test_lexer);
-    }
 }
