@@ -547,6 +547,11 @@ mod tests {
             },
             Gpt2FamilyTokenRole::Standalone,
             Gpt2FamilyTokenRole::Gap,
+            Gpt2FamilyTokenRole::Newline,
+            Gpt2FamilyTokenRole::Word {
+                check_contraction: true,
+                first_char_is_letter: true,
+            },
         ];
 
         let mut tokens = Vec::new();
@@ -598,7 +603,7 @@ mod tests {
         #[test]
         fn structural_invariants_multi_role(
             text in "\\PC{0,100}",
-            chunks in proptest::collection::vec((1..5usize, 0..6u8), 1..20),
+            chunks in proptest::collection::vec((1..5usize, 0..8u8), 1..20),
         ) {
             let tokens = build_token_stream(&text, &chunks);
             let spans = collect_spans(tokens.into_iter(), &text, 0);
@@ -608,7 +613,7 @@ mod tests {
         #[test]
         fn structural_invariants_with_offset(
             text in "\\PC{1,50}",
-            chunks in proptest::collection::vec((1..5usize, 0..6u8), 1..10),
+            chunks in proptest::collection::vec((1..5usize, 0..8u8), 1..10),
             offset in 0..1000usize,
         ) {
             let tokens = build_token_stream(&text, &chunks);
@@ -633,7 +638,7 @@ mod tests {
         #[test]
         fn early_termination(
             text in "\\PC{1,80}",
-            chunks in proptest::collection::vec((1..4usize, 0..6u8), 1..15),
+            chunks in proptest::collection::vec((1..4usize, 0..8u8), 1..15),
             stop_after in 1..10usize,
         ) {
             let tokens = build_token_stream(&text, &chunks);
@@ -674,7 +679,7 @@ mod tests {
         #[test]
         fn deterministic(
             text in "\\PC{0,80}",
-            chunks in proptest::collection::vec((1..4usize, 0..6u8), 1..15),
+            chunks in proptest::collection::vec((1..4usize, 0..8u8), 1..15),
         ) {
             let tokens1 = build_token_stream(&text, &chunks);
             let tokens2 = build_token_stream(&text, &chunks);
