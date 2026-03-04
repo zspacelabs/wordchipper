@@ -41,7 +41,7 @@ Tokenizers with fundamentally different pre-tokenization don't need this machine
 - **Bert-style** tokenizers split on whitespace and punctuation with simple rules, no lookaheads.
 
 If your tokenizer's regex pattern doesn't use `\s+(?!\S)` or a similar whitespace-backtracking
-idiom, you can still use logos for DFA speed, but you won't need `TokenRole` or
+idiom, you can still use logos for DFA speed, but you won't need `Gpt2FamilyTokenRole` or
 `for_each_classified_span`. Just implement `SpanLexer` directly.
 
 ## The whitespace problem, concretely
@@ -69,18 +69,19 @@ variant represents, and it applies the correct rule.
 
 ## The building blocks
 
-Three public items in `wordchipper::spanners::span_lexers::logos`:
+Three public items in `wordchipper::spanners::span_lexers::logos::gpt2_family`:
 
-### `TokenRole`
+### `Gpt2FamilyTokenRole`
 
 An enum that classifies how each logos token interacts with preceding whitespace:
 
 ```rust
-pub enum TokenRole {
+pub enum Gpt2FamilyTokenRole {
     Whitespace,
     Punctuation,
-    Word { check_contraction: bool },
+    Word { check_contraction: bool, first_char_is_letter: bool },
     Standalone,
+    Newline,
     Gap,
 }
 ```
@@ -91,35 +92,27 @@ Each variant tells the engine a different whitespace rule:
   it based on what comes next.
 - **`Punctuation`**: absorbs a preceding ASCII space. The engine merges the last buffered space
   character into this token's span (matching the ` ?` regex prefix).
-- **`Word`**: absorbs a preceding space _if the token starts with a letter_. If the token starts
-  with a non-letter prefix (like `"hello` where `"` is the first char), the engine handles the
-  prefix separately. The `check_contraction` field enables cl100k-style splitting where `'The`
-  becomes `'T` + `he`.
-- **`Standalone`**: never absorbs whitespace. Digits, explicit contractions, newlines. Any preceding
+- **`Word`**: absorbs a preceding space _if `first_char_is_letter` is true_. If the token starts
+  with a non-letter prefix (like `"hello` where `"` is the first char), set `first_char_is_letter`
+  to false and the engine handles the prefix separately. The `check_contraction` field enables
+  cl100k-style splitting where `'The` becomes `'T` + `he`.
+- **`Standalone`**: never absorbs whitespace. Digits, explicit contractions. Any preceding
   whitespace becomes its own span.
+- **`Newline`**: newline-containing whitespace (`\s*[\r\n]+`). Buffered separately; at end of
+  string, adjacent Newline + Whitespace merge (matching the regex `\s++$` behavior).
 - **`Gap`**: unrecognized bytes. Use this for logos `Err(())`.
 
-### `for_each_classified_span`
+### `Gpt2FamilyLogos` trait
 
-The engine function. You feed it a stream of `(TokenRole, Range<usize>)` pairs from your logos
-lexer, and it emits corrected `SpanRef::Word` / `SpanRef::Gap` spans:
+Maps a logos token enum to `Gpt2FamilyTokenRole`:
 
 ```rust
-pub fn for_each_classified_span(
-    iter: impl Iterator<Item = (TokenRole, Range<usize>)>,
-    text: &str,
-    offset: usize,
-    f: &mut dyn FnMut(SpanRef) -> bool,
-) -> (bool, usize)
+pub trait Gpt2FamilyLogos<'a>: Logos<'a> {
+    fn family_role(&self) -> Gpt2FamilyTokenRole;
+}
 ```
 
-The `iter` parameter is where your logos lexer plugs in. Each item is a token role paired with its
-byte range in the input text. The `f` callback receives the corrected spans one at a time. The
-`offset` parameter shifts all emitted ranges by a fixed amount (useful when scanning a slice of a
-larger document).
-
-The return value `(completed, consumed)` tells you whether the callback accepted all spans
-(`completed`) and how many bytes were processed (`consumed`).
+Implement this for your token enum and the engine handles all the post-processing.
 
 ### `contraction_split`
 
@@ -147,7 +140,7 @@ enum MyToken {
     #[regex(r"\p{Number}{1,3}")]
     Digits,
 
-    #[regex(r" ?[^\s\p{Letter}\p{Number}]+")]
+    #[regex(r" ?[^\s\p{Letter}\p{Number}]+[\r\n]*")]
     Punctuation,
 
     #[regex(r"\s*[\r\n]+")]
@@ -160,120 +153,125 @@ enum MyToken {
 
 Each variant maps to a regex fragment. Logos compiles all of them into a single DFA at build time.
 
-### Step 2: Map each variant to a `TokenRole`
+### Step 2: Implement `Gpt2FamilyLogos`
 
-This is where you make design decisions. For each token type, ask: "How should this interact with
-preceding whitespace?"
+Map each token variant to its role. This is where you make design decisions: for each token type,
+ask "How should this interact with preceding whitespace?"
 
 ```rust
-use wordchipper::spanners::span_lexers::logos::TokenRole;
+use wordchipper::spanners::span_lexers::logos::gpt2_family::{
+    Gpt2FamilyLogos, Gpt2FamilyTokenRole,
+};
 
-impl MyToken {
-    fn role(&self) -> TokenRole {
+impl Gpt2FamilyLogos<'_> for MyToken {
+    fn family_role(&self) -> Gpt2FamilyTokenRole {
         match self {
             // Whitespace is buffered; last char may merge into next token.
-            Self::Whitespace => TokenRole::Whitespace,
+            Self::Whitespace => Gpt2FamilyTokenRole::Whitespace,
 
             // Letters absorb a preceding space when the token starts with
             // a letter. No contraction splitting needed for our pattern.
-            Self::Letters => TokenRole::Word { check_contraction: false },
+            Self::Letters => Gpt2FamilyTokenRole::Word {
+                check_contraction: false,
+                first_char_is_letter: true,
+            },
 
             // Punctuation absorbs a preceding ASCII space (the ` ?` prefix).
-            Self::Punctuation => TokenRole::Punctuation,
+            Self::Punctuation => Gpt2FamilyTokenRole::Punctuation,
 
-            // Digits and newlines stand alone. They never merge with
-            // preceding whitespace.
-            Self::Digits | Self::Newline => TokenRole::Standalone,
+            // Newlines are buffered separately.
+            Self::Newline => Gpt2FamilyTokenRole::Newline,
+
+            // Digits stand alone. They never merge with preceding whitespace.
+            Self::Digits => Gpt2FamilyTokenRole::Standalone,
         }
     }
 }
 ```
 
 The key insight: you don't need to understand the whitespace-splitting algorithm. You just need to
-know what each token _is_, and `TokenRole` maps that to the correct behavior.
+know what each token _is_, and `Gpt2FamilyTokenRole` maps that to the correct behavior.
 
-### Step 3: Implement `SpanLexer`
+### Step 3: Use the `logos_lexer!` macro
 
-Wire the logos lexer to `for_each_classified_span`:
+The `logos_lexer!` macro generates the `SpanLexer` impl and registers the lexer with inventory for
+automatic acceleration:
 
 ```rust
-use wordchipper::spanners::{SpanRef, span_lexers::SpanLexer};
-use wordchipper::spanners::span_lexers::logos::{TokenRole, for_each_classified_span};
+logos_lexer! {
+    /// Logos DFA word scanner for my custom pattern.
+    pub struct MyLexer;
+    token = MyToken;
+    pattern = MY_PATTERN;
+}
+```
 
-#[derive(Clone, Debug)]
-pub struct MyLexer;
+This generates a struct that implements `SpanLexer`, which returns an iterator of word byte ranges.
+The macro also registers the lexer via `inventory` so it automatically replaces the regex spanner
+when the pattern matches.
+
+If you need a manual `SpanLexer` impl instead (e.g. for a non-standard pattern), you can call
+`logos_span_iter` directly:
+
+```rust
+use wordchipper::spanners::span_lexers::{SpanLexer, logos::gpt2_family::logos_span_iter};
 
 impl SpanLexer for MyLexer {
-    fn for_each_word(
-        &self,
-        text: &str,
-        offset: usize,
-        f: &mut dyn FnMut(SpanRef) -> bool,
-    ) -> (bool, usize) {
-        for_each_classified_span(
-            MyToken::lexer(text).spanned().map(|(res, range)| {
-                let role = match res {
-                    Ok(tok) => tok.role(),
-                    Err(()) => TokenRole::Gap,
-                };
-                (role, range)
-            }),
-            text,
-            offset,
-            f,
-        )
+    fn find_span_iter<'a>(
+        &'a self,
+        text: &'a str,
+    ) -> Box<dyn Iterator<Item = Range<usize>> + 'a> {
+        Box::new(logos_span_iter(text, MyToken::lexer(text).spanned()))
     }
 }
 ```
 
-That's it. ~30 lines of code for the entire lexer, and all the whitespace correction logic is
-handled for you.
+### The real thing: cl100k in ~65 lines
 
-### The real thing: cl100k in 80 lines
+The built-in `Cl100kLexer` follows exactly this pattern. The token enum has 7 variants. The
+`Gpt2FamilyLogos` impl is 15 lines. The `SpanLexer` impl is generated by `logos_lexer!`. You can
+read the full source at `crates/wordchipper/src/spanners/span_lexers/logos/cl100k.rs`.
 
-The built-in `Cl100kLexer` follows exactly this pattern. The token enum has 6 variants. The `role()`
-method is 7 lines. The `SpanLexer` impl is 15 lines. Everything else is the logos regex annotations
-and tests. You can read the full source at
-`crates/wordchipper/src/spanners/span_lexers/logos/cl100k.rs`.
+## Gpt2FamilyTokenRole reference
 
-## TokenRole reference
-
-| Variant                      | Absorbs preceding whitespace?      | Use for                                                     |
-| ---------------------------- | ---------------------------------- | ----------------------------------------------------------- |
-| `Whitespace`                 | N/A (is whitespace)                | Horizontal whitespace tokens (`[ \t]+`, `[^\S\r\n]+`)       |
-| `Punctuation`                | Yes, ASCII space only              | Punctuation with ` ?` prefix (` ?[^\s\p{L}\p{N}]+`)         |
-| `Word { check_contraction }` | Yes, if token starts with a letter | Letter/word tokens (`\p{L}+`, case-sensitive word patterns) |
-| `Standalone`                 | No                                 | Digits, contractions, newlines, anything that stands alone  |
-| `Gap`                        | No                                 | Unrecognized bytes (logos errors). Always use for `Err(())` |
+| Variant                                            | Absorbs preceding whitespace?  | Use for                                                     |
+| -------------------------------------------------- | ------------------------------ | ----------------------------------------------------------- |
+| `Whitespace`                                       | N/A (is whitespace)            | Horizontal whitespace tokens (`[^\S\r\n]+`)                 |
+| `Punctuation`                                      | Yes, ASCII space only          | Punctuation with ` ?` prefix (` ?[^\s\p{L}\p{N}]+`)         |
+| `Word { check_contraction, first_char_is_letter }` | Yes, if `first_char_is_letter` | Letter/word tokens (`\p{L}+`, case-sensitive word patterns) |
+| `Standalone`                                       | No                             | Digits, explicit contractions, anything that stands alone   |
+| `Newline`                                          | N/A (buffered separately)      | Newline-containing whitespace (`\s*[\r\n]+`)                |
+| `Gap`                                              | No                             | Unrecognized bytes (logos errors). Always use for `Err(())` |
 
 **When in doubt**, use `Standalone`. It's the safest default: the token is emitted as-is, and any
 preceding whitespace becomes its own span.
 
 ## Testing your lexer
 
-The strongest correctness guarantee is an **oracle test**: run the same input through both a
-regex-based spanner and your logos lexer, and assert the spans are identical. With
-[proptest](https://proptest-rs.github.io/proptest/intro.html), you can do this over thousands of
-random Unicode strings:
+A logos lexer must produce identical span boundaries to the regex it replaces. If they diverge on
+any input, benchmark comparisons are invalid because the two code paths tokenize different spans.
 
-```rust
-use proptest::prelude::*;
+### Equivalence testing with `lexer-equivalence`
 
-#[test]
-#[cfg(feature = "std")]
-fn my_lexer_matches_regex() {
-    // Build a regex spanner from the same pattern your logos enum targets.
-    let regex_spanner = /* ... */;
-    let logos_spanner = /* LexerTextSpanner wrapping MyLexer */;
+The `lexer-equivalence` crate in `dev-crates/` provides exhaustive combinatorial testing. It
+generates all k-character strings (k=1..4) from a set of Unicode representative codepoints and
+compares the span output of each logos lexer against the regex reference.
 
-    let config = proptest::test_runner::Config::with_cases(2000);
-    proptest!(config, |(text in "\\PC{0,200}")| {
-        let regex_spans = regex_spanner.split_spans(&text);
-        let logos_spans = logos_spanner.split_spans(&text);
-        prop_assert_eq!(&regex_spans, &logos_spans);
-    });
-}
+The representative set is derived from the Unicode predicates used in the OpenAI patterns (`\p{Lu}`,
+`\p{Ll}`, `\p{N}`, `\s`, etc.), which partition Unicode into 22 equivalence cells. Two codepoints in
+the same cell are indistinguishable to every regex predicate, so testing one representative per cell
+covers the full Unicode space. The test suite checks ~732,540 inputs per lexer and runs in under 10
+seconds:
+
+```
+cargo test -p lexer-equivalence
 ```
 
-If 2000 random Unicode inputs produce identical output, you have high confidence the lexer is
-correct. The built-in cl100k and o200k lexers both pass this test.
+The `validate_representative_completeness` test programmatically verifies that the representative
+set covers every equivalence cell, so you can be confident the coverage is complete.
+
+### Adding tests for a custom lexer
+
+To test a custom lexer against its regex, add a test that calls `assert_k_tuple_equivalence` from
+the `lexer_equivalence::harness` module with your lexer and the regex pattern it targets. See
+`dev-crates/lexer-equivalence/tests/equivalence.rs` for the pattern used by the built-in lexers.
