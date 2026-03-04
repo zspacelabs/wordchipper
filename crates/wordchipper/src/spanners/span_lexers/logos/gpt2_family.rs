@@ -9,12 +9,8 @@ use unicode_general_category::{GeneralCategory, get_general_category};
 
 use crate::spanners::SpanRef;
 
-/// Returns true if `c` has Unicode general category Letter (`\p{L}`).
-///
-/// Rust core's `char::is_alphabetic()` checks the derived `Alphabetic`
-/// property, which is a superset that includes some Mark characters
-/// (Mc with `Other_Alphabetic`). This function checks the actual
-/// general category, matching `\p{L}` in regex.
+/// True if `c` is `\p{L}`. Unlike `char::is_alphabetic()`, excludes
+/// Mc marks that have `Other_Alphabetic`.
 fn is_unicode_letter(c: char) -> bool {
     matches!(
         get_general_category(c),
@@ -26,13 +22,7 @@ fn is_unicode_letter(c: char) -> bool {
     )
 }
 
-/// Byte length of the leading non-letter prefix in `token`.
-///
-/// Scans characters until finding `\p{L}` or end of string. Used for
-/// mark-extension: the DFA's `PrefixedWord` absorbs combining marks into
-/// the word token, but the regex punct branch `[^\s\p{L}\p{N}]+` keeps
-/// them with punctuation.
-#[inline]
+/// Byte offset of the first `\p{L}` in `token`, or `token.len()` if none.
 fn non_letter_prefix_len(token: &str) -> usize {
     token
         .find(|c: char| is_unicode_letter(c))
