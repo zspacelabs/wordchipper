@@ -16,7 +16,9 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 humansize = { workspace = true }
 # fontlib issues, investigate wasm install.
-# plotters = { workspace = true }
+plotters = { workspace = true, features = [
+    "svg_backend", "full_palette", "all_series", "all_elements"
+] }
 clap = { workspace = true, features = ["derive"] }
 regex = { workspace = true }
 log = { workspace = true }
