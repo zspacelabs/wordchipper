@@ -1,4 +1,3 @@
-use core::f64;
 use std::{
     collections::BTreeMap,
     path::Path,
@@ -88,6 +87,7 @@ struct Point {
 
 struct Series {
     pub name: String,
+    pub glyph: String,
     pub style: ShapeStyle,
     pub points: Vec<Point>,
 }
@@ -117,11 +117,20 @@ impl Series {
     }
 }
 
-fn external_styles() -> BTreeMap<String, ShapeStyle> {
+fn external_styles() -> BTreeMap<String, (String, ShapeStyle)> {
     [
-        ("bpe_openai".to_string(), colors::PURPLE_200.filled()),
-        ("tiktoken".to_string(), colors::RED_200.filled()),
-        ("tokenizers".to_string(), colors::LIGHTBLUE_200.filled()),
+        (
+            "bpe_openai".to_string(),
+            ("♣︎".to_string(), colors::DEEPORANGE_200.filled()),
+        ),
+        (
+            "tiktoken".to_string(),
+            ("♥︎".to_string(), colors::PURPLE_200.filled()),
+        ),
+        (
+            "tokenizers".to_string(),
+            ("♦︎".to_string(), colors::PINK_200.filled()),
+        ),
     ]
     .iter()
     .cloned()
@@ -203,6 +212,7 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
 
             plot_series.push(Series {
                 name: span.to_string(),
+                glyph: "X".to_string(),
                 style,
                 points: as_points(&series_data, |_, br| median_bps(br)),
             })
@@ -332,6 +342,7 @@ fn build_internal_tgraph<P: AsRef<Path>>(
 
             plot_series.push(Series {
                 name: span.to_string(),
+                glyph: "X".to_string(),
                 style,
                 points: as_points(&series_data, |_, br| median_bps(br)),
             })
@@ -430,12 +441,13 @@ fn build_external_tgraph<P: AsRef<Path>>(
         .collect::<Vec<_>>();
 
     let mut brandx_group: Vec<Series> = Default::default();
-    for (ext, style) in external_styles().iter() {
+    for (ext, (glyph, style)) in external_styles().iter() {
         if let Some(name) = series_names.iter().find(|name| name.contains(ext)) {
             let series_data = data.select_series(name).unwrap();
 
             brandx_group.push(Series {
                 name: ext.to_string(),
+                glyph: glyph.to_string(),
                 style: *style,
                 points: as_points(&series_data, |_, br| median_bps(br)),
             })
@@ -444,6 +456,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
     let regex_series = Series {
         name: "wordchipper:regex".to_string(),
+        glyph: "✦".to_string(),
         style: colors::GREEN_200.filled(),
         points: as_points(
             &data
@@ -457,7 +470,8 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
     let logos_series = Series {
         name: "wordchipper:logos".to_string(),
-        style: colors::CYAN_200.filled(),
+        glyph: "★".to_string(),
+        style: colors::LIGHTBLUE_200.filled(),
         points: as_points(
             &data
                 .select_series(&format!(
@@ -529,9 +543,9 @@ fn build_external_tgraph<P: AsRef<Path>>(
             })
             .draw()?;
 
-        let size = 6;
+        let glyph_size = 24;
 
-        for pseries in &brandx_group {
+        for pseries in brandx_group.iter() {
             let name = &pseries.name;
             let style = pseries.style;
             let points: Vec<(u32, f64)> = pseries
@@ -542,20 +556,32 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
             chart.draw_series(LineSeries::new(
                 pseries.points.iter().map(|p| (p.threads, p.value)),
-                style,
+                style.stroke_width(4),
             ))?;
 
             chart
                 .draw_series(points.iter().map(|coord| {
                     EmptyElement::at(*coord)
-                        + TriangleMarker::new((0, 0), size + 2, BLACK.stroke_width(1))
-                        + TriangleMarker::new((0, 0), size, style)
+                        + Text::new(
+                            pseries.glyph.clone(),
+                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            ("sans-serif", glyph_size as f64)
+                                .into_font()
+                                .color(&colors::BLACK),
+                        )
                 }))?
                 .label(name)
                 .legend(move |coord| {
+                    let glyph_size = glyph_size * 2 / 3;
+
                     EmptyElement::at(coord)
-                        + TriangleMarker::new((0, 0), size + 2, BLACK.stroke_width(1))
-                        + TriangleMarker::new((0, 0), size, style)
+                        + Text::new(
+                            pseries.glyph.clone(),
+                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            ("sans-serif", glyph_size as f64)
+                                .into_font()
+                                .color(&colors::BLACK),
+                        )
                 });
         }
 
@@ -574,20 +600,32 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
             chart.draw_series(LineSeries::new(
                 pseries.points.iter().map(|p| (p.threads, p.value)),
-                style,
+                style.stroke_width(4),
             ))?;
 
             chart
                 .draw_series(points.iter().map(|coord| {
                     EmptyElement::at(*coord)
-                        + Circle::new((0, 0), size + 1, BLACK.filled())
-                        + Circle::new((0, 0), size, style)
+                        + Text::new(
+                            pseries.glyph.clone(),
+                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            ("sans-serif", glyph_size as f64)
+                                .into_font()
+                                .color(&colors::BLACK),
+                        )
                 }))?
                 .label(name)
                 .legend(move |coord| {
+                    let glyph_size = glyph_size * 2 / 3;
+
                     EmptyElement::at(coord)
-                        + Circle::new((0, 0), size + 1, BLACK.filled())
-                        + Circle::new((0, 0), size, style)
+                        + Text::new(
+                            pseries.glyph.clone(),
+                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            ("sans-serif", glyph_size as f64)
+                                .into_font()
+                                .color(&colors::BLACK),
+                        )
                 });
         }
 
