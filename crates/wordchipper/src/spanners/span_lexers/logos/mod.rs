@@ -46,3 +46,6 @@ pub mod cl100k;
 pub mod gpt2_family;
 pub mod o200k;
 pub mod r50k;
+
+#[cfg(any(test, feature = "testing"))]
+pub mod testutil;

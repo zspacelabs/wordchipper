@@ -2,10 +2,7 @@
 
 use logos::Logos;
 
-use super::gpt2_family::{
-    Gpt2FamilyLogos,
-    Gpt2FamilyTokenRole,
-};
+use super::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilyTokenRole};
 use crate::pretrained::openai::OA_CL100K_BASE_PATTERN;
 
 /// Logos token variants for `cl100k_base`.
@@ -70,19 +67,10 @@ logos_lexer! {
 mod tests {
     use super::*;
     use crate::{
-        alloc::{
-            string::ToString,
-            sync::Arc,
-            vec,
-            vec::Vec,
-        },
+        alloc::{string::ToString, sync::Arc, vec, vec::Vec},
         spanners::{
-            SpanRef,
-            TextSpanner,
-            span_lexers::{
-                LexerTextSpanner,
-                SpanLexer,
-            },
+            SpanRef, TextSpanner,
+            span_lexers::{LexerTextSpanner, SpanLexer},
         },
     };
 
@@ -168,37 +156,10 @@ mod tests {
     }
 
     #[test]
-    fn test_logos_empty() {
-        let s = spanner(Cl100kLexer);
-        let spans = s.split_spans("");
-        assert!(spans.is_empty());
-    }
-
-    #[test]
-    fn test_logos_whitespace_only() {
-        let s = spanner(Cl100kLexer);
-        let text = "   ";
-        let spans = s.split_spans(text);
-
-        assert_eq!(spans, vec![SpanRef::Word(0..3)]);
-    }
-
-    #[test]
-    fn test_find_span_iter_empty() {
-        let lexer = Cl100kLexer;
-        let spans: Vec<_> = lexer.find_span_iter("").collect();
-        assert!(spans.is_empty());
-    }
-
-    #[test]
-    fn test_find_span_iter_basic() {
-        let lexer = Cl100kLexer;
-        let spans: Vec<_> = lexer.find_span_iter("hello world").collect();
-        assert!(!spans.is_empty());
-        assert_eq!(spans[0].start, 0);
-        for pair in spans.windows(2) {
-            assert!(pair[0].end <= pair[1].start);
-        }
+    fn test_cl100k_common() {
+        crate::spanners::span_lexers::logos::testutil::common_lexer_tests(
+            crate::alloc::boxed::Box::new(Cl100kLexer),
+        );
     }
 
     #[test]

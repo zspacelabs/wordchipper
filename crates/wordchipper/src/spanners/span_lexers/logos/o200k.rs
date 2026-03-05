@@ -2,10 +2,7 @@
 
 use logos::Logos;
 
-use super::gpt2_family::{
-    Gpt2FamilyLogos,
-    Gpt2FamilyTokenRole,
-};
+use super::gpt2_family::{Gpt2FamilyLogos, Gpt2FamilyTokenRole};
 use crate::pretrained::openai::OA_O200K_BASE_PATTERN;
 // Shorthand aliases for the character classes used in o200k:
 //   UPPER      = [\p{Lu}\p{Lt}\p{Lm}\p{Lo}\p{M}]
@@ -115,12 +112,8 @@ mod tests {
             vec::Vec,
         },
         spanners::{
-            SpanRef,
-            TextSpanner,
-            span_lexers::{
-                LexerTextSpanner,
-                SpanLexer,
-            },
+            SpanRef, TextSpanner,
+            span_lexers::{LexerTextSpanner, SpanLexer},
         },
     };
 
@@ -156,38 +149,10 @@ mod tests {
     }
 
     #[test]
-    fn test_o200k_empty() {
-        let s = spanner(O200kLexer);
-        let spans = s.split_spans("");
-        assert!(spans.is_empty());
-    }
-
-    #[test]
-    fn test_o200k_whitespace_only() {
-        let s = spanner(O200kLexer);
-        let text = "   ";
-        let spans = s.split_spans(text);
-        assert_eq!(spans, vec![SpanRef::Word(0..3)]);
-    }
-
-    #[test]
-    fn test_find_span_iter_empty() {
-        let lexer = O200kLexer;
-        let spans: Vec<_> = lexer.find_span_iter("").collect();
-        assert!(spans.is_empty());
-    }
-
-    #[test]
-    fn test_find_span_iter_basic() {
-        let lexer = O200kLexer;
-        let spans: Vec<_> = lexer.find_span_iter("hello world").collect();
-        assert!(!spans.is_empty());
-        // First span should start at 0.
-        assert_eq!(spans[0].start, 0);
-        // Spans should cover the full input with no gaps between adjacent spans.
-        for pair in spans.windows(2) {
-            assert!(pair[0].end <= pair[1].start);
-        }
+    fn test_o200k_common() {
+        crate::spanners::span_lexers::logos::testutil::common_lexer_tests(
+            crate::alloc::boxed::Box::new(O200kLexer),
+        );
     }
 
     #[test]
