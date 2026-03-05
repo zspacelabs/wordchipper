@@ -5,12 +5,21 @@ use std::{
 
 use divan_parser::BenchResult;
 use plotters::{
+    element::{
+        Drawable,
+        PathElement,
+        Polygon,
+    },
     prelude::{
         IntoLogRange,
         ShapeStyle,
         *,
     },
     style::full_palette as colors,
+};
+use plotters_backend::{
+    BackendCoord,
+    DrawingErrorKind,
 };
 use wordchipper_cli_util::logging::LogArgs;
 
@@ -48,6 +57,8 @@ impl DevArgs {
 
         let output_dir = Path::new(&self.output_dir);
         std::fs::create_dir_all(output_dir)?;
+
+        build_demo_graph(&output_dir)?;
 
         build_external_tgraph(&self.model, "buffer_sweep", &output_dir, &data)?;
 
@@ -175,6 +186,129 @@ where
             value: f(*threads, br),
         })
         .collect()
+}
+
+pub struct Glyph<Coord>
+where
+    Coord: Copy,
+{
+    points: Vec<Coord>,
+    stroke: Option<ShapeStyle>,
+    fill: Option<ShapeStyle>,
+}
+
+impl<Coord> Glyph<Coord>
+where
+    Coord: Copy,
+{
+    pub fn new<P: Into<Vec<Coord>>, S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
+        points: P,
+        stroke: S,
+        fill: F,
+    ) -> Self {
+        Self {
+            points: points.into(),
+            stroke: stroke.into(),
+            fill: fill.into(),
+        }
+    }
+}
+
+impl<DB: DrawingBackend, Coord> Drawable<DB> for Glyph<Coord>
+where
+    Coord: Copy,
+{
+    fn draw<I: Iterator<Item = BackendCoord>>(
+        &self,
+        _pos: I,
+        backend: &mut DB,
+        parent_dim: (u32, u32),
+    ) -> Result<(), DrawingErrorKind<DB::ErrorType>> {
+        if let Some(fill) = self.fill {
+            Polygon::new(self.points.clone(), fill).draw(
+                std::iter::empty(),
+                backend,
+                parent_dim,
+            )?;
+        }
+        if let Some(stroke) = self.stroke {
+            let mut path = self.points.clone();
+            path.push(self.points[0]);
+            PathElement::new(path, stroke).draw(std::iter::empty(), backend, parent_dim)?;
+        }
+        Ok(())
+    }
+}
+
+fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn std::error::Error>> {
+    let output_dir = output_dir.as_ref();
+    let plot_path = output_dir.join("demo.svg");
+    log::info!("Plotting to {}", plot_path.display());
+
+    let root = SVGBackend::new(&plot_path, (640, 480)).into_drawing_area();
+    root.fill(&colors::WHITE)?;
+    let mut chart = ChartBuilder::on(&root)
+        .caption("demo", ("sans-serif", 20).into_font())
+        .margin(10)
+        .x_label_area_size(40)
+        .y_label_area_size(90)
+        .build_cartesian_2d(0..10, 0.0..1.0)?;
+
+    chart
+        .configure_mesh()
+        .x_desc("Index")
+        .y_desc("Value")
+        .y_label_formatter(&|&bps| {
+            format!("{}/s", humansize::format_size_i(bps, humansize::BINARY))
+        })
+        .draw()?;
+
+    let size = 10;
+    chart.draw_series(
+        [(1, 0.5)].map(|coord| EmptyElement::at(coord) + Circle::new((0, 0), size, colors::BLACK)),
+    )?;
+
+    chart.draw_series([(2, 0.5)].map(|coord| {
+        EmptyElement::at(coord) + Rectangle::new([(-size, -size), (size, size)], colors::BLACK)
+    }))?;
+
+    chart.draw_series(
+        [(3, 0.5)].map(|coord| {
+            EmptyElement::at(coord) + TriangleMarker::new((0, 0), size, colors::BLACK)
+        }),
+    )?;
+
+    chart.draw_series(
+        [(3, 0.25)].map(|coord| EmptyElement::at(coord) + Cross::new((0, 0), size, colors::BLACK)),
+    )?;
+
+    fn up_triangle<DB: DrawingBackend, S: Into<ShapeStyle>>(
+        coord: (i32, i32),
+        size: i32,
+        style: S,
+    ) -> DynElement<'static, DB, (i32, i32)> {
+        let (x, y) = coord;
+        let s = size;
+        Polygon::new(
+            vec![(x, y - s), (x - s, y + s), (x + s, y + s)],
+            style.into(),
+        )
+        .into_dyn()
+    }
+    chart.draw_series(
+        [(5, 0.5)].map(|coord| EmptyElement::at(coord) + up_triangle((0, 0), size, &colors::BLACK)),
+    )?;
+
+    chart
+        .configure_series_labels()
+        .position(SeriesLabelPosition::LowerRight)
+        .background_style(WHITE.mix(0.8))
+        .border_style(BLACK)
+        .draw()?;
+
+    root.present()?;
+
+    Ok(())
 }
 
 fn build_internal_rel_tgraph<P: AsRef<Path>>(

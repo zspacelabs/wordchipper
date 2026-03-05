@@ -19,6 +19,7 @@ humansize = { workspace = true }
 plotters = { workspace = true, features = [
     "svg_backend", "full_palette", "all_series", "all_elements"
 ] }
+plotters-backend = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
 regex = { workspace = true }
 log = { workspace = true }
