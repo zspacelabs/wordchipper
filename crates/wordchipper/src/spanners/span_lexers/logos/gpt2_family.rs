@@ -300,9 +300,7 @@ where
                         } else {
                             let first = bytes[start];
                             // Bare punctuation extends the body.
-                            if matches!(role, Gpt2FamilyTokenRole::Punctuation)
-                                && first != b' '
-                            {
+                            if matches!(role, Gpt2FamilyTokenRole::Punctuation) && first != b' ' {
                                 self.pending_punct = Some(pp.start..end);
                                 self.last = end;
                                 continue;
@@ -319,24 +317,18 @@ where
                                 first_char_is_letter: false,
                                 check_contraction,
                             } = role
+                                && !self.text[start..].starts_with(char::is_whitespace)
                             {
-                                if !self.text[start..].starts_with(char::is_whitespace) {
-                                    let prefix_len =
-                                        non_letter_prefix_len(&self.text[start..end]);
-                                    if start + prefix_len >= end {
-                                        self.pending_punct = Some(pp.start..end);
-                                        self.last = end;
-                                        continue;
-                                    }
-                                    emit!(pp.start..start + prefix_len);
-                                    emit_absorbing!(
-                                        start + prefix_len,
-                                        end,
-                                        check_contraction
-                                    );
+                                let prefix_len = non_letter_prefix_len(&self.text[start..end]);
+                                if start + prefix_len >= end {
+                                    self.pending_punct = Some(pp.start..end);
                                     self.last = end;
                                     continue;
                                 }
+                                emit!(pp.start..start + prefix_len);
+                                emit_absorbing!(start + prefix_len, end, check_contraction);
+                                self.last = end;
+                                continue;
                             }
                         }
                     }
