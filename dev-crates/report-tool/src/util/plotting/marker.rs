@@ -3,8 +3,6 @@ use std::f64::consts::FRAC_1_SQRT_2;
 use plotters::{
     element::{
         Drawable,
-        DynElement,
-        IntoDynElement,
         PointCollection,
     },
     prelude::{
@@ -183,26 +181,6 @@ impl MarkerType {
             })
             .collect()
     }
-
-    pub fn new<'b, DB, Coord, Size, S, F, E: Into<MarkerLevel>>(
-        &self,
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-        extra: E,
-    ) -> DynElement<'b, DB, Coord>
-    where
-        Size: SizeDesc,
-        S: Into<ShapeStyle>,
-        F: Into<Option<ShapeStyle>>,
-        GraphMarker<Coord, Size>: Drawable<DB> + 'b,
-        for<'a> &'a GraphMarker<Coord, Size>: PointCollection<'a, Coord>,
-        Coord: Clone,
-        DB: DrawingBackend,
-    {
-        GraphMarker::legacy(coord, size, *self, extra, stroke, fill).into_dyn()
-    }
 }
 
 pub struct GraphMarker<Coord, Size: SizeDesc> {
@@ -281,7 +259,9 @@ impl MarkerStyle {
         fill_style: S,
     ) -> Self {
         self.fill_style = fill_style.into();
-        self.fill_style.as_mut().map(|s| s.filled = true);
+        if let Some(fill) = self.fill_style.as_mut() {
+            fill.filled = true;
+        }
         self
     }
 
