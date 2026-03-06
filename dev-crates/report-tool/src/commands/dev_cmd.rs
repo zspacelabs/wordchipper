@@ -27,6 +27,8 @@ use plotters_backend::{
 use wordchipper_cli_util::logging::LogArgs;
 
 pub const SQRT_3: f64 = 1.732050807568877293527446341505872367_f64;
+const ORIGIN: (f64, f64) = (0.0, 0.0);
+const SQ_STEP: f64 = FRAC_1_SQRT_2;
 
 use crate::util::bench_data::par_bench::ParBenchData;
 
@@ -224,272 +226,200 @@ impl AbstractPath {
     }
 }
 
-pub struct PathMarker<Coord, Size: SizeDesc> {
-    coord: Coord,
-    size: Size,
-    path: AbstractPath,
-    stroke: Option<ShapeStyle>,
-    fill: Option<ShapeStyle>,
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Marker {
+    Circle,
+    CrossCircle,
+    Square,
+    Diamond,
+    CrossSquare,
+    CrossDiamond,
+    TriUp,
+    TriDown,
+    CrossTriUp,
+    CrossTriDown,
 }
 
-impl<Coord, Size: SizeDesc> PathMarker<Coord, Size> {
-    pub fn new<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-        path: AbstractPath,
-    ) -> Self {
-        Self {
-            coord,
-            size,
-            path,
-            stroke: stroke.into(),
-            fill: fill.into(),
+impl Marker {
+    fn poly_path(&self) -> Option<&[(f64, f64)]> {
+        use Marker::*;
+        match self {
+            Circle => None,
+            CrossCircle => Some(&[
+                (0.0, -1.0),
+                ORIGIN,
+                (1.0, 0.0),
+                ORIGIN,
+                (-1.0, 0.0),
+                ORIGIN,
+                (0.0, 1.0),
+                ORIGIN,
+            ]),
+            Square => Some(&[
+                (-SQ_STEP, -SQ_STEP),
+                (SQ_STEP, -SQ_STEP),
+                (SQ_STEP, SQ_STEP),
+                (-SQ_STEP, SQ_STEP),
+            ]),
+            Diamond => Some(&[(0.0, -1.0), (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0)]),
+            CrossSquare => Some(&[
+                (-SQ_STEP, -SQ_STEP),
+                (0.0, -SQ_STEP),
+                ORIGIN,
+                (0.0, -SQ_STEP),
+                (SQ_STEP, -SQ_STEP),
+                (SQ_STEP, 0.0),
+                ORIGIN,
+                (SQ_STEP, 0.0),
+                (SQ_STEP, SQ_STEP),
+                (0.0, SQ_STEP),
+                ORIGIN,
+                (0.0, SQ_STEP),
+                (-SQ_STEP, SQ_STEP),
+                (-SQ_STEP, 0.0),
+                ORIGIN,
+                (-SQ_STEP, 0.0),
+            ]),
+            CrossDiamond => Some(&[
+                (0.0, -1.0),
+                (0.5, -0.5),
+                ORIGIN,
+                (0.5, -0.5),
+                (1.0, 0.0),
+                (0.5, 0.5),
+                ORIGIN,
+                (0.5, 0.5),
+                (0.0, 1.0),
+                (-0.5, 0.5),
+                ORIGIN,
+                (-0.5, 0.5),
+                (-1.0, 0.0),
+                (-0.5, -0.5),
+                ORIGIN,
+                (-0.5, -0.5),
+            ]),
+            TriUp => Some(&[
+                (0.0, -1.0),
+                (1.5 / SQRT_3, 1.0 / 2.0),
+                (-1.5 / SQRT_3, 1.0 / 2.0),
+            ]),
+            TriDown => Some(&[
+                (0.0, 1.0),
+                (1.5 / SQRT_3, -1.0 / 2.0),
+                (-1.5 / SQRT_3, -1.0 / 2.0),
+            ]),
+            CrossTriUp => Some(&[
+                (0.0, -1.0),
+                (1.5 / SQRT_3 / 2.0, -0.25),
+                ORIGIN,
+                (1.5 / SQRT_3 / 2.0, -0.25),
+                (1.5 / SQRT_3, 1.0 / 2.0),
+                (0.0, 1.0 / 2.0),
+                ORIGIN,
+                (0.0, 1.0 / 2.0),
+                (-1.5 / SQRT_3, 1.0 / 2.0),
+                (-1.5 / SQRT_3 / 2.0, -0.25),
+                ORIGIN,
+                (-1.5 / SQRT_3 / 2.0, -0.25),
+            ]),
+            CrossTriDown => Some(&[
+                (0.0, 1.0),
+                (1.5 / SQRT_3 / 2.0, 0.25),
+                ORIGIN,
+                (1.5 / SQRT_3 / 2.0, 0.25),
+                (1.5 / SQRT_3, -1.0 / 2.0),
+                (0.0, -1.0 / 2.0),
+                ORIGIN,
+                (0.0, -1.0 / 2.0),
+                (-1.5 / SQRT_3, -1.0 / 2.0),
+                (-1.5 / SQRT_3 / 2.0, 0.25),
+                ORIGIN,
+                (-1.5 / SQRT_3 / 2.0, 0.25),
+            ]),
         }
     }
 
-    pub fn square<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        const STEP: f64 = FRAC_1_SQRT_2;
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![(-STEP, -STEP), (STEP, -STEP), (STEP, STEP), (-STEP, STEP)].into(),
-        )
+    #[allow(unused)]
+    fn points(
+        &self,
+        size: u32,
+        coord: BackendCoord,
+    ) -> Vec<BackendCoord> {
+        let (ax, ay) = coord;
+        self.poly_path()
+            .unwrap()
+            .iter()
+            .map(|(x, y)| {
+                let x = (x * size as f64) as i32;
+                let y = (y * size as f64) as i32;
+                (ax + x, ay + y)
+            })
+            .collect()
     }
 
-    pub fn cross_square<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
+    pub fn new<'b, DB, Coord, Size, S, F>(
+        &self,
         coord: Coord,
         size: Size,
         stroke: S,
         fill: F,
-    ) -> Self {
-        const ORIGIN: (f64, f64) = (0.0, 0.0);
-        const STEP: f64 = FRAC_1_SQRT_2;
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![
-                (-STEP, -STEP),
-                (0.0, -STEP),
-                ORIGIN,
-                (0.0, -STEP),
-                (STEP, -STEP),
-                (STEP, 0.0),
-                ORIGIN,
-                (STEP, 0.0),
-                (STEP, STEP),
-                (0.0, STEP),
-                ORIGIN,
-                (0.0, STEP),
-                (-STEP, STEP),
-                (-STEP, 0.0),
-                ORIGIN,
-                (-STEP, 0.0),
-            ]
-            .into(),
-        )
-    }
-
-    pub fn diamond<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        const STEP: f64 = 1.0;
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![(0.0, -STEP), (STEP, 0.0), (0.0, STEP), (-STEP, 0.0)].into(),
-        )
-    }
-
-    pub fn cross_diamond<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        const STEP: f64 = 0.5;
-        const ORIGIN: (f64, f64) = (0.0, 0.0);
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![
-                (0.0, -1.0),
-                (STEP, -STEP),
-                ORIGIN,
-                (STEP, -STEP),
-                (1.0, 0.0),
-                (STEP, STEP),
-                ORIGIN,
-                (STEP, STEP),
-                (0.0, 1.0),
-                (-STEP, STEP),
-                ORIGIN,
-                (-STEP, STEP),
-                (-1.0, 0.0),
-                (-STEP, -STEP),
-                ORIGIN,
-                (-STEP, -STEP),
-            ]
-            .into(),
-        )
-    }
-
-    pub fn star<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        const STEP: f64 = FRAC_1_SQRT_2 / 2.0;
-        const ORIGIN: (f64, f64) = (0.0, 0.0);
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![
-                (0.0, -1.0),
-                (STEP, -STEP),
-                ORIGIN,
-                (STEP, -STEP),
-                (1.0, 0.0),
-                (STEP, STEP),
-                ORIGIN,
-                (STEP, STEP),
-                (0.0, 1.0),
-                (-STEP, STEP),
-                ORIGIN,
-                (-STEP, STEP),
-                (-1.0, 0.0),
-                (-STEP, -STEP),
-                ORIGIN,
-                (-STEP, -STEP),
-            ]
-            .into(),
-        )
-    }
-
-    pub fn tri_up<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![
-                (0.0, -1.0),
-                (1.5 / SQRT_3, 1.0 / 2.0),
-                (-1.5 / SQRT_3, 1.0 / 2.0),
-            ]
-            .into(),
-        )
-    }
-
-    pub fn cross_tri_up<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        const ORIGIN: (f64, f64) = (0.0, 0.0);
-
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![
-                (0.0, -1.0),
-                (1.5 / SQRT_3 / 2.0, -0.25),
-                ORIGIN,
-                (1.5 / SQRT_3 / 2.0, -0.25),
-                (1.5 / SQRT_3, 1.0 / 2.0),
-                (0.0, 1.0 / 2.0),
-                ORIGIN,
-                (0.0, 1.0 / 2.0),
-                (-1.5 / SQRT_3, 1.0 / 2.0),
-                (-1.5 / SQRT_3 / 2.0, -0.25),
-                ORIGIN,
-                (-1.5 / SQRT_3 / 2.0, -0.25),
-            ]
-            .into(),
-        )
-    }
-
-    pub fn tri_down<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![
-                (0.0, 1.0),
-                (1.5 / SQRT_3, -1.0 / 2.0),
-                (-1.5 / SQRT_3, -1.0 / 2.0),
-            ]
-            .into(),
-        )
-    }
-
-    pub fn cross_tri_down<S: Into<Option<ShapeStyle>>, F: Into<Option<ShapeStyle>>>(
-        coord: Coord,
-        size: Size,
-        stroke: S,
-        fill: F,
-    ) -> Self {
-        const ORIGIN: (f64, f64) = (0.0, 0.0);
-
-        Self::new(
-            coord,
-            size,
-            stroke,
-            fill,
-            vec![
-                (0.0, 1.0),
-                (1.5 / SQRT_3 / 2.0, 0.25),
-                ORIGIN,
-                (1.5 / SQRT_3 / 2.0, 0.25),
-                (1.5 / SQRT_3, -1.0 / 2.0),
-                (0.0, -1.0 / 2.0),
-                ORIGIN,
-                (0.0, -1.0 / 2.0),
-                (-1.5 / SQRT_3, -1.0 / 2.0),
-                (-1.5 / SQRT_3 / 2.0, 0.25),
-                ORIGIN,
-                (-1.5 / SQRT_3 / 2.0, 0.25),
-            ]
-            .into(),
-        )
+        hyper: usize,
+    ) -> DynElement<'b, DB, Coord>
+    where
+        Size: SizeDesc,
+        S: Into<Option<ShapeStyle>>,
+        F: Into<Option<ShapeStyle>>,
+        GraphMarker<Coord, Size>: Drawable<DB> + 'b,
+        for<'a> &'a GraphMarker<Coord, Size>: PointCollection<'a, Coord>,
+        Coord: Clone,
+        DB: DrawingBackend,
+    {
+        GraphMarker::new(coord, size, *self, stroke, fill, hyper).into_dyn()
     }
 }
 
-impl<'a, Coord, Size: SizeDesc> PointCollection<'a, Coord> for &'a PathMarker<Coord, Size> {
+pub struct GraphMarker<Coord, Size: SizeDesc> {
+    coord: Coord,
+    size: Size,
+    kind: Marker,
+    stroke: Option<ShapeStyle>,
+    fill: Option<ShapeStyle>,
+    hyper: usize,
+}
+
+impl<Coord, Size: SizeDesc> GraphMarker<Coord, Size> {
+    pub fn new<S, F>(
+        coord: Coord,
+        size: Size,
+        kind: Marker,
+        stroke: S,
+        fill: F,
+        hyper: usize,
+    ) -> Self
+    where
+        S: Into<Option<ShapeStyle>>,
+        F: Into<Option<ShapeStyle>>,
+    {
+        // Squash the filled state of the stroke style.
+        let stroke = match stroke.into() {
+            None => None,
+            Some(mut style) => {
+                style.filled = false;
+                Some(style)
+            }
+        };
+        assert!(hyper < 3);
+        Self {
+            coord,
+            size,
+            kind,
+            stroke,
+            fill: fill.into(),
+            hyper,
+        }
+    }
+}
+impl<'a, Coord, Size: SizeDesc> PointCollection<'a, Coord> for &'a GraphMarker<Coord, Size> {
     type IntoIter = std::iter::Once<&'a Coord>;
     type Point = &'a Coord;
 
@@ -497,7 +427,8 @@ impl<'a, Coord, Size: SizeDesc> PointCollection<'a, Coord> for &'a PathMarker<Co
         std::iter::once(&self.coord)
     }
 }
-impl<DB: DrawingBackend, Coord, Size: SizeDesc> Drawable<DB> for PathMarker<Coord, Size> {
+
+impl<DB: DrawingBackend, Coord, Size: SizeDesc> Drawable<DB> for GraphMarker<Coord, Size> {
     fn draw<I: Iterator<Item = BackendCoord>>(
         &self,
         mut pos: I,
@@ -508,25 +439,51 @@ impl<DB: DrawingBackend, Coord, Size: SizeDesc> Drawable<DB> for PathMarker<Coor
             return Ok(());
         };
         let size = self.size.in_pixels(&parent_dim).max(0) as u32;
-        let points: Vec<BackendCoord> = self
-            .path
-            .to_size(size) // ← ownership issue here
-            .into_iter()
-            .map(|(x, y)| (ax + x, ay + y))
-            .collect();
 
-        if let Some(style) = &self.fill {
-            backend.fill_polygon(points.clone(), style)?;
+        let hyper_start = size * 6 / 7;
+        let hyper_step = size * 2 / 3;
+        for i in 0..self.hyper {
+            let hyper_size = hyper_start + (i as u32 + 1) * hyper_step;
+            let style = self.stroke.unwrap();
+            backend.draw_circle((ax, ay), hyper_size, &style, false)?;
         }
-        if let Some(style) = &self.stroke {
-            let mut points = points;
-            points.extend_from_within(0..2);
-            backend.draw_path(points, style)?;
+
+        use Marker::*;
+        match self.kind {
+            CrossCircle | Circle => {
+                if let Some(style) = &self.fill {
+                    backend.draw_circle((ax, ay), size, style, style.filled)?;
+                }
+                if let Some(style) = &self.stroke {
+                    backend.draw_circle((ax, ay), size, style, false)?;
+                }
+
+                if self.kind == CrossCircle {
+                    let points: Vec<BackendCoord> = self.kind.points(size, (ax, ay));
+
+                    if let Some(style) = &self.stroke {
+                        let mut points = points;
+                        points.extend_from_within(0..2);
+                        backend.draw_path(points, style)?;
+                    }
+                }
+            }
+            _ => {
+                let points: Vec<BackendCoord> = self.kind.points(size, (ax, ay));
+
+                if let Some(style) = &self.fill {
+                    backend.fill_polygon(points.clone(), style)?;
+                }
+                if let Some(style) = &self.stroke {
+                    let mut points = points;
+                    points.extend_from_within(0..2);
+                    backend.draw_path(points, style)?;
+                }
+            }
         }
         Ok(())
     }
 }
-
 fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
     let plot_path = output_dir.join("demo.svg");
@@ -552,9 +509,25 @@ fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn std::e
 
     let size = 10;
 
-    for (i, (stroke, fill)) in [
-        (colors::RED.stroke_width(2), None),
-        (colors::BLACK.stroke_width(2), colors::RED.filled().into()),
+    for (i, (stroke, fill, hyper)) in [
+        (colors::RED.stroke_width(2), None, 0),
+        (colors::RED.stroke_width(2), None, 1),
+        (colors::RED.stroke_width(2), None, 2),
+        (
+            colors::BLACK.stroke_width(2),
+            colors::RED.filled().into(),
+            0,
+        ),
+        (
+            colors::BLACK.stroke_width(2),
+            colors::RED.filled().into(),
+            1,
+        ),
+        (
+            colors::BLACK.stroke_width(2),
+            colors::RED.filled().into(),
+            2,
+        ),
     ]
     .iter()
     .enumerate()
@@ -562,34 +535,41 @@ fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn std::e
         let idx = i as i32 + 1;
         let stroke: ShapeStyle = *stroke;
         let fill: Option<ShapeStyle> = *fill;
+        let hyper = *hyper;
 
-        chart.draw_series([(idx, 0.10)].map(|coord| Circle::new(coord, size, stroke)))?;
+        chart.draw_series(
+            [(idx, 0.10)].map(|coord| Marker::Circle.new(coord, size, stroke, fill, hyper)),
+        )?;
+        chart.draw_series(
+            [(idx, 0.20)].map(|coord| Marker::CrossCircle.new(coord, size, stroke, fill, hyper)),
+        )?;
 
         chart.draw_series(
-            [(idx, 0.20)].map(|coord| PathMarker::square(coord, size, stroke, fill)),
+            [(idx, 0.30)].map(|coord| Marker::Square.new(coord, size, stroke, fill, hyper)),
         )?;
         chart.draw_series(
-            [(idx, 0.30)].map(|coord| PathMarker::diamond(coord, size, stroke, fill)),
+            [(idx, 0.40)].map(|coord| Marker::CrossSquare.new(coord, size, stroke, fill, hyper)),
+        )?;
+
+        chart.draw_series(
+            [(idx, 0.50)].map(|coord| Marker::Diamond.new(coord, size, stroke, fill, hyper)),
         )?;
         chart.draw_series(
-            [(idx, 0.40)].map(|coord| PathMarker::tri_up(coord, size, stroke, fill)),
+            [(idx, 0.60)].map(|coord| Marker::CrossDiamond.new(coord, size, stroke, fill, hyper)),
+        )?;
+
+        chart.draw_series(
+            [(idx, 0.70)].map(|coord| Marker::TriUp.new(coord, size, stroke, fill, hyper)),
         )?;
         chart.draw_series(
-            [(idx, 0.50)].map(|coord| PathMarker::tri_down(coord, size, stroke, fill)),
+            [(idx, 0.80)].map(|coord| Marker::CrossTriUp.new(coord, size, stroke, fill, hyper)),
+        )?;
+
+        chart.draw_series(
+            [(idx, 0.90)].map(|coord| Marker::TriDown.new(coord, size, stroke, fill, hyper)),
         )?;
         chart.draw_series(
-            [(idx, 0.60)].map(|coord| PathMarker::cross_square(coord, size, stroke, fill)),
-        )?;
-        chart
-            .draw_series([(idx, 0.70)].map(|coord| PathMarker::star(coord, size, stroke, fill)))?;
-        chart.draw_series(
-            [(idx, 0.80)].map(|coord| PathMarker::cross_diamond(coord, size, stroke, fill)),
-        )?;
-        chart.draw_series(
-            [(idx, 0.90)].map(|coord| PathMarker::cross_tri_up(coord, size, stroke, fill)),
-        )?;
-        chart.draw_series(
-            [(idx, 1.0)].map(|coord| PathMarker::cross_tri_down(coord, size, stroke, fill)),
+            [(idx, 1.0)].map(|coord| Marker::CrossTriDown.new(coord, size, stroke, fill, hyper)),
         )?;
     }
 
@@ -992,7 +972,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                     EmptyElement::at(*coord)
                         + Text::new(
                             pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            (glyph_size * -2 / 5, -glyph_size / 3),
                             ("sans-serif", glyph_size as f64)
                                 .into_font()
                                 .color(&colors::BLACK),
@@ -1005,7 +985,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                     EmptyElement::at(coord)
                         + Text::new(
                             pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            (glyph_size * -2 / 5, -glyph_size / 3),
                             ("sans-serif", glyph_size as f64)
                                 .into_font()
                                 .color(&colors::BLACK),
@@ -1036,7 +1016,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                     EmptyElement::at(*coord)
                         + Text::new(
                             pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            (glyph_size * -2 / 5, -glyph_size / 3),
                             ("sans-serif", glyph_size as f64)
                                 .into_font()
                                 .color(&colors::BLACK),
@@ -1049,7 +1029,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                     EmptyElement::at(coord)
                         + Text::new(
                             pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, glyph_size * -1 / 3),
+                            (glyph_size * -2 / 5, -glyph_size / 3),
                             ("sans-serif", glyph_size as f64)
                                 .into_font()
                                 .color(&colors::BLACK),
