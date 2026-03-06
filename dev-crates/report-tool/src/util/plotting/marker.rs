@@ -242,7 +242,7 @@ impl MarkerStyle {
 
     pub fn line_style(&self) -> ShapeStyle {
         if let Some(fill) = &self.fill_style {
-            fill.clone()
+            *fill
         } else {
             self.stroke_style
         }

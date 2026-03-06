@@ -235,7 +235,7 @@ fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn std::e
             MarkerLevel::Meta,
             MarkerLevel::Hyper,
         ] {
-            col = col + 1;
+            col += 1;
 
             let style = style.with_marker_level(level);
 
@@ -602,7 +602,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
             "tokenizers",
             //   ("♦︎".to_string(), colors::PINK_200.filled()),
             base_style
-                .with_marker_type(MarkerType::TriUp)
+                .with_marker_type(MarkerType::Circle)
                 .with_fill_style(Some(colors::PINK_100.into())),
         ),
     ]
@@ -626,8 +626,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
     let regex_series = Series {
         name: "wordchipper:regex".to_string(),
         marker_style: base_style
-            .with_marker_type(MarkerType::Circle)
-            .with_marker_level(MarkerLevel::Para)
+            .with_marker_type(MarkerType::TriUp)
             .with_fill_style(colors::GREEN_A200.filled()),
         points: as_points(
             &data
@@ -642,8 +641,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
     let logos_series = Series {
         name: "wordchipper:logos".to_string(),
         marker_style: base_style
-            .with_marker_type(MarkerType::CrossCircle)
-            .with_marker_level(MarkerLevel::Para)
+            .with_marker_type(MarkerType::TriDown)
             .with_fill_style(colors::LIGHTBLUE_A200.filled()),
         points: as_points(
             &data
@@ -675,7 +673,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
         regex_series.max_bps(),
     );
 
-    let size = 6;
+    let size = 8;
 
     for include_logos in [false, true] {
         let chart_name = if include_logos { "logos" } else { "regex" };
