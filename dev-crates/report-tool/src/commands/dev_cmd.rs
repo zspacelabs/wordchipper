@@ -7,7 +7,6 @@ use divan_parser::BenchResult;
 use plotters::{
     prelude::{
         IntoLogRange,
-        ShapeStyle,
         *,
     },
     style::full_palette as colors,
@@ -98,8 +97,6 @@ struct Point {
 #[allow(unused)]
 struct Series {
     pub name: String,
-    pub glyph: String,
-    pub style: ShapeStyle,
     pub marker_style: MarkerStyle,
     pub points: Vec<Point>,
 }
@@ -127,26 +124,6 @@ impl Series {
             .max_by(|a, b| a.partial_cmp(b).unwrap())
             .unwrap()
     }
-}
-
-fn external_styles() -> BTreeMap<String, (String, ShapeStyle)> {
-    [
-        (
-            "bpe_openai".to_string(),
-            ("♣︎".to_string(), colors::DEEPORANGE_200.filled()),
-        ),
-        (
-            "tiktoken".to_string(),
-            ("♥︎".to_string(), colors::PURPLE_200.filled()),
-        ),
-        (
-            "tokenizers".to_string(),
-            ("♦︎".to_string(), colors::PINK_200.filled()),
-        ),
-    ]
-    .iter()
-    .cloned()
-    .collect()
 }
 
 fn fmin(
@@ -393,8 +370,6 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
         if let Some(series_data) = data.select_series(&span_key(span)) {
             plot_series.push(Series {
                 name: span.to_string(),
-                glyph: "X".to_string(),
-                style: colors::GREY_A400.filled(),
                 marker_style,
                 points: as_points(&series_data, |_, br| median_bps(br)),
             })
@@ -510,8 +485,6 @@ fn build_internal_tgraph<P: AsRef<Path>>(
         if let Some(series_data) = data.select_series(&sname) {
             plot_series.push(Series {
                 name: span.to_string(),
-                glyph: "X".to_string(),
-                style: colors::GREY_A400.filled(),
                 marker_style,
                 points: as_points(&series_data, |_, br| median_bps(br)),
             })
@@ -563,7 +536,6 @@ fn build_internal_tgraph<P: AsRef<Path>>(
 
     for pseries in plot_series {
         let name = &pseries.name;
-        let style = pseries.style;
         let points: Vec<(u32, f64)> = pseries
             .points
             .iter()
@@ -572,7 +544,7 @@ fn build_internal_tgraph<P: AsRef<Path>>(
 
         chart.draw_series(LineSeries::new(
             pseries.points.iter().map(|p| (p.threads, p.value)),
-            style,
+            pseries.marker_style.line_style().stroke_width(4),
         ))?;
 
         chart
@@ -610,16 +582,42 @@ fn build_external_tgraph<P: AsRef<Path>>(
         .filter(|name| name.contains(model))
         .collect::<Vec<_>>();
 
+    let base_style = MarkerStyle::default().with_stroke_style(colors::BLACK.stroke_width(1));
+
+    let ext_styles: BTreeMap<&'static str, MarkerStyle> = [
+        (
+            "bpe_openai",
+            base_style
+                .with_marker_type(MarkerType::Diamond)
+                .with_fill_style(Some(colors::DEEPORANGE_100.into())),
+        ),
+        (
+            "tiktoken",
+            //   ("♥︎".to_string(), colors::PURPLE_200.filled()),
+            base_style
+                .with_marker_type(MarkerType::Square)
+                .with_fill_style(Some(colors::PURPLE_100.into())),
+        ),
+        (
+            "tokenizers",
+            //   ("♦︎".to_string(), colors::PINK_200.filled()),
+            base_style
+                .with_marker_type(MarkerType::TriUp)
+                .with_fill_style(Some(colors::PINK_100.into())),
+        ),
+    ]
+    .iter()
+    .cloned()
+    .collect();
+
     let mut brandx_group: Vec<Series> = Default::default();
-    for (ext, (glyph, style)) in external_styles().iter() {
+    for (ext, &marker_style) in ext_styles.iter() {
         if let Some(name) = series_names.iter().find(|name| name.contains(ext)) {
             let series_data = data.select_series(name).unwrap();
 
             brandx_group.push(Series {
                 name: ext.to_string(),
-                glyph: glyph.to_string(),
-                style: *style,
-                marker_style: Default::default(),
+                marker_style,
                 points: as_points(&series_data, |_, br| median_bps(br)),
             })
         }
@@ -627,9 +625,10 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
     let regex_series = Series {
         name: "wordchipper:regex".to_string(),
-        glyph: "✦".to_string(),
-        style: colors::GREEN_200.filled(),
-        marker_style: Default::default(),
+        marker_style: base_style
+            .with_marker_type(MarkerType::Circle)
+            .with_marker_level(MarkerLevel::Para)
+            .with_fill_style(colors::GREEN_A200.filled()),
         points: as_points(
             &data
                 .select_series(&format!(
@@ -642,9 +641,10 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
     let logos_series = Series {
         name: "wordchipper:logos".to_string(),
-        glyph: "★".to_string(),
-        style: colors::LIGHTBLUE_200.filled(),
-        marker_style: MarkerStyle::default().with_fill_style(colors::LIGHTBLUE_200.filled()),
+        marker_style: base_style
+            .with_marker_type(MarkerType::CrossCircle)
+            .with_marker_level(MarkerLevel::Para)
+            .with_fill_style(colors::LIGHTBLUE_A200.filled()),
         points: as_points(
             &data
                 .select_series(&format!(
@@ -674,6 +674,8 @@ fn build_external_tgraph<P: AsRef<Path>>(
             .unwrap(),
         regex_series.max_bps(),
     );
+
+    let size = 6;
 
     for include_logos in [false, true] {
         let chart_name = if include_logos { "logos" } else { "regex" };
@@ -716,11 +718,8 @@ fn build_external_tgraph<P: AsRef<Path>>(
             })
             .draw()?;
 
-        let glyph_size = 24;
-
         for pseries in brandx_group.iter() {
             let name = &pseries.name;
-            let style = pseries.style;
             let points: Vec<(u32, f64)> = pseries
                 .points
                 .iter()
@@ -729,33 +728,17 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
             chart.draw_series(LineSeries::new(
                 pseries.points.iter().map(|p| (p.threads, p.value)),
-                style.stroke_width(4),
+                pseries.marker_style.line_style().stroke_width(4),
             ))?;
 
             chart
-                .draw_series(points.iter().map(|coord| {
-                    EmptyElement::at(*coord)
-                        + Text::new(
-                            pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, -glyph_size / 3),
-                            ("sans-serif", glyph_size as f64)
-                                .into_font()
-                                .color(&colors::BLACK),
-                        )
-                }))?
+                .draw_series(
+                    points
+                        .iter()
+                        .map(|&coord| pseries.marker_style.marker(coord, size)),
+                )?
                 .label(name)
-                .legend(move |coord| {
-                    let glyph_size = glyph_size * 2 / 3;
-
-                    EmptyElement::at(coord)
-                        + Text::new(
-                            pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, -glyph_size / 3),
-                            ("sans-serif", glyph_size as f64)
-                                .into_font()
-                                .color(&colors::BLACK),
-                        )
-                });
+                .legend(move |coord| pseries.marker_style.marker(coord, size * 3 / 4));
         }
 
         for pseries in if include_logos {
@@ -764,7 +747,6 @@ fn build_external_tgraph<P: AsRef<Path>>(
             vec![&regex_series]
         } {
             let name = &pseries.name;
-            let style = pseries.style;
             let points: Vec<(u32, f64)> = pseries
                 .points
                 .iter()
@@ -773,33 +755,17 @@ fn build_external_tgraph<P: AsRef<Path>>(
 
             chart.draw_series(LineSeries::new(
                 pseries.points.iter().map(|p| (p.threads, p.value)),
-                style.stroke_width(4),
+                pseries.marker_style.line_style().stroke_width(4),
             ))?;
 
             chart
-                .draw_series(points.iter().map(|coord| {
-                    EmptyElement::at(*coord)
-                        + Text::new(
-                            pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, -glyph_size / 3),
-                            ("sans-serif", glyph_size as f64)
-                                .into_font()
-                                .color(&colors::BLACK),
-                        )
-                }))?
+                .draw_series(
+                    points
+                        .iter()
+                        .map(|&coord| pseries.marker_style.marker(coord, size)),
+                )?
                 .label(name)
-                .legend(move |coord| {
-                    let glyph_size = glyph_size * 2 / 3;
-
-                    EmptyElement::at(coord)
-                        + Text::new(
-                            pseries.glyph.clone(),
-                            (glyph_size * -2 / 5, -glyph_size / 3),
-                            ("sans-serif", glyph_size as f64)
-                                .into_font()
-                                .color(&colors::BLACK),
-                        )
-                });
+                .legend(move |coord| pseries.marker_style.marker(coord, size * 3 / 4));
         }
 
         chart
