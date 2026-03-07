@@ -1,10 +1,10 @@
 use std::{
     collections::BTreeMap,
+    ops::Range,
     path::Path,
 };
 
 use divan_parser::BenchResult;
-use humansize::FormatSizeOptions;
 use plotters::{
     prelude::{
         IntoLogRange,
@@ -12,27 +12,29 @@ use plotters::{
     },
     style::full_palette as colors,
 };
-use plotters_backend::BackendCoord;
 use wordchipper_cli_util::logging::LogArgs;
 
 use crate::util::{
     bench_data::par_bench::ParBenchData,
+    float_tools,
+    human_format,
     plotting::{
+        MarkerLevel,
         MarkerStyle,
         MarkerType,
     },
 };
 
-/// Args for the cat command.
+/// Args for the rust-bench-plots command.
 #[derive(clap::Args, Debug)]
-pub struct DevArgs {
+pub struct RustBenchPlots {
     /// Path to the benchmark data.
     #[clap(long, default_value = "dev-crates/wordchipper-bench/bench-data")]
     data_dir: String,
 
     /// Model name.
-    #[clap(long, default_value = "cl100k")]
-    model: String,
+    #[clap(long, value_delimiter = ',', default_value = "r50k,cl100k,o200k")]
+    models: Vec<String>,
 
     /// Path to the output directory.
     #[clap(long, default_value = "target/plots")]
@@ -42,12 +44,11 @@ pub struct DevArgs {
     logging: LogArgs,
 }
 
-impl DevArgs {
-    /// Run the dev command.
+impl RustBenchPlots {
+    /// Run the command.
     pub fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         self.logging.setup_logging(3)?;
-
-        println!("{:?}", self);
+        log::info!("{:#?}", self);
 
         let data_dir = Path::new(&self.data_dir);
 
@@ -56,31 +57,24 @@ impl DevArgs {
         let output_dir = Path::new(&self.output_dir);
         std::fs::create_dir_all(output_dir)?;
 
-        build_external_tgraph(&self.model, "buffer_sweep", &output_dir, &data)?;
+        for model in self.models.iter() {
+            build_external_tgraph(model, "buffer_sweep", &output_dir, &data)?;
 
-        for accel in [false, true] {
-            build_internal_tgraph(
-                &self.model,
-                accel,
-                &output_dir.join(format!(
-                    "tgraph.{}.{}.svg",
-                    if accel { "logos" } else { "regex" },
-                    self.model
-                )),
-                &data,
-            )?;
-        }
-        for accel in [false, true] {
-            build_internal_rel_tgraph(
-                &self.model,
-                accel,
-                &output_dir.join(format!(
-                    "tgraph.rel.{}.{}.svg",
-                    if accel { "logos" } else { "regex" },
-                    self.model
-                )),
-                &data,
-            )?;
+            for accel in [false, true] {
+                let lexer = if accel { "logos" } else { "regex" };
+                build_internal_tgraph(
+                    model,
+                    accel,
+                    &output_dir.join(format!("span_encoder_vrs.{model}.{lexer}.log.svg")),
+                    &data,
+                )?;
+                build_internal_rel_tgraph(
+                    model,
+                    accel,
+                    &output_dir.join(format!("span_encoder_vrs.{model}.{lexer}.rel.svg")),
+                    &data,
+                )?;
+            }
         }
 
         Ok(())
@@ -88,14 +82,14 @@ impl DevArgs {
 }
 
 #[derive(Debug, Clone)]
-struct Point {
+pub struct Point {
     pub threads: u32,
     pub value: f64,
 }
 
 #[allow(unused)]
 #[derive(Debug, Clone)]
-struct Series {
+pub struct Series {
     pub name: String,
     pub marker_style: MarkerStyle,
     pub points: Vec<Point>,
@@ -126,27 +120,6 @@ impl Series {
     }
 }
 
-fn fmin(
-    a: f64,
-    b: f64,
-) -> f64 {
-    match a.partial_cmp(&b).unwrap() {
-        std::cmp::Ordering::Less => a,
-        std::cmp::Ordering::Equal => a,
-        std::cmp::Ordering::Greater => b,
-    }
-}
-fn fmax(
-    a: f64,
-    b: f64,
-) -> f64 {
-    match a.partial_cmp(&b).unwrap() {
-        std::cmp::Ordering::Less => b,
-        std::cmp::Ordering::Equal => a,
-        std::cmp::Ordering::Greater => a,
-    }
-}
-
 fn median_bps(br: &BenchResult) -> f64 {
     br.throughput_bps.as_ref().unwrap().median.unwrap()
 }
@@ -166,37 +139,6 @@ where
         .collect()
 }
 
-pub struct AbstractPath {
-    pub path: Vec<(f64, f64)>,
-}
-
-impl<I> From<I> for AbstractPath
-where
-    I: IntoIterator<Item = (f64, f64)>,
-{
-    fn from(value: I) -> Self {
-        Self {
-            path: value.into_iter().collect(),
-        }
-    }
-}
-
-impl AbstractPath {
-    pub fn to_size(
-        &self,
-        size: u32,
-    ) -> Vec<BackendCoord> {
-        self.path
-            .iter()
-            .map(|(x, y)| {
-                let x = (x * size as f64) as i32;
-                let y = (y * size as f64) as i32;
-                (x, y)
-            })
-            .collect()
-    }
-}
-
 fn span_styles() -> BTreeMap<&'static str, MarkerStyle> {
     let base_style = MarkerStyle::default().with_stroke_style(colors::BLACK.stroke_width(2));
 
@@ -204,37 +146,72 @@ fn span_styles() -> BTreeMap<&'static str, MarkerStyle> {
         (
             "buffer_sweep",
             base_style
-                .with_marker_type(MarkerType::Square)
-                .with_fill_style(Some(colors::GREEN_A200.into())),
+                .with_marker_type(MarkerType::Circle)
+                .with_fill_style(Some(colors::GREEN_200.into())),
         ),
         (
             "priority_merge",
             base_style
-                .with_marker_type(MarkerType::CrossDiamond)
-                .with_fill_style(Some(colors::PINK_A200.into())),
+                .with_marker_type(MarkerType::Square)
+                .with_fill_style(Some(colors::PURPLE_200.into())),
         ),
         (
             "tail_sweep",
             base_style
-                .with_marker_type(MarkerType::CrossTriDown)
-                .with_fill_style(Some(colors::DEEPORANGE_A200.into())),
+                .with_marker_type(MarkerType::Diamond)
+                .with_fill_style(Some(colors::DEEPORANGE_200.into())),
         ),
         (
             "bpe_backtrack",
             base_style
                 .with_marker_type(MarkerType::TriUp)
-                .with_fill_style(Some(colors::PURPLE_A200.into())),
+                .with_fill_style(Some(colors::LIGHTBLUE_200.into())),
         ),
         (
             "merge_heap",
             base_style
-                .with_marker_type(MarkerType::Diamond)
-                .with_fill_style(Some(colors::BLUE_A200.into())),
+                .with_marker_type(MarkerType::TriDown)
+                .with_fill_style(Some(colors::BLUEGREY_200.into())),
         ),
     ]
     .iter()
     .cloned()
     .collect()
+}
+
+pub struct SeriesLimits {
+    pub threads: (u32, u32),
+    pub value: (f64, f64),
+}
+
+impl SeriesLimits {
+    pub fn from_series(s: &[Series]) -> Self {
+        let min_threads = s.iter().map(|s| s.min_threads()).min().unwrap();
+        let max_threads = s.iter().map(|s| s.max_threads()).max().unwrap();
+        let min_bps = s
+            .iter()
+            .map(|s| s.min_bps())
+            .min_by(|a, b| a.partial_cmp(b).unwrap())
+            .unwrap();
+        let max_bps = s
+            .iter()
+            .map(|s| s.max_bps())
+            .max_by(|a, b| a.partial_cmp(b).unwrap())
+            .unwrap();
+
+        Self {
+            threads: (min_threads, max_threads),
+            value: (min_bps, max_bps),
+        }
+    }
+
+    pub fn thread_range(&self) -> Range<u32> {
+        self.threads.0..self.threads.1
+    }
+
+    pub fn value_range(&self) -> Range<f64> {
+        self.value.0..self.value.1
+    }
 }
 
 fn build_internal_rel_tgraph<P: AsRef<Path>>(
@@ -270,7 +247,7 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
     for series in plot_series.iter() {
         for point in series.points.iter() {
             let entry = baseline.entry(point.threads).or_default();
-            *entry = fmax(*entry, point.value);
+            *entry = float_tools::fmax(*entry, point.value);
         }
     }
     for series in plot_series.iter_mut() {
@@ -279,21 +256,10 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
         })
     }
 
-    let min_threads = plot_series.iter().map(|s| s.min_threads()).min().unwrap();
-    let max_threads = plot_series.iter().map(|s| s.max_threads()).max().unwrap();
-    let min_bps = plot_series
-        .iter()
-        .map(|s| s.min_bps())
-        .min_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap();
-    let max_bps = plot_series
-        .iter()
-        .map(|s| s.max_bps())
-        .max_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap();
-
     let root = SVGBackend::new(plot_path, (640, 480)).into_drawing_area();
     root.fill(&colors::WHITE)?;
+
+    let series_limits = SeriesLimits::from_series(&plot_series);
 
     let mut chart = ChartBuilder::on(&root)
         .caption(
@@ -306,16 +272,16 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
         )
         .margin(10)
         .x_label_area_size(40)
-        .y_label_area_size(90)
+        .y_label_area_size(50)
         .build_cartesian_2d(
-            (min_threads..max_threads).log_scale().base(2.0),
-            min_bps..max_bps,
+            series_limits.thread_range().log_scale().base(2.0),
+            series_limits.value_range(),
         )?;
 
     chart
         .configure_mesh()
         .x_desc("Thread Count")
-        .y_desc("Relative Median Throughput")
+        .y_desc("Median Throughput: max relative")
         .draw()?;
 
     for pseries in plot_series {
@@ -345,6 +311,8 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
     chart
         .configure_series_labels()
         .position(SeriesLabelPosition::LowerRight)
+        .margin(12)
+        .legend_area_size(15)
         .background_style(WHITE.mix(0.8))
         .border_style(BLACK)
         .draw()?;
@@ -380,21 +348,11 @@ fn build_internal_tgraph<P: AsRef<Path>>(
         }
     }
 
-    let min_threads = plot_series.iter().map(|s| s.min_threads()).min().unwrap();
-    let max_threads = plot_series.iter().map(|s| s.max_threads()).max().unwrap();
-    let min_bps = plot_series
-        .iter()
-        .map(|s| s.min_bps())
-        .min_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap();
-    let max_bps = plot_series
-        .iter()
-        .map(|s| s.max_bps())
-        .max_by(|a, b| a.partial_cmp(b).unwrap())
-        .unwrap();
-
     let root = SVGBackend::new(plot_path, (640, 480)).into_drawing_area();
     root.fill(&colors::WHITE)?;
+
+    let series_limits = SeriesLimits::from_series(&plot_series);
+
     let mut chart = ChartBuilder::on(&root)
         .caption(
             format!(
@@ -406,19 +364,17 @@ fn build_internal_tgraph<P: AsRef<Path>>(
         )
         .margin(10)
         .x_label_area_size(40)
-        .y_label_area_size(90)
+        .y_label_area_size(70)
         .build_cartesian_2d(
-            (min_threads..max_threads).log_scale().base(2.0),
-            min_bps..max_bps,
+            series_limits.thread_range().log_scale().base(2.0),
+            series_limits.value_range().log_scale().base(2.0),
         )?;
 
     chart
         .configure_mesh()
         .x_desc("Thread Count")
-        .y_desc("Median Throughput")
-        .y_label_formatter(&|&bps| {
-            format!("{}/s", humansize::format_size_i(bps, humansize::BINARY))
-        })
+        .y_desc("Median Throughput: log scale")
+        .y_label_formatter(&|&bps| human_format::format_bps(bps))
         .draw()?;
 
     let size = 8;
@@ -449,6 +405,8 @@ fn build_internal_tgraph<P: AsRef<Path>>(
     chart
         .configure_series_labels()
         .position(SeriesLabelPosition::LowerRight)
+        .margin(12)
+        .legend_area_size(15)
         .background_style(WHITE.mix(0.8))
         .border_style(BLACK)
         .draw()?;
@@ -457,6 +415,7 @@ fn build_internal_tgraph<P: AsRef<Path>>(
 
     Ok(())
 }
+
 fn build_external_tgraph<P: AsRef<Path>>(
     model: &str,
     span_encoder: &str,
@@ -478,21 +437,19 @@ fn build_external_tgraph<P: AsRef<Path>>(
             "bpe_openai",
             base_style
                 .with_marker_type(MarkerType::Circle)
-                .with_fill_style(Some(colors::DEEPORANGE_100.into())),
+                .with_fill_style(Some(colors::DEEPORANGE_200.into())),
         ),
         (
             "tiktoken",
-            //   ("♥︎".to_string(), colors::PURPLE_200.filled()),
             base_style
                 .with_marker_type(MarkerType::Square)
-                .with_fill_style(Some(colors::PURPLE_100.into())),
+                .with_fill_style(Some(colors::PURPLE_200.into())),
         ),
         (
             "tokenizers",
-            //   ("♦︎".to_string(), colors::PINK_200.filled()),
             base_style
                 .with_marker_type(MarkerType::Diamond)
-                .with_fill_style(Some(colors::BLUEGREY_100.into())),
+                .with_fill_style(Some(colors::BLUEGREY_200.into())),
         ),
     ]
     .iter()
@@ -516,13 +473,14 @@ fn build_external_tgraph<P: AsRef<Path>>(
         name: "wordchipper:regex".to_string(),
         marker_style: base_style
             .with_marker_type(MarkerType::TriUp)
+            .with_marker_level(MarkerLevel::Para)
             .with_fill_style(colors::GREEN_A200.filled()),
         points: as_points(
             &data
                 .select_series(&format!(
                     "encoding_parallel::wordchipper::{span_encoder}::{model}"
                 ))
-                .expect("Failed to select regex series"),
+                .expect("Failed to select series"),
             |_, br| median_bps(br),
         ),
     };
@@ -531,38 +489,20 @@ fn build_external_tgraph<P: AsRef<Path>>(
         name: "wordchipper:logos".to_string(),
         marker_style: base_style
             .with_marker_type(MarkerType::TriDown)
+            .with_marker_level(MarkerLevel::Para)
             .with_fill_style(colors::LIGHTBLUE_A200.filled()),
         points: as_points(
             &data
                 .select_series(&format!(
                     "encoding_parallel::wordchipper::{span_encoder}::{model}_fast"
                 ))
-                .expect("Failed to select regex series"),
+                .expect("Failed to select series"),
             |_, br| median_bps(br),
         ),
     };
 
-    let min_threads = brandx_group.iter().map(|s| s.min_threads()).min().unwrap();
-    let max_threads = brandx_group.iter().map(|s| s.max_threads()).max().unwrap();
-
-    let min_bps = fmin(
-        brandx_group
-            .iter()
-            .map(|s| s.min_bps())
-            .min_by(|a, b| a.partial_cmp(b).unwrap())
-            .unwrap(),
-        regex_series.min_bps(),
-    );
-    let max_bps = fmax(
-        brandx_group
-            .iter()
-            .map(|s| s.max_bps())
-            .max_by(|a, b| a.partial_cmp(b).unwrap())
-            .unwrap(),
-        regex_series.max_bps(),
-    );
-
     let size = 8;
+    let line_width = 4;
 
     for include_logos in [false, true] {
         for log_scale in [false, true] {
@@ -570,39 +510,24 @@ fn build_external_tgraph<P: AsRef<Path>>(
             let scale_desc = if log_scale { "log" } else { "linear" };
 
             let plot_path = output_dir.join(format!(
-                "wc_{chart_name}_vrs_brandx.rust.{scale_desc}.{model}.svg"
+                "wc_{chart_name}_vrs_brandx.rust.{model}.{scale_desc}.svg"
             ));
             log::info!("Plotting to {}", plot_path.display());
-
-            let min_bps = if include_logos {
-                fmin(min_bps, logos_series.min_bps())
-            } else {
-                min_bps
-            };
-            let max_bps = if include_logos {
-                fmax(max_bps, logos_series.max_bps())
-            } else {
-                max_bps
-            };
 
             let root = SVGBackend::new(&plot_path, (640, 480)).into_drawing_area();
             root.fill(&colors::WHITE)?;
 
             let mut display_series = brandx_group.clone();
-            display_series.insert(0, regex_series.clone());
+            display_series.push(regex_series.clone());
             if include_logos {
-                display_series.insert(0, logos_series.clone());
+                display_series.push(logos_series.clone());
             }
+
+            let series_limits = SeriesLimits::from_series(&display_series);
 
             let caption = format!(
                 "wordchipper:{chart_name} {scale_desc} throughput, rust, model: \"{model}\"",
             );
-
-            let human_opts = FormatSizeOptions::from(humansize::BINARY).decimal_places(0);
-            let bps_formatter =
-                move |bps: &f64| format!("{}/s", humansize::format_size(*bps as u64, human_opts));
-
-            let line_width = 4;
 
             // ATTENTION: This is weird.
             // The plotters chart machinery makes extensive and heavy use of specialized
@@ -617,7 +542,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                         .x_label_area_size(40)
                         .y_label_area_size(70)
                         .build_cartesian_2d(
-                            (min_threads..max_threads).log_scale().base(2.0),
+                            series_limits.thread_range().log_scale().base(2.0),
                             $y_axis,
                         )?;
 
@@ -625,7 +550,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                         .configure_mesh()
                         .x_desc("Thread Count")
                         .y_desc(format!("Median Throughput: {scale_desc} scale"))
-                        .y_label_formatter(&bps_formatter)
+                        .y_label_formatter(&|&bps| human_format::format_bps(bps))
                         .draw()?;
 
                     for series in display_series.iter() {
@@ -641,13 +566,15 @@ fn build_external_tgraph<P: AsRef<Path>>(
                                 }),
                             )?
                             .label(&series.name)
-                            .legend(move |coord| series.marker_style.marker(coord, size * 3 / 4));
+                            .legend(move |coord| series.marker_style.marker(coord, size));
                     }
 
                     chart
                         .configure_series_labels()
                         .position(SeriesLabelPosition::UpperLeft)
                         .background_style(WHITE.mix(0.8))
+                        .margin(12)
+                        .legend_area_size(15)
                         .border_style(BLACK)
                         .draw()?;
 
@@ -656,9 +583,9 @@ fn build_external_tgraph<P: AsRef<Path>>(
             }
 
             if log_scale {
-                draw_chart!((min_bps..max_bps).log_scale().base(2.0))?;
+                draw_chart!(series_limits.value_range().log_scale().base(2.0))?;
             } else {
-                draw_chart!(min_bps..max_bps)?;
+                draw_chart!(series_limits.value_range())?;
             }
 
             root.present()?;

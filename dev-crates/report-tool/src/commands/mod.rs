@@ -1,1 +1,1 @@
-pub mod dev_cmd;
+pub mod rust_bench_plots_cmd;
