@@ -2,11 +2,11 @@
 
 # Run the benchmark for the par_batch feature
 
-THREADS=(1 2 4 8 16 24 32 48 64)
+THREADS=(1 2 4 8 10 12)
 
 WORKSPACE_ROOT=$(dirname $(cargo locate-project --workspace --message-format plain))
 
-DATA_DIR="$WORKSPACE_ROOT/targets/bench-data/rust_parallel"
+DATA_DIR="$WORKSPACE_ROOT/target/bench-data/rust_parallel"
 
 mkdir -p "$DATA_DIR"
 rm -rf "$DATA_DIR"/encoding_parallel.*.json
