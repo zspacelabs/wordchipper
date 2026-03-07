@@ -6,7 +6,7 @@ THREADS=(1 2 4 8 16 24 32 48 64)
 
 WORKSPACE_ROOT=$(dirname $(cargo locate-project --workspace --message-format plain))
 
-DATA_DIR="$WORKSPACE_ROOT/dev-crates/wordchipper-bench/bench-data/parallel"
+DATA_DIR="$WORKSPACE_ROOT/targets/bench-data/rust_parallel"
 
 mkdir -p "$DATA_DIR"
 rm -rf "$DATA_DIR"/encoding_parallel.*.json

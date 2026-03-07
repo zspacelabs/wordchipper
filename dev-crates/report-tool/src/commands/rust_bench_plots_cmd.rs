@@ -28,13 +28,13 @@ use crate::util::{
 /// Args for the rust-bench-plots command.
 #[derive(clap::Args, Debug)]
 pub struct RustBenchPlots {
-    /// Path to the benchmark data.
-    #[clap(long, default_value = "dev-crates/wordchipper-bench/bench-data")]
-    data_dir: String,
-
     /// Model name.
     #[clap(long, value_delimiter = ',', default_value = "r50k,cl100k,o200k")]
     models: Vec<String>,
+
+    /// Path to the benchmark data.
+    #[clap(long, default_value = "benchmarks/amd3990X/data")]
+    data_dir: String,
 
     /// Path to the output directory.
     #[clap(long, default_value = "target/plots")]
@@ -52,7 +52,7 @@ impl RustBenchPlots {
 
         let data_dir = Path::new(&self.data_dir);
 
-        let data = ParBenchData::load_data(data_dir.join("parallel"))?;
+        let data = ParBenchData::load_data(data_dir.join("rust_parallel"))?;
 
         let output_dir = Path::new(&self.output_dir);
         std::fs::create_dir_all(output_dir)?;
