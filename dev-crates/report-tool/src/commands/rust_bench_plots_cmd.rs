@@ -20,6 +20,7 @@ use crate::util::{
     human_format,
     plotting::{
         MarkerLevel,
+        MarkerSeries,
         MarkerStyle,
         MarkerType,
     },
@@ -61,54 +62,6 @@ impl RustBenchPlots {
         }
 
         Ok(())
-    }
-}
-
-pub struct MarkerSeries<Coord> {
-    pub name: String,
-    pub style: MarkerStyle,
-    pub points: Vec<Coord>,
-}
-
-impl<Coord> MarkerSeries<Coord> {
-    pub fn new<S: AsRef<str>>(
-        name: S,
-        style: MarkerStyle,
-        points: Vec<Coord>,
-    ) -> Self {
-        Self {
-            name: name.as_ref().to_string(),
-            style,
-            points,
-        }
-    }
-
-    pub fn map<F, T>(
-        &self,
-        f: F,
-    ) -> MarkerSeries<T>
-    where
-        F: Fn(&Coord) -> T,
-    {
-        MarkerSeries::<T> {
-            name: self.name.clone(),
-            style: self.style,
-            points: self.points.iter().map(f).collect(),
-        }
-    }
-}
-
-impl<A, B> MarkerSeries<(A, B)>
-where
-    A: Clone,
-    B: Clone,
-{
-    pub fn xs(&self) -> Vec<A> {
-        self.points.iter().map(|(x, _)| x.clone()).collect()
-    }
-
-    pub fn ys(&self) -> Vec<B> {
-        self.points.iter().map(|(_, y)| y.clone()).collect()
     }
 }
 
@@ -272,17 +225,19 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
         .y_desc("Median Throughput: max relative")
         .draw()?;
 
+    const SIZE: i32 = 8;
+    const LINE_WIDTH: u32 = 4;
+
     for ms in render {
         chart.draw_series(LineSeries::new(
             ms.points.clone(),
-            ms.style.line_style().stroke_width(4),
+            ms.style.line_style().stroke_width(LINE_WIDTH),
         ))?;
 
-        let size = 8;
         chart
-            .draw_series(ms.points.iter().map(|&coord| ms.style.marker(coord, size)))?
+            .draw_series(ms.points.iter().map(|&coord| ms.style.marker(coord, SIZE)))?
             .label(ms.name)
-            .legend(move |coord| ms.style.marker(coord, size));
+            .legend(move |coord| ms.style.marker(coord, SIZE));
     }
 
     chart
@@ -363,18 +318,19 @@ fn build_internal_tgraph<P: AsRef<Path>>(
         .y_label_formatter(&|&bps| human_format::format_bps(bps))
         .draw()?;
 
-    let size = 8;
+    const SIZE: i32 = 8;
+    const LINE_WIDTH: u32 = 4;
 
     for ms in render {
         chart.draw_series(LineSeries::new(
             ms.points.clone(),
-            ms.style.line_style().stroke_width(4),
+            ms.style.line_style().stroke_width(LINE_WIDTH),
         ))?;
 
         chart
-            .draw_series(ms.points.iter().map(|&coord| ms.style.marker(coord, size)))?
+            .draw_series(ms.points.iter().map(|&coord| ms.style.marker(coord, SIZE)))?
             .label(ms.name)
-            .legend(move |coord| ms.style.marker(coord, size));
+            .legend(move |coord| ms.style.marker(coord, SIZE));
     }
 
     chart
@@ -450,8 +406,8 @@ fn build_external_graphs<P: AsRef<Path>>(
         ))?,
     );
 
-    let size = 8;
-    let line_width = 4;
+    const SIZE: i32 = 8;
+    const LINE_WIDTH: u32 = 4;
 
     for include_logos in [false, true] {
         for log_scale in [false, true] {
@@ -514,17 +470,17 @@ fn build_external_graphs<P: AsRef<Path>>(
                     for ms in schedule {
                         chart.draw_series(LineSeries::new(
                             ms.points.clone(),
-                            ms.style.line_style().stroke_width(line_width),
+                            ms.style.line_style().stroke_width(LINE_WIDTH),
                         ))?;
 
                         chart
                             .draw_series(
                                 ms.points
                                     .into_iter()
-                                    .map(|coords| ms.style.marker(coords, size)),
+                                    .map(|coords| ms.style.marker(coords, SIZE)),
                             )?
                             .label(ms.name)
-                            .legend(move |coord| ms.style.marker(coord, size));
+                            .legend(move |coord| ms.style.marker(coord, SIZE));
                     }
 
                     chart

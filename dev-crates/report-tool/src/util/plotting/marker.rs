@@ -517,3 +517,51 @@ pub fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn st
 
     Ok(())
 }
+
+pub struct MarkerSeries<Coord> {
+    pub name: String,
+    pub style: MarkerStyle,
+    pub points: Vec<Coord>,
+}
+
+impl<Coord> MarkerSeries<Coord> {
+    pub fn new<S: AsRef<str>>(
+        name: S,
+        style: MarkerStyle,
+        points: Vec<Coord>,
+    ) -> Self {
+        Self {
+            name: name.as_ref().to_string(),
+            style,
+            points,
+        }
+    }
+
+    pub fn map<F, T>(
+        &self,
+        f: F,
+    ) -> MarkerSeries<T>
+    where
+        F: Fn(&Coord) -> T,
+    {
+        MarkerSeries::<T> {
+            name: self.name.clone(),
+            style: self.style,
+            points: self.points.iter().map(f).collect(),
+        }
+    }
+}
+
+impl<A, B> MarkerSeries<(A, B)>
+where
+    A: Clone,
+    B: Clone,
+{
+    pub fn xs(&self) -> Vec<A> {
+        self.points.iter().map(|(x, _)| x.clone()).collect()
+    }
+
+    pub fn ys(&self) -> Vec<B> {
+        self.points.iter().map(|(_, y)| y.clone()).collect()
+    }
+}
