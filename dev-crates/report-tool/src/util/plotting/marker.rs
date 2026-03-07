@@ -1,12 +1,26 @@
-use std::f64::consts::FRAC_1_SQRT_2;
+use std::{
+    f64::consts::FRAC_1_SQRT_2,
+    path::Path,
+};
 
 use plotters::{
+    backend::SVGBackend,
+    chart::{
+        ChartBuilder,
+        SeriesLabelPosition,
+    },
+    drawing::IntoDrawingArea,
     element::{
         Drawable,
         PointCollection,
     },
+    prelude,
     prelude::{
+        Color,
+        IntoFont,
         ShapeStyle,
+        WHITE,
+        full_palette,
         full_palette::BLACK,
     },
     style::SizeDesc,
@@ -391,4 +405,115 @@ impl<DB: DrawingBackend, Coord, Size: SizeDesc> Drawable<DB> for GraphMarker<Coo
         }
         Ok(())
     }
+}
+
+pub fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn std::error::Error>> {
+    let output_dir = output_dir.as_ref();
+    let plot_path = output_dir.join("demo.svg");
+    log::info!("Plotting to {}", plot_path.display());
+
+    let root = SVGBackend::new(&plot_path, (640, 480)).into_drawing_area();
+    root.fill(&full_palette::WHITE)?;
+    let mut chart = ChartBuilder::on(&root)
+        .caption("demo", ("sans-serif", 20).into_font())
+        .margin(10)
+        .x_label_area_size(40)
+        .y_label_area_size(90)
+        .build_cartesian_2d(0..10, 0.0..1.0)?;
+
+    chart
+        .configure_mesh()
+        .x_desc("Index")
+        .y_desc("Value")
+        .y_label_formatter(&|&bps| {
+            format!("{}/s", humansize::format_size_i(bps, humansize::BINARY))
+        })
+        .draw()?;
+
+    let size = 10;
+
+    let mut col = 0;
+    for style in [
+        MarkerStyle::default().with_stroke_style(full_palette::RED.stroke_width(2)),
+        MarkerStyle::default()
+            .with_stroke_style(full_palette::BLACK.stroke_width(2))
+            .with_fill_style(full_palette::RED.filled()),
+    ] {
+        for level in [
+            MarkerLevel::Hypo,
+            MarkerLevel::Para,
+            MarkerLevel::Meta,
+            MarkerLevel::Hyper,
+        ] {
+            col += 1;
+
+            let style = style.with_marker_level(level);
+
+            chart.draw_series([(col, 0.10)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::Circle)
+                    .marker(coord, size)
+            }))?;
+            chart.draw_series([(col, 0.20)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::CrossCircle)
+                    .marker(coord, size)
+            }))?;
+
+            chart.draw_series([(col, 0.30)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::Square)
+                    .marker(coord, size)
+            }))?;
+            chart.draw_series([(col, 0.40)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::CrossSquare)
+                    .marker(coord, size)
+            }))?;
+
+            chart.draw_series([(col, 0.50)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::Diamond)
+                    .marker(coord, size)
+            }))?;
+            chart.draw_series([(col, 0.60)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::CrossDiamond)
+                    .marker(coord, size)
+            }))?;
+
+            chart.draw_series([(col, 0.70)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::TriUp)
+                    .marker(coord, size)
+            }))?;
+            chart.draw_series([(col, 0.80)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::CrossTriUp)
+                    .marker(coord, size)
+            }))?;
+
+            chart.draw_series([(col, 0.90)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::TriDown)
+                    .marker(coord, size)
+            }))?;
+            chart.draw_series([(col, 1.0)].map(|coord| {
+                style
+                    .with_marker_type(MarkerType::CrossTriDown)
+                    .marker(coord, size)
+            }))?;
+        }
+    }
+
+    chart
+        .configure_series_labels()
+        .position(SeriesLabelPosition::LowerRight)
+        .background_style(WHITE.mix(0.8))
+        .border_style(prelude::BLACK)
+        .draw()?;
+
+    root.present()?;
+
+    Ok(())
 }
