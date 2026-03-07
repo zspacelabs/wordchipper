@@ -1,3 +1,4 @@
+import os
 import urllib.request
 from pathlib import Path
 
@@ -12,6 +13,18 @@ SHARD_URL = (
 )
 SHARD_CACHE = Path("~/.cache/brn-nanochat/dataset/shard_00000.parquet").expanduser()
 BATCH_SIZE = 1024
+
+
+@pytest.fixture(scope="session")
+def max_threads():
+    """Max thread count from RAYON_NUM_THREADS, or None (use system default)."""
+    val = os.environ.get("RAYON_NUM_THREADS")
+    if not val:
+        return None
+    n = int(val)
+    if n < 1:
+        raise pytest.UsageError(f"RAYON_NUM_THREADS must be >= 1, got {val!r}")
+    return n
 
 
 @pytest.fixture(scope="session")
