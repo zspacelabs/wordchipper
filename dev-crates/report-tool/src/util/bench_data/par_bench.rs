@@ -76,4 +76,15 @@ impl ParBenchData {
 
         if res.is_empty() { None } else { Some(res) }
     }
+
+    pub fn try_select_series(
+        &self,
+        name: &str,
+    ) -> Result<Vec<(u32, BenchResult)>, Box<dyn std::error::Error>> {
+        if let Some(series) = self.select_series(name) {
+            Ok(series)
+        } else {
+            Err(format!("No series named \"{}\"", name).into())
+        }
+    }
 }
