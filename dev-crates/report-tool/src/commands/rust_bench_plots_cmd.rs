@@ -5,7 +5,6 @@ use std::{
 };
 
 use divan_parser::BenchResult;
-use humansize::FormatSizeOptions;
 use plotters::{
     prelude::{
         IntoLogRange,
@@ -18,6 +17,7 @@ use wordchipper_cli_util::logging::LogArgs;
 use crate::util::{
     bench_data::par_bench::ParBenchData,
     float_tools,
+    human_format,
     plotting::{
         MarkerStyle,
         MarkerType,
@@ -87,11 +87,6 @@ impl RustBenchPlots {
 
         Ok(())
     }
-}
-
-fn format_bps(bps: f64) -> String {
-    let human_opts = FormatSizeOptions::from(humansize::BINARY).decimal_places(0);
-    format!("{}/s", humansize::format_size(bps as u64, human_opts))
 }
 
 #[derive(Debug, Clone)]
@@ -269,10 +264,10 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
         })
     }
 
-    let series_limits = SeriesLimits::from_series(&plot_series);
-
     let root = SVGBackend::new(plot_path, (640, 480)).into_drawing_area();
     root.fill(&colors::WHITE)?;
+
+    let series_limits = SeriesLimits::from_series(&plot_series);
 
     let mut chart = ChartBuilder::on(&root)
         .caption(
@@ -359,10 +354,11 @@ fn build_internal_tgraph<P: AsRef<Path>>(
         }
     }
 
-    let series_limits = SeriesLimits::from_series(&plot_series);
-
     let root = SVGBackend::new(plot_path, (640, 480)).into_drawing_area();
     root.fill(&colors::WHITE)?;
+
+    let series_limits = SeriesLimits::from_series(&plot_series);
+
     let mut chart = ChartBuilder::on(&root)
         .caption(
             format!(
@@ -384,7 +380,7 @@ fn build_internal_tgraph<P: AsRef<Path>>(
         .configure_mesh()
         .x_desc("Thread Count")
         .y_desc("Median Throughput")
-        .y_label_formatter(&|&bps| format_bps(bps))
+        .y_label_formatter(&|&bps| human_format::format_bps(bps))
         .draw()?;
 
     let size = 8;
@@ -423,6 +419,7 @@ fn build_internal_tgraph<P: AsRef<Path>>(
 
     Ok(())
 }
+
 fn build_external_tgraph<P: AsRef<Path>>(
     model: &str,
     span_encoder: &str,
@@ -518,6 +515,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                 "wc_{chart_name}_vrs_brandx.rust.{model}.{scale_desc}.svg"
             ));
             log::info!("Plotting to {}", plot_path.display());
+
             let root = SVGBackend::new(&plot_path, (640, 480)).into_drawing_area();
             root.fill(&colors::WHITE)?;
 
@@ -554,7 +552,7 @@ fn build_external_tgraph<P: AsRef<Path>>(
                         .configure_mesh()
                         .x_desc("Thread Count")
                         .y_desc(format!("Median Throughput: {scale_desc} scale"))
-                        .y_label_formatter(&|&bps| format_bps(bps))
+                        .y_label_formatter(&|&bps| human_format::format_bps(bps))
                         .draw()?;
 
                     for series in display_series.iter() {
