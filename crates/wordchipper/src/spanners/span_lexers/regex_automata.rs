@@ -230,6 +230,8 @@ fn build_cache_pool(
 
 #[cfg(test)]
 mod tests {
+    use alloc::vec;
+
     use super::*;
     use crate::{
         spanners::span_lexers::accelerators::testutil::assert_matches_reference_lexer,
