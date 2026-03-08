@@ -79,9 +79,9 @@ fn build_model_graphs<P: AsRef<Path>>(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
 
-    build_external_graphs(model, "buffer_sweep", shape.clone(), &output_dir, data)?;
+    build_external_graphs(model, "buffer_sweep", shape, &output_dir, data)?;
 
-    build_internal_graphs(model, shape.clone(), &output_dir, data)
+    build_internal_graphs(model, shape, &output_dir, data)
 }
 
 fn build_internal_graphs<P: AsRef<Path>>(
@@ -100,7 +100,7 @@ fn build_internal_graphs<P: AsRef<Path>>(
                 model,
                 lexer,
                 suffix,
-                shape.clone(),
+                shape,
                 &output_dir.join(format!("span_encoder_vrs.{model}.{lexer}.log.svg")),
                 data,
             )?;
@@ -108,7 +108,7 @@ fn build_internal_graphs<P: AsRef<Path>>(
                 model,
                 lexer,
                 suffix,
-                shape.clone(),
+                shape,
                 &output_dir.join(format!("span_encoder_vrs.{model}.{lexer}.rel.svg")),
                 data,
             )?;
@@ -222,7 +222,7 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
     let values = render.iter().flat_map(|s| s.ys()).collect::<Vec<_>>();
     let y_range = fiter_range(&values).unwrap();
 
-    let root = SVGBackend::new(plot_path, shape.clone()).into_drawing_area();
+    let root = SVGBackend::new(plot_path, shape).into_drawing_area();
     root.fill(&colors::WHITE)?;
 
     let mut chart = ChartBuilder::on(&root)
@@ -319,7 +319,7 @@ fn build_internal_tgraph<P: AsRef<Path>>(
     let values = render.iter().flat_map(|s| s.ys()).collect::<Vec<_>>();
     let y_range = fiter_range(&values).unwrap();
 
-    let root = SVGBackend::new(plot_path, shape.clone()).into_drawing_area();
+    let root = SVGBackend::new(plot_path, shape).into_drawing_area();
     root.fill(&colors::WHITE)?;
 
     let mut chart = ChartBuilder::on(&root)
@@ -458,7 +458,7 @@ fn build_external_graphs<P: AsRef<Path>>(
             ));
             log::info!("Plotting to {}", plot_path.display());
 
-            let root = SVGBackend::new(&plot_path, shape.clone()).into_drawing_area();
+            let root = SVGBackend::new(&plot_path, shape).into_drawing_area();
             root.fill(&colors::WHITE)?;
 
             fn select((threads, bench_results): &(u32, BenchResult)) -> (u32, f64) {
