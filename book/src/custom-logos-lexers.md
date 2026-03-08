@@ -9,7 +9,7 @@ example, uses alternations with Unicode property classes and lookaheads to segme
 into `["hello", " world"]`.
 
 Regex is correct but slow. Each match backtracks through Unicode property tables. wordchipper has
-three spanning tiers: fancy-regex (fallback), `regex-automata` (middle tier, ~4-7x faster), and
+three spanning tiers: fancy-regex (fallback), `regex-automata` (middle tier, ~4-8x faster), and
 logos DFA (fastest, ~14-21x faster). The [logos](https://logos.maciej.codes/) crate compiles regex
 patterns into a deterministic finite automaton (DFA) at build time via a derive macro. No
 backtracking, no runtime regex compilation. For wordchipper's cl100k and o200k patterns, this gives

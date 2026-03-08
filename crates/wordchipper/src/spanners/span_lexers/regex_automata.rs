@@ -1,8 +1,8 @@
 //! [`SpanLexer`] backed by `regex_automata::meta::Regex` with external cache
 //! management.
 //!
-//! When the `concurrent` feature is enabled, caches are pooled via
-//! `PoolToy<Mutex<Cache>>` (one per thread). Without `concurrent`, a single
+//! When the `concurrent` feature is enabled, caches are distributed across
+//! pool slots via `PoolToy<Mutex<Cache>>`. Without `concurrent`, a single
 //! `spin::Mutex<Cache>` is used instead (still much faster than fancy-regex).
 
 use core::{
@@ -86,7 +86,9 @@ impl SpanLexer for RegexAutomataLexer {
             };
             let range = m.range();
             if range.is_empty() {
-                pos += 1;
+                // Advance by one UTF-8 character, not one byte, to avoid
+                // landing mid-sequence on multi-byte characters.
+                pos += text[pos..].chars().next().map(|c| c.len_utf8()).unwrap_or(1);
                 continue;
             }
             // Whitespace truncation: if this is a multi-char all-whitespace
@@ -154,12 +156,19 @@ pub(crate) fn try_build(
     pattern: &str,
     max_pool: Option<NonZeroUsize>,
 ) -> Option<Arc<dyn SpanLexer>> {
-    let _ = max_pool; // only used with concurrent feature
-
     // Check known transforms.
     for &(original, transformed, has_newline_branch) in KNOWN_TRANSFORMS {
         if pattern == original {
-            let regex = Regex::new(transformed).ok()?;
+            let regex = match Regex::new(transformed) {
+                Ok(r) => r,
+                Err(e) => {
+                    log::warn!(
+                        "regex-automata failed to compile known transform (len={}): {e}",
+                        transformed.len(),
+                    );
+                    return None;
+                }
+            };
             return Some(build_lexer(regex, has_newline_branch, max_pool));
         }
     }

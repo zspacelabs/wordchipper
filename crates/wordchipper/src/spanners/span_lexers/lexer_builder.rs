@@ -18,6 +18,7 @@ use crate::{
 ///
 /// ## Arguments
 /// * `pattern` - the pattern.
+/// * `accelerated` - whether to try DFA-accelerated lexers (logos) first.
 /// * `concurrent` - whether to use a concurrent pool.
 /// * `max_pool` - the max size of the concurrent pool; `None` will use
 ///   system/environment defaults.
@@ -27,10 +28,6 @@ pub fn build_regex_lexer(
     concurrent: bool,
     max_pool: Option<NonZeroUsize>,
 ) -> Arc<dyn SpanLexer> {
-    let _ = accelerated;
-    let _ = concurrent;
-    let _ = max_pool;
-
     if accelerated && let Some(lexer) = accelerators::get_regex_accelerator(pattern.as_str()) {
         return lexer;
     }

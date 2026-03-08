@@ -38,10 +38,12 @@ them with a single whitespace post-processing fixup (truncate multi-character wh
 split off the last character). This gives near-regex-correct semantics with much less post-processing
 than logos.
 
-Each thread gets its own regex cache via `PoolToy<Mutex<Cache>>`, avoiding the internal pool
-contention that limits `regex-automata`'s built-in pool to ~8 threads.
+With the `concurrent` feature, each pool slot gets its own regex cache via
+`PoolToy<Mutex<Cache>>`, avoiding the internal pool contention that limits `regex-automata`'s
+built-in pool to ~8 threads. Without `concurrent`, a single `spin::Mutex<Cache>` is used (still
+much faster than fancy-regex, even single-threaded).
 
-Enabled when the `concurrent` feature is active and no logos accelerator matches.
+Enabled by default for known patterns when no logos accelerator matches.
 
 ### Tier 3: fancy-regex (fallback)
 
@@ -50,13 +52,13 @@ quantifiers. Correct but slow due to per-match allocations and backtracking.
 
 ### Benchmarks
 
-Spanning throughput on a single thread (English corpus, 73 KB repeated 10x):
+Spanning throughput on a single thread (~73 KB English corpus):
 
 | Model       | Regex     | regex-automata | Logos DFA | RA/Regex | Logos/Regex |
 |-------------|-----------|----------------|-----------|----------|-------------|
 | r50k_base   | ~21 MB/s  | ~89 MB/s       | ~296 MB/s | **4x**   | **14x**     |
 | cl100k_base | ~19 MB/s  | ~90 MB/s       | ~269 MB/s | **5x**   | **14x**     |
-| o200k_base  | ~12 MB/s  | ~91 MB/s       | ~255 MB/s | **7x**   | **21x**     |
+| o200k_base  | ~12 MB/s  | ~91 MB/s       | ~255 MB/s | **8x**   | **21x**     |
 
 Parallel encoding throughput (1024-document batch, `bpe_backtrack` encoder):
 
@@ -74,7 +76,9 @@ Unicode character class alternations.
 # use wordchipper::{TokenizerOptions, load_vocab, disk_cache::WordchipperDiskCache};
 # let mut cache = WordchipperDiskCache::default();
 # let (_, vocab) = load_vocab("openai:cl100k_base", &mut cache).unwrap();
-// Force regex-only spanning (disable both logos and regex-automata):
+// Force regex-only spanning (disable logos and regex-automata).
+// Requires the `concurrent` feature; without it, regex-automata
+// is always active and cannot be disabled via this flag.
 let tok = TokenizerOptions::default()
     .with_accelerated_lexers(false)
     .with_concurrent(false)

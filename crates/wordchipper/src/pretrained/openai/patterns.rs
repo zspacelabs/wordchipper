@@ -68,9 +68,10 @@ pub const OA_O200K_BASE_PATTERN: ConstRegexPattern = ConstRegexPattern::Fancy(jo
 ));
 
 // Transformed patterns for `regex-automata` (no lookaheads, no possessive
-// quantifiers). Used by the `RegexAutomataLexer`; whitespace branches are
-// collapsed to `\s+` with post-processing to split off the last character
-// (matching lookahead semantics).
+// quantifiers). Used by the `RegexAutomataLexer`; the `\s+(?!\S)` + `\s`
+// lookahead branches are collapsed to `\s+` with post-processing to split
+// off the last character (matching lookahead semantics). Other whitespace
+// branches (`\s+$`, `\s*[\r\n]`) are preserved as-is.
 
 /// Transformed `r50k_base`/`gpt2` pattern for `regex-automata`.
 pub(crate) const OA_R50K_BASE_PATTERN_RA: &str = join_patterns!(

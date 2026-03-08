@@ -190,7 +190,7 @@ In wordchipper's architecture:
 
 - **Step 1** is handled by a `TextSpanner` (the `spanners` module). Three backend tiers are
   available, selected automatically: compile-time DFA via logos (fastest, 14-21x over regex),
-  `regex-automata` hybrid engine (middle tier, 4-7x over regex), and fancy-regex (fallback). See
+  `regex-automata` hybrid engine (middle tier, 4-8x over regex), and fancy-regex (fallback). See
   [Performance](./performance.md) for benchmarks.
 - **Step 2** is handled by a `SpanEncoder` (the `encoders` module). Multiple BPE algorithms are
   available, optimized for different use cases.
