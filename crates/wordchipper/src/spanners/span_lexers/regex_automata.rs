@@ -88,7 +88,11 @@ impl SpanLexer for RegexAutomataLexer {
             if range.is_empty() {
                 // Advance by one UTF-8 character, not one byte, to avoid
                 // landing mid-sequence on multi-byte characters.
-                pos += text[pos..].chars().next().map(|c| c.len_utf8()).unwrap_or(1);
+                pos += text[pos..]
+                    .chars()
+                    .next()
+                    .map(|c| c.len_utf8())
+                    .unwrap_or(1);
                 continue;
             }
             // Whitespace truncation: if this is a multi-char all-whitespace
