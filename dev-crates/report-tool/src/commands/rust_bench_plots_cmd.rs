@@ -136,9 +136,9 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
     let sub_charts = charts.split_evenly((3, 1));
 
     for (idx, (lexer_label, model_suffix)) in [
-        ("fast-regex", ""),
-        ("regex-automata", "_ra"),
         ("logos", "_fast"),
+        ("regex-automata", "_ra"),
+        ("fast-regex", ""),
     ]
     .into_iter()
     .enumerate()
