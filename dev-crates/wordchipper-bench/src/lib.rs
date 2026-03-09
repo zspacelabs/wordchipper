@@ -20,9 +20,11 @@ pub const OA_CL100K_BASE: &str = "openai:cl100k_base";
 /// `OpenAI` "`o200k_base`" vocab.
 pub const OA_O200K_BASE: &str = "openai:o200k_base";
 
+/// The huggingface/tokenizers model to use for `r50k_base`.
+pub const HF_R50K: &str = "Xenova/gpt-3";
+
 /// The huggingface/tokenizers model to use for `cl100k_base`.
 pub const HF_CL100K: &str = "Xenova/text-embedding-ada-002";
-
 /// The huggingface/tokenizers model to use for `o200k_base`.
 pub const HF_O200K: &str = "Xenova/gpt-4o";
 
