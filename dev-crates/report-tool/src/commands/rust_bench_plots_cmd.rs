@@ -22,7 +22,10 @@ use crate::util::{
     bench_data,
     bench_data::par_bench::ParBenchData,
     bounds_tools,
-    bounds_tools::iter_frange,
+    bounds_tools::{
+        iter_frange,
+        iter_range,
+    },
     human_format,
     plotting::{
         MarkerLevel,
@@ -146,35 +149,34 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
 
         let span_key = |span: &str| format!("encoding_parallel::wordchipper::{span}::{sel_model}",);
 
-        let base_style = MarkerStyle::default().with_stroke_style(colors::BLACK.stroke_width(2));
         let span_styles = [
             (
                 "buffer_sweep",
-                base_style
+                MarkerStyle::default()
                     .with_marker_type(MarkerType::Circle)
                     .with_fill_style(Some(colors::GREEN_200.into())),
             ),
             (
                 "priority_merge",
-                base_style
+                MarkerStyle::default()
                     .with_marker_type(MarkerType::Square)
                     .with_fill_style(Some(colors::PURPLE_200.into())),
             ),
             (
                 "tail_sweep",
-                base_style
+                MarkerStyle::default()
                     .with_marker_type(MarkerType::Diamond)
                     .with_fill_style(Some(colors::DEEPORANGE_200.into())),
             ),
             (
                 "bpe_backtrack",
-                base_style
+                MarkerStyle::default()
                     .with_marker_type(MarkerType::TriUp)
                     .with_fill_style(Some(colors::LIGHTBLUE_200.into())),
             ),
             (
                 "merge_heap",
-                base_style
+                MarkerStyle::default()
                     .with_marker_type(MarkerType::TriDown)
                     .with_fill_style(Some(colors::BLUEGREY_200.into())),
             ),
@@ -211,7 +213,15 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
             .map(|s| s.map(|&(t, v)| (t, v / baseline[&t])))
             .collect();
 
-        let x_range = match bounds_tools::iter_range(render.iter().flat_map(|s| s.xs())) {
+        let x_range = match iter_range(render.iter().flat_map(|s| s.xs())) {
+            Some(r) => r,
+            None => {
+                log::warn!("No data for {}::{}::{}", model, lexer_label, model_suffix);
+                return Ok(());
+            }
+        };
+
+        let y_range = match iter_frange(render.iter().flat_map(|s| s.ys())) {
             Some(r) => r,
             None => {
                 log::warn!("No data for {}::{}::{}", model, lexer_label, model_suffix);
@@ -223,7 +233,7 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
             .caption(lexer_label, ("sans-serif", 20).into_font())
             .x_label_area_size(40)
             .y_label_area_size(50)
-            .build_cartesian_2d(x_range.log_scale().base(2.0), 0.8..1.0)?;
+            .build_cartesian_2d(x_range.log_scale().base(2.0), y_range)?;
 
         if idx == sub_charts.len() - 1 {
             chart
