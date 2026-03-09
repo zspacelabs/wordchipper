@@ -58,3 +58,14 @@ pub fn fiter_min(iter: impl IntoIterator<Item = f64>) -> Option<f64> {
     }
     acc
 }
+
+pub fn iter_min_max<T: Copy + Ord>(iter: impl Iterator<Item = T>) -> Option<(T, T)> {
+    iter.fold(None, |acc, x| match acc {
+        None => Some((x, x)),
+        Some((low, high)) => Some((std::cmp::min(low, x), std::cmp::max(high, x))),
+    })
+}
+
+pub fn iter_range<T: Copy + Ord>(iter: impl Iterator<Item = T>) -> Option<Range<T>> {
+    iter_min_max(iter).map(|(low, high)| low..high)
+}

@@ -1,6 +1,5 @@
 use std::{
     collections::BTreeMap,
-    ops::Range,
     path::Path,
 };
 
@@ -15,9 +14,10 @@ use plotters::{
 use wordchipper_cli_util::logging::LogArgs;
 
 use crate::util::{
+    bench_data,
     bench_data::par_bench::ParBenchData,
-    float_tools,
-    float_tools::iter_frange,
+    bounds_tools,
+    bounds_tools::iter_frange,
     human_format,
     plotting::{
         MarkerLevel,
@@ -72,17 +72,6 @@ fn lexer_levels() -> &'static [(&'static str, &'static str)] {
     &[("regex", ""), ("ra", "_ra"), ("logos", "fast")]
 }
 
-fn iter_min_max<T: Copy + Ord>(iter: impl Iterator<Item = T>) -> Option<(T, T)> {
-    iter.fold(None, |acc, x| match acc {
-        None => Some((x, x)),
-        Some((low, high)) => Some((std::cmp::min(low, x), std::cmp::max(high, x))),
-    })
-}
-
-fn iter_range<T: Copy + Ord>(iter: impl Iterator<Item = T>) -> Option<Range<T>> {
-    iter_min_max(iter).map(|(low, high)| low..high)
-}
-
 fn build_model_graphs<P: AsRef<Path>>(
     model: &str,
     output_dir: &P,
@@ -128,10 +117,6 @@ fn build_internal_graphs<P: AsRef<Path>>(
     }
 
     Ok(())
-}
-
-fn median_bps(br: &BenchResult) -> f64 {
-    br.throughput_bps.as_ref().unwrap().median.unwrap()
 }
 
 fn span_styles() -> BTreeMap<&'static str, MarkerStyle> {
@@ -202,7 +187,7 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
     }
 
     fn select((threads, bench_results): &(u32, BenchResult)) -> (u32, f64) {
-        (*threads, median_bps(bench_results))
+        (*threads, bench_data::median_bps(bench_results))
     }
 
     let render: Vec<MarkerSeries<(u32, f64)>> = plot_series.iter().map(|s| s.map(select)).collect();
@@ -212,7 +197,7 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
     for ms in render.iter() {
         for &(t, v) in ms.points.iter() {
             let entry = baseline.entry(t).or_default();
-            *entry = float_tools::fmax(*entry, v);
+            *entry = bounds_tools::fmax(*entry, v);
         }
     }
     let render: Vec<MarkerSeries<(u32, f64)>> = render
@@ -220,7 +205,7 @@ fn build_internal_rel_tgraph<P: AsRef<Path>>(
         .map(|s| s.map(|&(t, v)| (t, v / baseline[&t])))
         .collect();
 
-    let x_range = match iter_range(render.iter().flat_map(|s| s.xs())) {
+    let x_range = match bounds_tools::iter_range(render.iter().flat_map(|s| s.xs())) {
         Some(r) => r,
         None => {
             log::warn!("No data for {}::{}::{}", model, lexer, suffix);
@@ -309,12 +294,12 @@ fn build_internal_tgraph<P: AsRef<Path>>(
     }
 
     fn select((threads, bench_results): &(u32, BenchResult)) -> (u32, f64) {
-        (*threads, median_bps(bench_results))
+        (*threads, bench_data::median_bps(bench_results))
     }
 
     let render: Vec<MarkerSeries<(u32, f64)>> = schedule.iter().map(|s| s.map(select)).collect();
 
-    let x_range = match iter_range(render.iter().flat_map(|s| s.xs())) {
+    let x_range = match bounds_tools::iter_range(render.iter().flat_map(|s| s.xs())) {
         Some(r) => r,
         None => {
             log::warn!("No data for {}::{}::{}", model, lexer, suffix);
@@ -467,18 +452,24 @@ fn build_external_graphs<P: AsRef<Path>>(
             root.fill(&colors::WHITE)?;
 
             fn select((threads, bench_results): &(u32, BenchResult)) -> (u32, f64) {
-                (*threads, median_bps(bench_results))
+                (*threads, bench_data::median_bps(bench_results))
             }
 
-            let mut schedule: Vec<MarkerSeries<(u32, f64)>> =
-                external.iter().map(|ms| ms.map(select)).collect();
-
-            for s in group.iter() {
-                schedule.push(s.map(select));
+            let mut schedule: Vec<MarkerSeries<(u32, BenchResult)>> = external.clone();
+            for &g in &group {
+                schedule.push(g.clone());
             }
 
-            let x_range = iter_range(schedule.iter().flat_map(|s| s.xs())).unwrap();
-            let y_range = iter_frange(schedule.iter().flat_map(|s| s.ys())).unwrap();
+            // Range over all thread values.
+            let x_range = bounds_tools::iter_range(schedule.iter().flat_map(|s| s.xs())).unwrap();
+            // Range over all bps values.
+            let y_range = iter_frange(schedule.iter().flat_map(|s| {
+                s.ys()
+                    .iter()
+                    .map(bench_data::median_bps)
+                    .collect::<Vec<f64>>()
+            }))
+            .unwrap();
 
             let caption = format!(
                 "wordchipper:{chart_name} {scale_desc} throughput, rust, model: \"{model}\"",
@@ -508,21 +499,44 @@ fn build_external_graphs<P: AsRef<Path>>(
                     // Render the lines under the markers.
                     for ms in schedule.iter() {
                         chart.draw_series(LineSeries::new(
-                            ms.points.clone(),
+                            ms.map_points(select),
                             ms.style.line_style().stroke_width(LINE_WIDTH),
                         ))?;
                     }
 
                     for ms in schedule.iter() {
                         chart
-                            .draw_series(
-                                ms.points
-                                    .iter()
-                                    .map(|coords| ms.style.marker(*coords, SIZE)),
-                            )?
+                            .draw_series(ms.points.iter().map(|(threads, bench_results)| {
+                                let bps = bench_data::median_bps(bench_results);
+                                let coord = (*threads, bps);
+                                ms.style.marker(coord, SIZE)
+                            }))?
                             .label(ms.name.clone())
                             .legend(move |coord| ms.style.marker(coord, SIZE));
                     }
+
+                    /*
+                    if log_scale {
+                        for ms in schedule.iter() {
+                            chart
+                                .draw_series(ms.points.iter().map(|(threads, bench_results)| {
+                                    let bps = median_bps(bench_results);
+                                    let coord = (*threads, bps);
+                                    let allocs = alloc_count(bench_results).unwrap_or(0);
+                                    let deallocs = dealloc_count(bench_results).unwrap_or(0);
+
+                                    EmptyElement::at(coord)
+                                        + Text::new(
+                                            format!("{}:{}", allocs, deallocs),
+                                            (5, 10),
+                                            ("sans-serif", 12).into_font(),
+                                        )
+                                }))?
+                                .label(ms.name.clone())
+                                .legend(move |coord| ms.style.marker(coord, SIZE));
+                        }
+                    }
+                     */
 
                     chart
                         .configure_series_labels()

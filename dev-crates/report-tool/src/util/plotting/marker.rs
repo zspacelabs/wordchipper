@@ -296,28 +296,6 @@ impl<Coord, Size: SizeDesc> GraphMarker<Coord, Size> {
     ) -> Self {
         Self { coord, size, style }
     }
-
-    pub fn legacy<S, F, E>(
-        coord: Coord,
-        size: Size,
-        marker_type: MarkerType,
-        marker_level: E,
-        stroke_style: S,
-        fill_style: F,
-    ) -> Self
-    where
-        S: Into<ShapeStyle>,
-        F: Into<Option<ShapeStyle>>,
-        E: Into<MarkerLevel>,
-    {
-        let style = MarkerStyle::default()
-            .with_marker_type(marker_type)
-            .with_marker_level(marker_level)
-            .with_stroke_style(stroke_style)
-            .with_fill_style(fill_style);
-
-        Self::new(coord, size, style)
-    }
 }
 
 impl<'a, Coord, Size: SizeDesc> PointCollection<'a, Coord> for &'a GraphMarker<Coord, Size> {
@@ -518,17 +496,18 @@ pub fn build_demo_graph<P: AsRef<Path>>(output_dir: &P) -> Result<(), Box<dyn st
     Ok(())
 }
 
-pub struct MarkerSeries<Coord> {
+#[derive(Clone, Debug)]
+pub struct MarkerSeries<V: Clone> {
     pub name: String,
     pub style: MarkerStyle,
-    pub points: Vec<Coord>,
+    pub points: Vec<V>,
 }
 
-impl<Coord> MarkerSeries<Coord> {
+impl<V: Clone> MarkerSeries<V> {
     pub fn new<S: AsRef<str>>(
         name: S,
         style: MarkerStyle,
-        points: Vec<Coord>,
+        points: Vec<V>,
     ) -> Self {
         Self {
             name: name.as_ref().to_string(),
@@ -537,18 +516,28 @@ impl<Coord> MarkerSeries<Coord> {
         }
     }
 
-    pub fn map<F, T>(
+    pub fn map<F, U: Clone>(
         &self,
         f: F,
-    ) -> MarkerSeries<T>
+    ) -> MarkerSeries<U>
     where
-        F: Fn(&Coord) -> T,
+        F: Fn(&V) -> U,
     {
-        MarkerSeries::<T> {
+        MarkerSeries::<U> {
             name: self.name.clone(),
             style: self.style,
-            points: self.points.iter().map(f).collect(),
+            points: self.map_points(f),
         }
+    }
+
+    pub fn map_points<F, U: Clone>(
+        &self,
+        f: F,
+    ) -> Vec<U>
+    where
+        F: Fn(&V) -> U,
+    {
+        self.points.iter().map(f).collect()
     }
 }
 
