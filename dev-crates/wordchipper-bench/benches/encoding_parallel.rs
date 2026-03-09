@@ -171,11 +171,18 @@ fn bench_bpe_openai(
 }
 
 mod r50k {
+    use wordchipper_bench::HF_R50K;
+
     use super::*;
 
     #[divan::bench]
     fn tiktoken(bencher: Bencher) {
         bench_tt(bencher, &tiktoken_rs::r50k_base().unwrap())
+    }
+
+    #[divan::bench]
+    fn tokenizers(bencher: Bencher) {
+        bench_hf(bencher, HF_R50K)
     }
 
     mod wordchipper {
