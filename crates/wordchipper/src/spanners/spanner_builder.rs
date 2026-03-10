@@ -26,7 +26,9 @@ use crate::{
 pub struct TextSpannerBuilder<T: TokenType> {
     config: TextSpanningConfig<T>,
 
-    accelerated_lexers: bool,
+    enable_accelerated_lexers: bool,
+    enable_regex_automata: bool,
+
     concurrent: bool,
     max_pool: Option<NonZeroUsize>,
 }
@@ -48,7 +50,8 @@ impl<T: TokenType> TextSpannerBuilder<T> {
     pub fn new(config: TextSpanningConfig<T>) -> Self {
         Self {
             config,
-            accelerated_lexers: true,
+            enable_accelerated_lexers: true,
+            enable_regex_automata: true,
             concurrent: true,
             max_pool: None,
         }
@@ -65,7 +68,7 @@ impl<T: TokenType> TextSpannerBuilder<T> {
     /// found for a given regex pattern; the regex accelerator
     /// will be used for spanners.
     pub fn accelerated_lexers(&self) -> bool {
-        self.accelerated_lexers
+        self.enable_accelerated_lexers
     }
 
     /// Set whether accelerated lexers should be enabled.
@@ -75,9 +78,9 @@ impl<T: TokenType> TextSpannerBuilder<T> {
     /// will be used for spanners.
     pub fn set_accelerated_lexers(
         &mut self,
-        accelerated_lexers: bool,
+        enable: bool,
     ) {
-        self.accelerated_lexers = accelerated_lexers;
+        self.enable_accelerated_lexers = enable;
     }
 
     /// Set whether accelerated lexers should be enabled.
@@ -87,9 +90,31 @@ impl<T: TokenType> TextSpannerBuilder<T> {
     /// will be used for spanners.
     pub fn with_accelerated_lexers(
         mut self,
+        enable: bool,
+    ) -> Self {
+        self.set_accelerated_lexers(enable);
+        self
+    }
+
+    /// Is regex-automata enabled?
+    pub fn regex_automata(&self) -> bool {
+        self.enable_regex_automata
+    }
+
+    /// Set whether regex-automa should be enabled.
+    pub fn set_regex_automata(
+        &mut self,
+        enable: bool,
+    ) {
+        self.enable_regex_automata = enable;
+    }
+
+    /// Set whether regex-automa should be enabled.
+    pub fn with_regex_automata(
+        mut self,
         accelerated_lexers: bool,
     ) -> Self {
-        self.set_accelerated_lexers(accelerated_lexers);
+        self.set_regex_automata(accelerated_lexers);
         self
     }
 
@@ -156,15 +181,21 @@ impl<T: TokenType> TextSpannerBuilder<T> {
     pub fn build(&self) -> Arc<dyn TextSpanner> {
         let word_lexer: Arc<dyn SpanLexer> = build_regex_lexer(
             self.config().pattern().clone(),
-            self.accelerated_lexers,
+            self.enable_accelerated_lexers,
+            self.enable_regex_automata,
             self.concurrent,
             self.max_pool,
         );
-        let special_lexer: Option<Arc<dyn SpanLexer>> = self
-            .config
-            .specials()
-            .special_pattern()
-            .map(|pattern| build_regex_lexer(pattern, false, self.concurrent, self.max_pool));
+        let special_lexer: Option<Arc<dyn SpanLexer>> =
+            self.config.specials().special_pattern().map(|pattern| {
+                build_regex_lexer(
+                    pattern,
+                    false,
+                    self.enable_regex_automata,
+                    self.concurrent,
+                    self.max_pool,
+                )
+            });
 
         Arc::new(LexerTextSpanner::new(word_lexer, special_lexer))
     }

@@ -18,24 +18,30 @@ use crate::{
 ///
 /// ## Arguments
 /// * `pattern` - the pattern.
-/// * `accelerated` - whether to try DFA-accelerated lexers (logos) first.
+/// * `enable_accelerators` - whether to try DFA-accelerated lexers (logos)
+///   first.
+/// * `enable_regex_automata` - whether to try `regex_automata` lexers.
 /// * `concurrent` - whether to use a concurrent pool.
 /// * `max_pool` - the max size of the concurrent pool; `None` will use
 ///   system/environment defaults.
 pub fn build_regex_lexer(
     pattern: RegexPattern,
-    accelerated: bool,
+    enable_accelerators: bool,
+    enable_regex_automata: bool,
     concurrent: bool,
     max_pool: Option<NonZeroUsize>,
 ) -> Arc<dyn SpanLexer> {
-    if accelerated && let Some(lexer) = accelerators::get_regex_accelerator(pattern.as_str()) {
+    if enable_accelerators
+        && let Some(lexer) = accelerators::get_regex_accelerator(pattern.as_str())
+    {
         return lexer;
     }
 
     // regex-automata: when concurrent feature is active, respect the concurrent
     // flag (so benchmarks can isolate the regex fallback). Without the feature,
     // always try it since it's faster than fancy-regex even single-threaded.
-    if (cfg!(not(feature = "concurrent")) || concurrent)
+    if enable_regex_automata
+        && (cfg!(not(feature = "concurrent")) || concurrent)
         && let Some(lexer) = super::regex_automata::try_build(pattern.as_str(), max_pool)
     {
         return lexer;

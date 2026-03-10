@@ -30,7 +30,11 @@ def _utf8_len(text):
     return len(text.encode("utf-8"))
 
 
-# ---------------------------------------------------------------------------
+def warm_up():
+    pass
+
+
+# -----e---------------------------------------------------------------------
 # Single-string encoding
 # ---------------------------------------------------------------------------
 
@@ -154,13 +158,11 @@ class TestBatchEncode:
         benchmark.group = f"batch/{model}"
         benchmark.extra_info["input_bytes"] = total_bytes
 
-        pool = ThreadPoolExecutor(max_workers=max_threads)
+        with ThreadPoolExecutor(max_workers=max_threads, initializer=warm_up) as pool:
+            def encode_batch_threaded(texts):
+                return list(pool.map(tok.encode, texts))
 
-        def encode_batch_threaded(texts):
-            return list(pool.map(tok.encode, texts))
-
-        benchmark(encode_batch_threaded, texts)
-        pool.shutdown(wait=False)
+            benchmark(encode_batch_threaded, texts)
 
     def test_wordchipper_threadpool_accel(self, benchmark, model, fineweb_batch, max_threads):
         texts, total_bytes = fineweb_batch
@@ -176,13 +178,11 @@ class TestBatchEncode:
         benchmark.group = f"batch/{model}"
         benchmark.extra_info["input_bytes"] = total_bytes
 
-        pool = ThreadPoolExecutor(max_workers=max_threads)
+        with ThreadPoolExecutor(max_workers=max_threads, initializer=warm_up) as pool:
+            def encode_batch_threaded(texts):
+                return list(pool.map(tok.encode, texts))
 
-        def encode_batch_threaded(texts):
-            return list(pool.map(tok.encode, texts))
-
-        benchmark(encode_batch_threaded, texts)
-        pool.shutdown(wait=False)
+            benchmark(encode_batch_threaded, texts)
 
     def test_tiktoken(self, benchmark, model, fineweb_batch):
         texts, total_bytes = fineweb_batch
