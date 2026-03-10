@@ -124,7 +124,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
         groups.push(MarkerSeries::new(
             "tokenizers",
             MarkerStyle::default()
-                .with_marker_type(MarkerType::CrossDiamond)
+                .with_marker_type(MarkerType::Diamond)
                 .with_fill_style(Some(colors::BLUEGREY_100.into())),
             series,
         ));
@@ -138,10 +138,30 @@ fn build_throughput_graph<P: AsRef<Path>>(
             series,
         ));
     }
+    /*
+    if let Some(series) = data.select_series(&format!("tokenizers_threadpool[{model}]")) {
+        groups.push(MarkerSeries::new(
+            "tokenizers::threadpool",
+            MarkerStyle::default()
+                .with_marker_type(MarkerType::CrossDiamond)
+                .with_fill_style(Some(colors::BLUEGREY_100.into())),
+            series,
+        ));
+    }
+    if let Some(series) = data.select_series(&format!("tiktoken_threadpool[{model}]")) {
+        groups.push(MarkerSeries::new(
+            "tiktoken::threadpool",
+            MarkerStyle::default()
+                .with_marker_type(MarkerType::Square)
+                .with_fill_style(Some(colors::PURPLE_200.into())),
+            series,
+        ));
+    }
+     */
 
     if let Some(series) = data.select_series(&format!("wordchipper_parallel[{model}]")) {
         groups.push(MarkerSeries::new(
-            "wordchipper::rayon::regex",
+            "wordchipper::rayon::regex-automata",
             MarkerStyle::default()
                 .with_marker_type(MarkerType::TriUp)
                 .with_marker_level(MarkerLevel::Para)
@@ -161,7 +181,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
     }
     if let Some(series) = data.select_series(&format!("wordchipper_threadpool[{model}]")) {
         groups.push(MarkerSeries::new(
-            "wordchipper::threadpool::regex",
+            "wordchipper::threadpool::regex-automata",
             MarkerStyle::default()
                 .with_marker_type(MarkerType::TriUp)
                 .with_fill_style(Some(colors::LIGHTBLUE_200.into())),

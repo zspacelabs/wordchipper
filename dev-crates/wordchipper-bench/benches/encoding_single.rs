@@ -42,7 +42,7 @@ pub fn bench_wc(
     selector: SpanEncoderSelector,
     accelerator: bool,
 ) {
-    let encoder = wordchipper_bench::load_encoder::<u32>(
+    let encoder = wordchipper_bench::load_cached_encoder::<u32>(
         model,
         TokenEncoderOptions::default()
             .with_accelerated_lexers(accelerator)

@@ -35,22 +35,31 @@ fn get_disk_cache() -> &'static Mutex<WordchipperDiskCache> {
     DISK_CACHE.get_or_init(|| Mutex::new(WordchipperDiskCache::default()))
 }
 
-/// Builds an `Arc<Tokenizer<T>>` for the target model and options.
+/// Loads an `Arc<UnifiedTokenVocab<T>>` for the target model.
 ///
 /// Use the default disk cache to load the vocab.
-pub fn load_encoder<T: TokenType>(
-    model: &str,
-    options: TokenEncoderOptions,
-) -> Arc<dyn TokenEncoder<T>> {
+pub fn load_cached_vocab<T: TokenType>(
+    model: &str
+) -> Result<Arc<UnifiedTokenVocab<T>>, wordchipper::WCError> {
     let mut guard = get_disk_cache().lock().unwrap();
     let disk_cache = &mut *guard;
 
-    let vocab: Arc<UnifiedTokenVocab<T>> = load_vocab(model, disk_cache)
-        .unwrap()
+    let vocab: Arc<UnifiedTokenVocab<T>> = load_vocab(model, disk_cache)?
         .vocab()
-        .to_token_type::<T>()
-        .unwrap()
+        .to_token_type::<T>()?
         .into();
+
+    Ok(vocab)
+}
+
+/// Builds an `Arc<Tokenizer<T>>` for the target model and options.
+///
+/// Use the default disk cache to load the vocab.
+pub fn load_cached_encoder<T: TokenType>(
+    model: &str,
+    options: TokenEncoderOptions,
+) -> Arc<dyn TokenEncoder<T>> {
+    let vocab: Arc<UnifiedTokenVocab<T>> = load_cached_vocab::<T>(model).unwrap();
 
     options.build(vocab)
 }

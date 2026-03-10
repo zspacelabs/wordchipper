@@ -17,21 +17,21 @@ use wordchipper::{
     TokenEncoder,
     TokenType,
     UnifiedTokenVocab,
-    disk_cache::WordchipperDiskCache,
     encoders::token_span_encoder::{
         SpanEncoderSelector,
         TokenSpanEncoder,
     },
-    load_vocab,
     spanners::TextSpannerBuilder,
     support::concurrency::rayon::ParallelRayonEncoder,
 };
 use wordchipper_bench::{
     HF_CL100K,
     HF_O200K,
+    HF_R50K,
     OA_CL100K_BASE,
     OA_O200K_BASE,
     OA_R50K_BASE,
+    load_cached_vocab,
 };
 use wordchipper_data::dataset::DatasetCacheConfig;
 
@@ -95,23 +95,38 @@ fn load_batch() -> Batch {
 
 static BATCH: LazyLock<Batch> = LazyLock::new(load_batch);
 
-fn build_encoder<T: TokenType>(
+pub enum LexerMode {
+    Regex,
+    RegexAutomata,
+    Logos,
+}
+
+fn build_encoder_wc<T: TokenType>(
     model: &str,
     selector: SpanEncoderSelector,
-    accelerated: bool,
-    concurrent: bool,
+    mode: LexerMode,
 ) -> Arc<dyn TokenEncoder<T>> {
-    let vocab: Arc<UnifiedTokenVocab<T>> = load_vocab(model, &mut WordchipperDiskCache::default())
-        .unwrap()
-        .vocab()
-        .to_token_type::<T>()
-        .unwrap()
-        .into();
+    let vocab: Arc<UnifiedTokenVocab<T>> = load_cached_vocab(model).unwrap();
 
-    let spanner = TextSpannerBuilder::new(vocab.spanning().clone())
-        .with_accelerated_lexers(accelerated)
-        .with_concurrent(concurrent)
-        .build();
+    let mut builder = TextSpannerBuilder::from_vocab(&vocab);
+    builder.set_concurrent(true);
+
+    match mode {
+        LexerMode::Regex => {
+            builder.set_regex_automata(false);
+            builder.set_accelerated_lexers(false);
+        }
+        LexerMode::RegexAutomata => {
+            builder.set_regex_automata(true);
+            builder.set_accelerated_lexers(false);
+        }
+        LexerMode::Logos => {
+            builder.set_regex_automata(false);
+            builder.set_accelerated_lexers(true);
+        }
+    }
+
+    let spanner = builder.build();
 
     let enc: Arc<dyn TokenEncoder<T>> = Arc::new(TokenSpanEncoder::<T>::new_with_selector(
         spanner, vocab, selector,
@@ -124,12 +139,10 @@ fn bench_wc(
     bencher: Bencher,
     model: &str,
     selector: SpanEncoderSelector,
-    accelerated: bool,
-    concurrent: bool,
+    mode: LexerMode,
 ) {
     let strs = BATCH.strs();
-    let encoder = build_encoder::<u32>(model, selector, accelerated, concurrent);
-
+    let encoder = build_encoder_wc::<u32>(model, selector, mode);
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
         .bench(|| encoder.try_encode_batch(black_box(&strs)).unwrap());
@@ -171,7 +184,6 @@ fn bench_bpe_openai(
 }
 
 mod r50k {
-    use wordchipper_bench::HF_R50K;
 
     use super::*;
 
@@ -190,6 +202,7 @@ mod r50k {
 
         mod regex {
             use super::*;
+            const MODE: LexerMode = LexerMode::Regex;
 
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
@@ -197,31 +210,18 @@ mod r50k {
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
             #[divan::bench]
             fn tail_sweep(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_R50K_BASE,
-                    SpanEncoderSelector::TailSweep,
-                    false,
-                    false,
-                );
+                bench_wc(bencher, OA_R50K_BASE, SpanEncoderSelector::TailSweep, MODE);
             }
 
             #[divan::bench]
             fn merge_heap(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_R50K_BASE,
-                    SpanEncoderSelector::MergeHeap,
-                    false,
-                    false,
-                );
+                bench_wc(bencher, OA_R50K_BASE, SpanEncoderSelector::MergeHeap, MODE);
             }
 
             #[divan::bench]
@@ -230,8 +230,7 @@ mod r50k {
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
@@ -241,8 +240,7 @@ mod r50k {
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    false,
-                    false,
+                    MODE,
                 );
             }
         }
@@ -250,37 +248,26 @@ mod r50k {
         mod regex_automata {
             use super::*;
 
+            const MODE: LexerMode = LexerMode::RegexAutomata;
+
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
                 bench_wc(
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
             #[divan::bench]
             fn tail_sweep(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_R50K_BASE,
-                    SpanEncoderSelector::TailSweep,
-                    false,
-                    true,
-                );
+                bench_wc(bencher, OA_R50K_BASE, SpanEncoderSelector::TailSweep, MODE);
             }
 
             #[divan::bench]
             fn merge_heap(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_R50K_BASE,
-                    SpanEncoderSelector::MergeHeap,
-                    false,
-                    true,
-                );
+                bench_wc(bencher, OA_R50K_BASE, SpanEncoderSelector::MergeHeap, MODE);
             }
 
             #[divan::bench]
@@ -289,8 +276,7 @@ mod r50k {
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
@@ -300,8 +286,7 @@ mod r50k {
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    false,
-                    true,
+                    MODE,
                 );
             }
         }
@@ -309,37 +294,26 @@ mod r50k {
         mod logos {
             use super::*;
 
+            const MODE: LexerMode = LexerMode::Logos;
+
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
                 bench_wc(
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
             #[divan::bench]
             fn tail_sweep(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_R50K_BASE,
-                    SpanEncoderSelector::TailSweep,
-                    true,
-                    true,
-                );
+                bench_wc(bencher, OA_R50K_BASE, SpanEncoderSelector::TailSweep, MODE);
             }
 
             #[divan::bench]
             fn merge_heap(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_R50K_BASE,
-                    SpanEncoderSelector::MergeHeap,
-                    true,
-                    true,
-                );
+                bench_wc(bencher, OA_R50K_BASE, SpanEncoderSelector::MergeHeap, MODE);
             }
 
             #[divan::bench]
@@ -348,8 +322,7 @@ mod r50k {
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
@@ -359,8 +332,7 @@ mod r50k {
                     bencher,
                     OA_R50K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    true,
-                    true,
+                    MODE,
                 );
             }
         }
@@ -390,6 +362,7 @@ mod cl100k {
 
         mod regex {
             use super::*;
+            const MODE: LexerMode = LexerMode::Regex;
 
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
@@ -397,8 +370,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
@@ -408,8 +380,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::TailSweep,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
@@ -419,8 +390,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::MergeHeap,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
@@ -430,8 +400,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
@@ -441,8 +410,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    false,
-                    false,
+                    MODE,
                 );
             }
         }
@@ -450,14 +418,15 @@ mod cl100k {
         mod regex_automata {
             use super::*;
 
+            const MODE: LexerMode = LexerMode::RegexAutomata;
+
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
                 bench_wc(
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
@@ -467,8 +436,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::TailSweep,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
@@ -478,8 +446,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::MergeHeap,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
@@ -489,8 +456,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
@@ -500,8 +466,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    false,
-                    true,
+                    MODE,
                 );
             }
         }
@@ -509,14 +474,15 @@ mod cl100k {
         mod logos {
             use super::*;
 
+            const MODE: LexerMode = LexerMode::Logos;
+
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
                 bench_wc(
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
@@ -526,8 +492,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::TailSweep,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
@@ -537,8 +502,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::MergeHeap,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
@@ -548,8 +512,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
@@ -559,8 +522,7 @@ mod cl100k {
                     bencher,
                     OA_CL100K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    true,
-                    true,
+                    MODE,
                 );
             }
         }
@@ -591,37 +553,26 @@ mod o200k {
         mod regex {
             use super::*;
 
+            const MODE: LexerMode = LexerMode::Regex;
+
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
                 bench_wc(
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
             #[divan::bench]
             fn tail_sweep(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_O200K_BASE,
-                    SpanEncoderSelector::TailSweep,
-                    false,
-                    false,
-                );
+                bench_wc(bencher, OA_O200K_BASE, SpanEncoderSelector::TailSweep, MODE);
             }
 
             #[divan::bench]
             fn merge_heap(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_O200K_BASE,
-                    SpanEncoderSelector::MergeHeap,
-                    false,
-                    false,
-                );
+                bench_wc(bencher, OA_O200K_BASE, SpanEncoderSelector::MergeHeap, MODE);
             }
 
             #[divan::bench]
@@ -630,8 +581,7 @@ mod o200k {
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    false,
-                    false,
+                    MODE,
                 );
             }
 
@@ -641,8 +591,7 @@ mod o200k {
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    false,
-                    false,
+                    MODE,
                 );
             }
         }
@@ -650,37 +599,26 @@ mod o200k {
         mod regex_automata {
             use super::*;
 
+            const MODE: LexerMode = LexerMode::RegexAutomata;
+
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
                 bench_wc(
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
             #[divan::bench]
             fn tail_sweep(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_O200K_BASE,
-                    SpanEncoderSelector::TailSweep,
-                    false,
-                    true,
-                );
+                bench_wc(bencher, OA_O200K_BASE, SpanEncoderSelector::TailSweep, MODE);
             }
 
             #[divan::bench]
             fn merge_heap(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_O200K_BASE,
-                    SpanEncoderSelector::MergeHeap,
-                    false,
-                    true,
-                );
+                bench_wc(bencher, OA_O200K_BASE, SpanEncoderSelector::MergeHeap, MODE);
             }
 
             #[divan::bench]
@@ -689,8 +627,7 @@ mod o200k {
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    false,
-                    true,
+                    MODE,
                 );
             }
 
@@ -700,8 +637,7 @@ mod o200k {
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    false,
-                    true,
+                    MODE,
                 );
             }
         }
@@ -709,37 +645,26 @@ mod o200k {
         mod logos {
             use super::*;
 
+            const MODE: LexerMode = LexerMode::Logos;
+
             #[divan::bench]
             fn buffer_sweep(bencher: Bencher) {
                 bench_wc(
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::BufferSweep,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
             #[divan::bench]
             fn tail_sweep(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_O200K_BASE,
-                    SpanEncoderSelector::TailSweep,
-                    true,
-                    true,
-                );
+                bench_wc(bencher, OA_O200K_BASE, SpanEncoderSelector::TailSweep, MODE);
             }
 
             #[divan::bench]
             fn merge_heap(bencher: Bencher) {
-                bench_wc(
-                    bencher,
-                    OA_O200K_BASE,
-                    SpanEncoderSelector::MergeHeap,
-                    true,
-                    true,
-                );
+                bench_wc(bencher, OA_O200K_BASE, SpanEncoderSelector::MergeHeap, MODE);
             }
 
             #[divan::bench]
@@ -748,8 +673,7 @@ mod o200k {
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::PriorityMerge,
-                    true,
-                    true,
+                    MODE,
                 );
             }
 
@@ -759,8 +683,7 @@ mod o200k {
                     bencher,
                     OA_O200K_BASE,
                     SpanEncoderSelector::BpeBacktrack,
-                    true,
-                    true,
+                    MODE,
                 );
             }
         }
