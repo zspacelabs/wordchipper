@@ -25,13 +25,13 @@ This is the training implementation crate for the
 The core additional user-facing crates are:
 
 * [wordchipper](https://crates.io/crates/wordchipper) - the core tokenizer library.
-* [wchipper](https://crates.io/crates/wchipper) - a multi-tool tokenizer binary; notably:
-    * `wchipper cat` - in-line encoder/decoder tool.
-    * `wchipper train` - tokenizer training tool.
+* [wordchipper-cli](https://crates.io/crates/wordchipper-cli) - a multi-tool tokenizer binary; notably:
+    * `wordchipper-cli cat` - in-line encoder/decoder tool.
+    * `wordchipper-cli train` - tokenizer training tool.
 
 ## Training Tool
 
-A pre-built training tool is shipped as part of the [`wchipper`](https://crates.io/crates/wchipper) tool.
+A pre-built training tool is shipped as part of the [`wordchipper-cli`](https://crates.io/crates/wordchipper-cli) tool.
 
 ## Training
 

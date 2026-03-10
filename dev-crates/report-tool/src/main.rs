@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     args.command.run()
 }
 
-/// Subcommands for wchipper
+/// Subcommands for wordchipper-cli
 #[derive(clap::Subcommand, Debug)]
 pub enum Commands {
     /// Rust benchmark plots.

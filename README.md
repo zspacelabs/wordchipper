@@ -95,7 +95,7 @@ See [bindings/wasm](bindings/wasm) for full API, build instructions, and example
 
 - [wordchipper](crates/wordchipper) - main crate.
 - [wordchipper-training](crates/wordchipper-training) - training library.
-- [wchipper](crates/wchipper) - `chipper` multifunction command-line tool.
+- [wordchipper-cli](crates/wordchipper-cli) - `chipper` multifunction command-line tool.
 
 #### Internally Sourced Dep Crates
 

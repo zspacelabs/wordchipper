@@ -1,7 +1,7 @@
-# wchipper
+# wordchipper-cli
 
-[![Crates.io Version](https://img.shields.io/crates/v/wchipper)](https://crates.io/crates/wchipper)
-[![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wchipper/)
+[![Crates.io Version](https://img.shields.io/crates/v/wordchipper-cli)](https://crates.io/crates/wordchipper-cli)
+[![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wordchipper-cli/)
 [![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
 
 A text LLM tokenizer command line multi-tool.
@@ -23,17 +23,17 @@ The core additional user-facing crates are:
 ## Installation
 
 ```terminaloutput
-% cargo install wchipper
+% cargo install wordchipper-cli
 ```
 
 ## Usage
 
 See: [USAGE](USAGE.md) for detailed usage instructions.
 
-### Example: wchipper cat
+### Example: wordchipper-cli cat
 
 ```terminaloutput
-% echo "abc def" | wchipper cat --encode --model=openai::gpt2
+% echo "abc def" | wordchipper-cli cat --encode --model=openai::gpt2
 39305 825 198
 
 % echo "39305 825 198" | cargo run --release -p wordchipper-cli -- \
@@ -41,10 +41,10 @@ See: [USAGE](USAGE.md) for detailed usage instructions.
 abc def
 ```
 
-### Example: wchipper models list
+### Example: wordchipper-cli models list
 
 ```terminaloutput
- % wchipper models list                  
+ % wordchipper-cli models list                  
 "openai" - Pretrained vocabularies from OpenAI
   * "openai:gpt2"
     GPT-2 `gpt2` vocabulary
@@ -62,10 +62,10 @@ abc def
     GPT-5 `o200k_harmony` vocabulary
 ```
 
-### Example: wchipper train
+### Example: wordchipper-cli train
 
 ```terminal
-% wchipper train \
+% wordchipper-cli train \
     --output=/tmp/tok.tokenizer \
     --lexer-model=gpt2 \
     --input-format=parquet \

@@ -24,9 +24,9 @@ This is the main crate for the [wordchipper](https://github.com/zspacelabs/wordc
 
 The core additional user-facing crates are:
 
-* [wchipper](https://crates.io/crates/wchipper) - a multi-tool tokenizer binary; notably:
-    * `wchipper cat` - in-line encoder/decoder tool.
-    * `wchipper train` - tokenizer training tool.
+* [wordchipper-cli](https://crates.io/crates/wordchipper-cli) - a multi-tool tokenizer binary; notably:
+    * `wordchipper-cli cat` - in-line encoder/decoder tool.
+    * `wordchipper-cli train` - tokenizer training tool.
 * [wordchipper-training](https://crates.io/crates/wordchipper-training) - an extension crate for training tokenizers.
 
 ## Encode/Decode Side-by-Side Benchmarks

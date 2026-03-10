@@ -1,24 +1,24 @@
-# Command-Line Help for `wchipper`
+# Command-Line Help for `wordchipper-cli`
 
-This document contains the help content for the `wchipper` command-line program.
+This document contains the help content for the `wordchipper-cli` command-line program.
 
 **Command Overview:**
 
-* [`wchipper`↴](#wchipper)
-* [`wchipper cat`↴](#wchipper-cat)
-* [`wchipper lexers`↴](#wchipper-lexers)
-* [`wchipper lexers list`↴](#wchipper-lexers-list)
-* [`wchipper lexers stress`↴](#wchipper-lexers-stress)
-* [`wchipper models`↴](#wchipper-models)
-* [`wchipper models list`↴](#wchipper-models-list)
-* [`wchipper train`↴](#wchipper-train)
-* [`wchipper doc`↴](#wchipper-doc)
+* [`wordchipper-cli`↴](#wordchipper-cli)
+* [`wordchipper-cli cat`↴](#wordchipper-cli-cat)
+* [`wordchipper-cli lexers`↴](#wordchipper-cli-lexers)
+* [`wordchipper-cli lexers list`↴](#wordchipper-cli-lexers-list)
+* [`wordchipper-cli lexers stress`↴](#wordchipper-cli-lexers-stress)
+* [`wordchipper-cli models`↴](#wordchipper-cli-models)
+* [`wordchipper-cli models list`↴](#wordchipper-cli-models-list)
+* [`wordchipper-cli train`↴](#wordchipper-cli-train)
+* [`wordchipper-cli doc`↴](#wordchipper-cli-doc)
 
-## `wchipper`
+## `wordchipper-cli`
 
 Text tokenizer multi-tool
 
-**Usage:** `wchipper <COMMAND>`
+**Usage:** `wordchipper-cli <COMMAND>`
 
 ###### **Subcommands:**
 
@@ -28,13 +28,11 @@ Text tokenizer multi-tool
 * `train` — Train a new model
 * `doc` — Generate markdown documentation
 
-
-
-## `wchipper cat`
+## `wordchipper-cli cat`
 
 Act as a streaming tokenizer
 
-**Usage:** `wchipper cat [OPTIONS] <--model <MODEL>> <--encode|--decode>`
+**Usage:** `wordchipper-cli cat [OPTIONS] <--model <MODEL>> <--encode|--decode>`
 
 ###### **Options:**
 
@@ -47,26 +45,22 @@ Act as a streaming tokenizer
 * `--output <OUTPUT>` — Optional output file; "-" may be used to indicate stdout
 * `--cache-dir <CACHE_DIR>` — Cache directory
 
-
-
-## `wchipper lexers`
+## `wordchipper-cli lexers`
 
 Lexers sub-menu
 
-**Usage:** `wchipper lexers <COMMAND>`
+**Usage:** `wordchipper-cli lexers <COMMAND>`
 
 ###### **Subcommands:**
 
 * `list` — List available lexers
 * `stress` — Stress test a regex accelerator
 
-
-
-## `wchipper lexers list`
+## `wordchipper-cli lexers list`
 
 List available lexers
 
-**Usage:** `wchipper lexers list [OPTIONS]`
+**Usage:** `wordchipper-cli lexers list [OPTIONS]`
 
 **Command Alias:** `ls`
 
@@ -74,13 +68,12 @@ List available lexers
 
 * `-p`, `--patterns` — Display the patterns
 
-
-
-## `wchipper lexers stress`
+## `wordchipper-cli lexers stress`
 
 Stress test a regex accelerator
 
-**Usage:** `wchipper lexers stress [OPTIONS] --input-format <INPUT_FORMAT> <--lexer-model <LEXER_MODEL>|--pattern <PATTERN>> [FILES]...`
+**Usage:**
+`wordchipper-cli lexers stress [OPTIONS] --input-format <INPUT_FORMAT> <--lexer-model <LEXER_MODEL>|--pattern <PATTERN>> [FILES]...`
 
 ###### **Arguments:**
 
@@ -91,10 +84,10 @@ Stress test a regex accelerator
 * `--input-format <INPUT_FORMAT>` — The input shard file format
 
   Possible values:
-  - `text`:
-    Simple text files
-  - `parquet`:
-    Parquet files
+    - `text`:
+      Simple text files
+    - `parquet`:
+      Parquet files
 
 * `--input-batch-size <INPUT_BATCH_SIZE>` — The input batch size
 
@@ -111,35 +104,30 @@ Stress test a regex accelerator
 
   Default value: `8`
 
-
-
-## `wchipper models`
+## `wordchipper-cli models`
 
 Models sub-menu
 
-**Usage:** `wchipper models <COMMAND>`
+**Usage:** `wordchipper-cli models <COMMAND>`
 
 ###### **Subcommands:**
 
 * `list` — List available models
 
-
-
-## `wchipper models list`
+## `wordchipper-cli models list`
 
 List available models
 
-**Usage:** `wchipper models list`
+**Usage:** `wordchipper-cli models list`
 
 **Command Alias:** `ls`
 
-
-
-## `wchipper train`
+## `wordchipper-cli train`
 
 Train a new model
 
-**Usage:** `wchipper train [OPTIONS] --input-format <INPUT_FORMAT> <--lexer-model <LEXER_MODEL>|--pattern <PATTERN>> [FILES]...`
+**Usage:**
+`wordchipper-cli train [OPTIONS] --input-format <INPUT_FORMAT> <--lexer-model <LEXER_MODEL>|--pattern <PATTERN>> [FILES]...`
 
 ###### **Arguments:**
 
@@ -150,10 +138,10 @@ Train a new model
 * `--input-format <INPUT_FORMAT>` — The input shard file format
 
   Possible values:
-  - `text`:
-    Simple text files
-  - `parquet`:
-    Parquet files
+    - `text`:
+      Simple text files
+    - `parquet`:
+      Parquet files
 
 * `--input-batch-size <INPUT_BATCH_SIZE>` — The input batch size
 
@@ -168,20 +156,18 @@ Train a new model
 * `--pattern <PATTERN>` — Pattern for selection
 * `--output <OUTPUT>` — Optional output file; "-" may be used to indicate stdout
 
-
-
-## `wchipper doc`
+## `wordchipper-cli doc`
 
 Generate markdown documentation
 
-**Usage:** `wchipper doc`
+**Usage:** `wordchipper-cli doc`
 
 
 
 <hr/>
 
 <small><i>
-    This document was generated automatically by
-    <a href="https://crates.io/crates/clap-markdown"><code>clap-markdown</code></a>.
+This document was generated automatically by
+<a href="https://crates.io/crates/clap-markdown"><code>clap-markdown</code></a>.
 </i></small>
 

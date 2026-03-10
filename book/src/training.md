@@ -24,14 +24,14 @@ The short version: train your own when the pretrained vocabulary doesn't fit you
 
 ## Quick start: the CLI
 
-The fastest way to train a tokenizer is with `wchipper`. No Rust code needed.
+The fastest way to train a tokenizer is with `wordchipper-cli`. No Rust code needed.
 
 ### Training on text files
 
 Create a text file with your training data (one document per line, or free-form text):
 
 ```bash
-cargo run --release -p wchipper -- \
+cargo run --release -p wordchipper-cli -- \
     train \
     --vocab-size=8000 \
     --output=my_tokenizer.tiktoken \
@@ -47,7 +47,7 @@ base64-encoded tiktoken format.
 For larger datasets, Parquet is more efficient. The file must have a column named `"text"`:
 
 ```bash
-cargo run --release -p wchipper -- \
+cargo run --release -p wordchipper-cli -- \
     train \
     --input-format=parquet \
     --vocab-size=50281 \
@@ -297,7 +297,7 @@ decisions in tokenizer design. The pattern determines what kinds of tokens can e
 wordchipper provides the same patterns used by OpenAI's models as constants:
 
 | Constant                 | Used by        | Key behavior                             |
-| ------------------------ | -------------- | ---------------------------------------- |
+|--------------------------|----------------|------------------------------------------|
 | `OA_R50K_BASE_PATTERN`   | GPT-2          | Basic word/number/punctuation splitting  |
 | `OA_CL100K_BASE_PATTERN` | GPT-3.5, GPT-4 | Adds case-insensitive contractions       |
 | `OA_O200K_BASE_PATTERN`  | GPT-4o         | Unicode-aware, broader letter categories |
@@ -349,7 +349,7 @@ The vocabulary size is the total number of tokens, including the 256 byte tokens
 ### Trade-offs
 
 | Vocab size | Merges  | Effect                                                          |
-| ---------- | ------- | --------------------------------------------------------------- |
+|------------|---------|-----------------------------------------------------------------|
 | 256        | 0       | Pure byte-level. Every character is 1-4 tokens. Long sequences. |
 | 1,000      | 744     | Common bigrams and short words are single tokens.               |
 | 8,000      | 7,744   | Most common words are single tokens. Good for small models.     |

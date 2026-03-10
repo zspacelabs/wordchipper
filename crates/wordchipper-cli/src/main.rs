@@ -5,7 +5,7 @@ pub use wordchipper_cli_util as util;
 
 /// Text tokenizer multi-tool.
 #[derive(clap::Parser, Debug)]
-#[command(name = "wchipper")]
+#[command(name = "wordchipper-cli")]
 pub struct Args {
     /// Subcommand to run.
     #[clap(subcommand)]
@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     args.command.run()
 }
 
-/// Subcommands for wchipper
+/// Subcommands for wordchipper-cli
 #[derive(clap::Subcommand, Debug)]
 pub enum Commands {
     /// Act as a streaming tokenizer.
