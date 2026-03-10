@@ -1,0 +1,1362 @@
+{
+    "machine_info": {
+        "node": "Crutchers-MacBook-Pro.local",
+        "processor": "arm",
+        "machine": "arm64",
+        "python_compiler": "Clang 16.0.0 (clang-1600.0.26.6)",
+        "python_implementation": "CPython",
+        "python_implementation_version": "3.13.3",
+        "python_version": "3.13.3",
+        "python_build": [
+            "main",
+            "Apr  8 2025 13:54:08"
+        ],
+        "release": "25.3.0",
+        "system": "Darwin",
+        "cpu": {
+            "python_version": "3.13.3.final.0 (64 bit)",
+            "cpuinfo_version": [
+                9,
+                0,
+                0
+            ],
+            "cpuinfo_version_string": "9.0.0",
+            "arch": "ARM_8",
+            "bits": 64,
+            "count": 12,
+            "arch_string_raw": "arm64",
+            "brand_raw": "Apple M2 Pro"
+        }
+    },
+    "commit_info": {
+        "id": "800f71023dad40b51663ec3b49bb000f9b78f625",
+        "time": "2026-03-10T06:10:00Z",
+        "author_time": "2026-03-09T23:10:00-07:00",
+        "dirty": true,
+        "project": "wordchipper",
+        "branch": "main"
+    },
+    "benchmarks": [
+        {
+            "group": "batch/gpt2",
+            "name": "test_wordchipper_parallel_accel[gpt2]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel_accel[gpt2]",
+            "params": {
+                "model": "gpt2"
+            },
+            "param": "gpt2",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.05022587499843212,
+                "max": 0.05145933300082106,
+                "mean": 0.0506124512208367,
+                "stddev": 0.0003283661268765451,
+                "rounds": 18,
+                "median": 0.05052737499499926,
+                "iqr": 0.0002193750042351894,
+                "q1": 0.05040958299650811,
+                "q3": 0.050628958000743296,
+                "iqr_outliers": 2,
+                "stddev_outliers": 3,
+                "outliers": "3;2",
+                "ld15iqr": 0.05022587499843212,
+                "hd15iqr": 0.0513954170019133,
+                "ops": 19.757983971902725,
+                "total": 0.9110241219750606,
+                "data": [
+                    0.0513954170019133,
+                    0.050835415997426026,
+                    0.050515332994109485,
+                    0.05053941699588904,
+                    0.05050808299711207,
+                    0.050628958000743296,
+                    0.0505049159983173,
+                    0.050569250000989996,
+                    0.05145933300082106,
+                    0.05070533300022362,
+                    0.05054829199798405,
+                    0.05029195799579611,
+                    0.05022587499843212,
+                    0.05046233299799496,
+                    0.05061225000099512,
+                    0.050408791001245845,
+                    0.05040358399855904,
+                    0.05040958299650811
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/r50k_base",
+            "name": "test_wordchipper_parallel_accel[r50k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel_accel[r50k_base]",
+            "params": {
+                "model": "r50k_base"
+            },
+            "param": "r50k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.05006316600338323,
+                "max": 0.058225041000696365,
+                "mean": 0.05116590635116154,
+                "stddev": 0.0017986826330989008,
+                "rounds": 20,
+                "median": 0.050567021000460954,
+                "iqr": 0.0009929584957717452,
+                "q1": 0.05032008350099204,
+                "q3": 0.051313041996763786,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.05006316600338323,
+                "hd15iqr": 0.058225041000696365,
+                "ops": 19.544264361053354,
+                "total": 1.0233181270232308,
+                "data": [
+                    0.05079279200435849,
+                    0.05099258400150575,
+                    0.0506366670015268,
+                    0.050497374999395106,
+                    0.05042791700543603,
+                    0.05046349999611266,
+                    0.05006316600338323,
+                    0.050083875001291744,
+                    0.05122708399721887,
+                    0.050283583004784305,
+                    0.050215041999763343,
+                    0.05019125000399072,
+                    0.05254687500564614,
+                    0.058225041000696365,
+                    0.052256416995078325,
+                    0.050663292000535876,
+                    0.05035658399719978,
+                    0.05153025000618072,
+                    0.0513989999963087,
+                    0.05046583300281782
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/cl100k_base",
+            "name": "test_wordchipper_parallel_accel[cl100k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel_accel[cl100k_base]",
+            "params": {
+                "model": "cl100k_base"
+            },
+            "param": "cl100k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.047600458994566,
+                "max": 0.05004770800587721,
+                "mean": 0.04837453330037533,
+                "stddev": 0.0006794802561883908,
+                "rounds": 20,
+                "median": 0.04834593750274507,
+                "iqr": 0.0006771870030206628,
+                "q1": 0.04782929199791397,
+                "q3": 0.04850647900093463,
+                "iqr_outliers": 2,
+                "stddev_outliers": 7,
+                "outliers": "7;2",
+                "ld15iqr": 0.047600458994566,
+                "hd15iqr": 0.04967604100238532,
+                "ops": 20.67203405954598,
+                "total": 0.9674906660075067,
+                "data": [
+                    0.04906920799840009,
+                    0.048316583000996616,
+                    0.047687417005363386,
+                    0.04794541599403601,
+                    0.04967604100238532,
+                    0.048437958997965325,
+                    0.048160333004489075,
+                    0.05004770800587721,
+                    0.04837529200449353,
+                    0.047766499999852385,
+                    0.04799020799691789,
+                    0.0478673749967129,
+                    0.04764162500214297,
+                    0.04839025000546826,
+                    0.04926595799770439,
+                    0.048448166999151,
+                    0.04779120899911504,
+                    0.048518166004214436,
+                    0.04849479199765483,
+                    0.047600458994566
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/o200k_base",
+            "name": "test_wordchipper_parallel_accel[o200k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel_accel[o200k_base]",
+            "params": {
+                "model": "o200k_base"
+            },
+            "param": "o200k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.05100954200315755,
+                "max": 0.05426529199758079,
+                "mean": 0.05181549752930604,
+                "stddev": 0.00093503563636289,
+                "rounds": 17,
+                "median": 0.051419832998362835,
+                "iqr": 0.0006200732495926786,
+                "q1": 0.05127122900012182,
+                "q3": 0.0518913022497145,
+                "iqr_outliers": 2,
+                "stddev_outliers": 3,
+                "outliers": "3;2",
+                "ld15iqr": 0.05100954200315755,
+                "hd15iqr": 0.05380012500245357,
+                "ops": 19.299245354817167,
+                "total": 0.8808634579982026,
+                "data": [
+                    0.05192358299973421,
+                    0.05426529199758079,
+                    0.051798333995975554,
+                    0.051419832998362835,
+                    0.052756457997020334,
+                    0.051713292006752454,
+                    0.05127383299986832,
+                    0.051087833002384286,
+                    0.05100954200315755,
+                    0.05126341700088233,
+                    0.05143516599491704,
+                    0.05188054199970793,
+                    0.051171750004868954,
+                    0.05137937499966938,
+                    0.05380012500245357,
+                    0.05139695799880428,
+                    0.051288124996062834
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/gpt2",
+            "name": "test_wordchipper_parallel[gpt2]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel[gpt2]",
+            "params": {
+                "model": "gpt2"
+            },
+            "param": "gpt2",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.08404712499759626,
+                "max": 0.08576650000031805,
+                "mean": 0.08468384016608373,
+                "stddev": 0.0005067797784303138,
+                "rounds": 12,
+                "median": 0.084621749996586,
+                "iqr": 0.0004582505025609862,
+                "q1": 0.08432539549903595,
+                "q3": 0.08478364600159694,
+                "iqr_outliers": 2,
+                "stddev_outliers": 3,
+                "outliers": "3;2",
+                "ld15iqr": 0.08404712499759626,
+                "hd15iqr": 0.08551716600049986,
+                "ops": 11.808628399925876,
+                "total": 1.0162060819930048,
+                "data": [
+                    0.08469087499543093,
+                    0.08441929199761944,
+                    0.08474912500241771,
+                    0.08473879100347403,
+                    0.08551716600049986,
+                    0.08455262499774108,
+                    0.08431587499944726,
+                    0.08425562499905936,
+                    0.08404712499759626,
+                    0.08433491599862464,
+                    0.08576650000031805,
+                    0.08481816700077616
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/r50k_base",
+            "name": "test_wordchipper_parallel[r50k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel[r50k_base]",
+            "params": {
+                "model": "r50k_base"
+            },
+            "param": "r50k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.08399095800268697,
+                "max": 0.08745583300333237,
+                "mean": 0.0849484097501166,
+                "stddev": 0.0010396522195905227,
+                "rounds": 12,
+                "median": 0.08454427100150497,
+                "iqr": 0.000863437497173436,
+                "q1": 0.08429031250125263,
+                "q3": 0.08515374999842606,
+                "iqr_outliers": 2,
+                "stddev_outliers": 2,
+                "outliers": "2;2",
+                "ld15iqr": 0.08399095800268697,
+                "hd15iqr": 0.08649299999524374,
+                "ops": 11.771850737895978,
+                "total": 1.0193809170013992,
+                "data": [
+                    0.08495108300121501,
+                    0.08438475000002654,
+                    0.0848988340003416,
+                    0.08434012500219978,
+                    0.08745583300333237,
+                    0.08649299999524374,
+                    0.08465925000200514,
+                    0.08424050000030547,
+                    0.08418087499740068,
+                    0.08399095800268697,
+                    0.08535641699563712,
+                    0.0844292920010048
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/cl100k_base",
+            "name": "test_wordchipper_parallel[cl100k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel[cl100k_base]",
+            "params": {
+                "model": "cl100k_base"
+            },
+            "param": "cl100k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.08019983299891464,
+                "max": 0.08625237500382354,
+                "mean": 0.08195331809044794,
+                "stddev": 0.0017808460138701698,
+                "rounds": 11,
+                "median": 0.08116074999998091,
+                "iqr": 0.0021252394963084953,
+                "q1": 0.08074220800153853,
+                "q3": 0.08286744749784702,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.08019983299891464,
+                "hd15iqr": 0.08625237500382354,
+                "ops": 12.20206848606603,
+                "total": 0.9014864989949274,
+                "data": [
+                    0.08019983299891464,
+                    0.08072758300113492,
+                    0.080512666994764,
+                    0.08116074999998091,
+                    0.08210233299905667,
+                    0.08078608300274936,
+                    0.08211104100337252,
+                    0.08625237500382354,
+                    0.08103295899491059,
+                    0.08348129200021503,
+                    0.08311958299600519
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/o200k_base",
+            "name": "test_wordchipper_parallel[o200k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_parallel[o200k_base]",
+            "params": {
+                "model": "o200k_base"
+            },
+            "param": "o200k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.08281970800453564,
+                "max": 0.086390083997685,
+                "mean": 0.08404663888844273,
+                "stddev": 0.001226524139458948,
+                "rounds": 9,
+                "median": 0.08369587500055786,
+                "iqr": 0.0015791672485647723,
+                "q1": 0.08305498925074062,
+                "q3": 0.08463415649930539,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.08281970800453564,
+                "hd15iqr": 0.086390083997685,
+                "ops": 11.898155752871043,
+                "total": 0.7564197499959846,
+                "data": [
+                    0.08369587500055786,
+                    0.08431154199934099,
+                    0.0856019999991986,
+                    0.08309183300298173,
+                    0.0835001250015921,
+                    0.08294445799401728,
+                    0.08281970800453564,
+                    0.0840641249960754,
+                    0.086390083997685
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/gpt2",
+            "name": "test_wordchipper_threadpool[gpt2]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool[gpt2]",
+            "params": {
+                "model": "gpt2"
+            },
+            "param": "gpt2",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09560083300311817,
+                "max": 0.09663833300146507,
+                "mean": 0.09612262900045607,
+                "stddev": 0.00035155255786402335,
+                "rounds": 10,
+                "median": 0.09605568699771538,
+                "iqr": 0.0006215419998625293,
+                "q1": 0.09584620800160337,
+                "q3": 0.0964677500014659,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.09560083300311817,
+                "hd15iqr": 0.09663833300146507,
+                "ops": 10.40337754385864,
+                "total": 0.9612262900045607,
+                "data": [
+                    0.09592800000245916,
+                    0.09628733299905434,
+                    0.09605170799477492,
+                    0.09656016699591419,
+                    0.09605966600065585,
+                    0.09584620800160337,
+                    0.09560083300311817,
+                    0.09578629200404976,
+                    0.0964677500014659,
+                    0.09663833300146507
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/r50k_base",
+            "name": "test_wordchipper_threadpool[r50k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool[r50k_base]",
+            "params": {
+                "model": "r50k_base"
+            },
+            "param": "r50k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09586229099659249,
+                "max": 0.09834124999906635,
+                "mean": 0.09660856669943314,
+                "stddev": 0.0007748518253743769,
+                "rounds": 10,
+                "median": 0.09640835399841308,
+                "iqr": 0.0007461660061380826,
+                "q1": 0.09607633399718907,
+                "q3": 0.09682250000332715,
+                "iqr_outliers": 1,
+                "stddev_outliers": 2,
+                "outliers": "2;1",
+                "ld15iqr": 0.09586229099659249,
+                "hd15iqr": 0.09834124999906635,
+                "ops": 10.351048920031928,
+                "total": 0.9660856669943314,
+                "data": [
+                    0.09586229099659249,
+                    0.0959337919994141,
+                    0.09656233299756423,
+                    0.09749570900021354,
+                    0.09644408299936913,
+                    0.09682250000332715,
+                    0.09617475000413833,
+                    0.09607633399718907,
+                    0.09637262499745702,
+                    0.09834124999906635
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/cl100k_base",
+            "name": "test_wordchipper_threadpool[cl100k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool[cl100k_base]",
+            "params": {
+                "model": "cl100k_base"
+            },
+            "param": "cl100k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09193899999809219,
+                "max": 0.09915533399907872,
+                "mean": 0.093105445898982,
+                "stddev": 0.002195366607255109,
+                "rounds": 10,
+                "median": 0.0921994164964417,
+                "iqr": 0.0011518329920363612,
+                "q1": 0.09200087500357768,
+                "q3": 0.09315270799561404,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.09193899999809219,
+                "hd15iqr": 0.09915533399907872,
+                "ops": 10.740510292867132,
+                "total": 0.93105445898982,
+                "data": [
+                    0.09224712499417365,
+                    0.09293800000159536,
+                    0.09205012500024168,
+                    0.0934485420002602,
+                    0.09200087500357768,
+                    0.09197104199847672,
+                    0.09193899999809219,
+                    0.09215170799870975,
+                    0.09315270799561404,
+                    0.09915533399907872
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/o200k_base",
+            "name": "test_wordchipper_threadpool[o200k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool[o200k_base]",
+            "params": {
+                "model": "o200k_base"
+            },
+            "param": "o200k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09511337499861838,
+                "max": 0.10221749999618623,
+                "mean": 0.0972522035549951,
+                "stddev": 0.0026927951922578984,
+                "rounds": 9,
+                "median": 0.09604050000052666,
+                "iqr": 0.002270447248520213,
+                "q1": 0.09577168750001874,
+                "q3": 0.09804213474853896,
+                "iqr_outliers": 2,
+                "stddev_outliers": 2,
+                "outliers": "2;2",
+                "ld15iqr": 0.09511337499861838,
+                "hd15iqr": 0.10163491600542329,
+                "ops": 10.282543360927658,
+                "total": 0.8752698319949559,
+                "data": [
+                    0.09592083299503429,
+                    0.09583325000130571,
+                    0.09684454099624418,
+                    0.09558699999615783,
+                    0.10163491600542329,
+                    0.10221749999618623,
+                    0.09604050000052666,
+                    0.09607791700545931,
+                    0.09511337499861838
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/gpt2",
+            "name": "test_wordchipper_threadpool_accel[gpt2]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool_accel[gpt2]",
+            "params": {
+                "model": "gpt2"
+            },
+            "param": "gpt2",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.060251041999435984,
+                "max": 0.06632879200333264,
+                "mean": 0.061478615117427096,
+                "stddev": 0.0015727324016952362,
+                "rounds": 17,
+                "median": 0.06087633300194284,
+                "iqr": 0.001339312508207513,
+                "q1": 0.06056481224550225,
+                "q3": 0.061904124753709766,
+                "iqr_outliers": 2,
+                "stddev_outliers": 2,
+                "outliers": "2;2",
+                "ld15iqr": 0.060251041999435984,
+                "hd15iqr": 0.06403375000081724,
+                "ops": 16.26581857919135,
+                "total": 1.0451364569962607,
+                "data": [
+                    0.06076287500036415,
+                    0.0603419590042904,
+                    0.06403375000081724,
+                    0.06213450000359444,
+                    0.06182733300374821,
+                    0.06083175000094343,
+                    0.06218583299778402,
+                    0.06096745799732162,
+                    0.06087633300194284,
+                    0.06632879200333264,
+                    0.06061170799512183,
+                    0.060251041999435984,
+                    0.06042412499664351,
+                    0.06062637500144774,
+                    0.06164304100093432,
+                    0.060410374993807636,
+                    0.06087920799473068
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/r50k_base",
+            "name": "test_wordchipper_threadpool_accel[r50k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool_accel[r50k_base]",
+            "params": {
+                "model": "r50k_base"
+            },
+            "param": "r50k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.05982345800293842,
+                "max": 0.06604233300458873,
+                "mean": 0.061548789176466764,
+                "stddev": 0.0018003034524611207,
+                "rounds": 17,
+                "median": 0.06079166699782945,
+                "iqr": 0.0017206144984811544,
+                "q1": 0.060503583248646464,
+                "q3": 0.06222419774712762,
+                "iqr_outliers": 2,
+                "stddev_outliers": 3,
+                "outliers": "3;2",
+                "ld15iqr": 0.05982345800293842,
+                "hd15iqr": 0.0653372919987305,
+                "ops": 16.24727331569263,
+                "total": 1.046329415999935,
+                "data": [
+                    0.06091874999401625,
+                    0.0608495420019608,
+                    0.060422707996622194,
+                    0.06064662500284612,
+                    0.06339608300186228,
+                    0.06257354099943768,
+                    0.06604233300458873,
+                    0.0621077499963576,
+                    0.06069487499917159,
+                    0.06052662499860162,
+                    0.06023408399778418,
+                    0.0606123750039842,
+                    0.0653372919987305,
+                    0.060434457998781,
+                    0.06079166699782945,
+                    0.060917250004422385,
+                    0.05982345800293842
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/cl100k_base",
+            "name": "test_wordchipper_threadpool_accel[cl100k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool_accel[cl100k_base]",
+            "params": {
+                "model": "cl100k_base"
+            },
+            "param": "cl100k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.057500957998854574,
+                "max": 0.06488533299852861,
+                "mean": 0.05891396311798256,
+                "stddev": 0.0018379980184698775,
+                "rounds": 17,
+                "median": 0.0580592499973136,
+                "iqr": 0.002147719000276993,
+                "q1": 0.05778222874869243,
+                "q3": 0.059929947748969425,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.057500957998854574,
+                "hd15iqr": 0.06488533299852861,
+                "ops": 16.973904776994466,
+                "total": 1.0015373730057036,
+                "data": [
+                    0.0580592499973136,
+                    0.05756587500218302,
+                    0.058651999999710824,
+                    0.06018933300219942,
+                    0.0602716670036898,
+                    0.0598513329969137,
+                    0.06016579200513661,
+                    0.05782054099836387,
+                    0.05766729199967813,
+                    0.057500957998854574,
+                    0.05789445799746318,
+                    0.057824458002869505,
+                    0.05787075000262121,
+                    0.057576083003368694,
+                    0.05893324999487959,
+                    0.06488533299852861,
+                    0.058809000001929235
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/o200k_base",
+            "name": "test_wordchipper_threadpool_accel[o200k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_wordchipper_threadpool_accel[o200k_base]",
+            "params": {
+                "model": "o200k_base"
+            },
+            "param": "o200k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.06133791700267466,
+                "max": 0.0667498750044615,
+                "mean": 0.062758408334048,
+                "stddev": 0.0015799047153236781,
+                "rounds": 15,
+                "median": 0.06210333299532067,
+                "iqr": 0.001602886251930613,
+                "q1": 0.061626634749700315,
+                "q3": 0.06322952100163093,
+                "iqr_outliers": 1,
+                "stddev_outliers": 2,
+                "outliers": "2;1",
+                "ld15iqr": 0.06133791700267466,
+                "hd15iqr": 0.0667498750044615,
+                "ops": 15.934119850159984,
+                "total": 0.94137612501072,
+                "data": [
+                    0.06151445799332578,
+                    0.0667498750044615,
+                    0.06392816600418882,
+                    0.06553237500338582,
+                    0.06184533299528994,
+                    0.06208558400248876,
+                    0.06133791700267466,
+                    0.06182716599869309,
+                    0.06210333299532067,
+                    0.06222529200022109,
+                    0.06147104200499598,
+                    0.063240625000617,
+                    0.06319620900467271,
+                    0.06275895900034811,
+                    0.06155979100003606
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/gpt2",
+            "name": "test_tiktoken[gpt2]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tiktoken[gpt2]",
+            "params": {
+                "model": "gpt2"
+            },
+            "param": "gpt2",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.037791583003127016,
+                "max": 0.05004591699980665,
+                "mean": 0.041254573616382774,
+                "stddev": 0.003786863510353769,
+                "rounds": 26,
+                "median": 0.038506771004904294,
+                "iqr": 0.006683667001198046,
+                "q1": 0.03813458300282946,
+                "q3": 0.044818250004027504,
+                "iqr_outliers": 0,
+                "stddev_outliers": 5,
+                "outliers": "5;0",
+                "ld15iqr": 0.037791583003127016,
+                "hd15iqr": 0.05004591699980665,
+                "ops": 24.239736648323664,
+                "total": 1.072618914025952,
+                "data": [
+                    0.038681500001985114,
+                    0.0383757909949054,
+                    0.03829950000363169,
+                    0.03813458300282946,
+                    0.038333790995238815,
+                    0.03792079200502485,
+                    0.037791583003127016,
+                    0.038092415998107754,
+                    0.0384424170042621,
+                    0.03815112500160467,
+                    0.03784483300114516,
+                    0.038010083000699524,
+                    0.038154791996930726,
+                    0.03857112500554649,
+                    0.038045000001147855,
+                    0.04551095799979521,
+                    0.04466179099836154,
+                    0.04472075000376208,
+                    0.05004591699980665,
+                    0.045130124999559484,
+                    0.044818250004027504,
+                    0.045499957996071316,
+                    0.04482441700383788,
+                    0.044478333002189174,
+                    0.04529829200328095,
+                    0.0447807919990737
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/r50k_base",
+            "name": "test_tiktoken[r50k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tiktoken[r50k_base]",
+            "params": {
+                "model": "r50k_base"
+            },
+            "param": "r50k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.03776533400377957,
+                "max": 0.046185708000848535,
+                "mean": 0.0409330434167714,
+                "stddev": 0.003347756424751003,
+                "rounds": 24,
+                "median": 0.038414958500652574,
+                "iqr": 0.006550437497935491,
+                "q1": 0.03808937500070897,
+                "q3": 0.04463981249864446,
+                "iqr_outliers": 0,
+                "stddev_outliers": 8,
+                "outliers": "8;0",
+                "ld15iqr": 0.03776533400377957,
+                "hd15iqr": 0.046185708000848535,
+                "ops": 24.430140456897284,
+                "total": 0.9823930420025135,
+                "data": [
+                    0.03915733399480814,
+                    0.03836270900501404,
+                    0.03846720799629111,
+                    0.038007750001270324,
+                    0.03804287499951897,
+                    0.037977291001880076,
+                    0.03814420800335938,
+                    0.03776533400377957,
+                    0.03814895799587248,
+                    0.0379939580016071,
+                    0.03827479200117523,
+                    0.03813587500189897,
+                    0.043941333002294414,
+                    0.03822808400582289,
+                    0.03796241599775385,
+                    0.04524374999891734,
+                    0.044740917001035996,
+                    0.044348290997731965,
+                    0.044970916998863686,
+                    0.04410591699706856,
+                    0.0448891249980079,
+                    0.044538707996252924,
+                    0.046185708000848535,
+                    0.04475958400144009
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/cl100k_base",
+            "name": "test_tiktoken[cl100k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tiktoken[cl100k_base]",
+            "params": {
+                "model": "cl100k_base"
+            },
+            "param": "cl100k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.039434459002222866,
+                "max": 0.05301829199743224,
+                "mean": 0.044414358440844806,
+                "stddev": 0.005448232560984342,
+                "rounds": 25,
+                "median": 0.040087917004711926,
+                "iqr": 0.01031439600410522,
+                "q1": 0.039753541748723364,
+                "q3": 0.050067937752828584,
+                "iqr_outliers": 0,
+                "stddev_outliers": 7,
+                "outliers": "7;0",
+                "ld15iqr": 0.039434459002222866,
+                "hd15iqr": 0.05301829199743224,
+                "ops": 22.51524135673137,
+                "total": 1.1103589610211202,
+                "data": [
+                    0.039529708003101405,
+                    0.03987108300498221,
+                    0.039863417005108204,
+                    0.039589917003468145,
+                    0.04046070799813606,
+                    0.039434459002222866,
+                    0.039838459000748117,
+                    0.039457416998629924,
+                    0.046011833001102787,
+                    0.03954162500303937,
+                    0.04000058300152887,
+                    0.03968616700149141,
+                    0.040087917004711926,
+                    0.040053332995739765,
+                    0.03977599999780068,
+                    0.05255216699879384,
+                    0.05301829199743224,
+                    0.049814124999102205,
+                    0.05071529200358782,
+                    0.050300625000090804,
+                    0.05026450000150362,
+                    0.04951033399993321,
+                    0.05000241700327024,
+                    0.04959554100059904,
+                    0.05138304199499544
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/o200k_base",
+            "name": "test_tiktoken[o200k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tiktoken[o200k_base]",
+            "params": {
+                "model": "o200k_base"
+            },
+            "param": "o200k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.06173062499874504,
+                "max": 0.11657845900481334,
+                "mean": 0.06637845312616264,
+                "stddev": 0.013490282957295551,
+                "rounds": 16,
+                "median": 0.06278070800181013,
+                "iqr": 0.0010603540031297598,
+                "q1": 0.06221187499977532,
+                "q3": 0.06327222900290508,
+                "iqr_outliers": 2,
+                "stddev_outliers": 1,
+                "outliers": "1;2",
+                "ld15iqr": 0.06173062499874504,
+                "hd15iqr": 0.06898366699897451,
+                "ops": 15.065129615168095,
+                "total": 1.0620552500186022,
+                "data": [
+                    0.06207166700187372,
+                    0.06210049999936018,
+                    0.061928833994898014,
+                    0.06898366699897451,
+                    0.0633084580040304,
+                    0.06323600000177976,
+                    0.06232379100401886,
+                    0.06269633299962152,
+                    0.06286508300399873,
+                    0.0630251250040601,
+                    0.062323250000190455,
+                    0.06250729100429453,
+                    0.06301012499898206,
+                    0.06336604199896101,
+                    0.06173062499874504,
+                    0.11657845900481334
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/gpt2",
+            "name": "test_tokenizers[gpt2]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tokenizers[gpt2]",
+            "params": {
+                "model": "gpt2"
+            },
+            "param": "gpt2",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.8610519159992691,
+                "max": 0.8730568340033642,
+                "mean": 0.8660645832002046,
+                "stddev": 0.004548388547356413,
+                "rounds": 5,
+                "median": 0.8648290409983019,
+                "iqr": 0.0057933227508328855,
+                "q1": 0.8631363542499457,
+                "q3": 0.8689296770007786,
+                "iqr_outliers": 0,
+                "stddev_outliers": 2,
+                "outliers": "2;0",
+                "ld15iqr": 0.8610519159992691,
+                "hd15iqr": 0.8730568340033642,
+                "ops": 1.1546483015214513,
+                "total": 4.330322916001023,
+                "data": [
+                    0.8675539579999167,
+                    0.8730568340033642,
+                    0.8610519159992691,
+                    0.8648290409983019,
+                    0.8638311670001713
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/r50k_base",
+            "name": "test_tokenizers[r50k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tokenizers[r50k_base]",
+            "params": {
+                "model": "r50k_base"
+            },
+            "param": "r50k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.8614534169973922,
+                "max": 0.8680898749953485,
+                "mean": 0.8648120497979107,
+                "stddev": 0.002678617510798739,
+                "rounds": 5,
+                "median": 0.8650724580002134,
+                "iqr": 0.004382239250844577,
+                "q1": 0.8625434789973951,
+                "q3": 0.8669257182482397,
+                "iqr_outliers": 0,
+                "stddev_outliers": 2,
+                "outliers": "2;0",
+                "ld15iqr": 0.8614534169973922,
+                "hd15iqr": 0.8680898749953485,
+                "ops": 1.1563206135179083,
+                "total": 4.324060248989554,
+                "data": [
+                    0.8680898749953485,
+                    0.8665376659992035,
+                    0.8650724580002134,
+                    0.8629068329973961,
+                    0.8614534169973922
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/cl100k_base",
+            "name": "test_tokenizers[cl100k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tokenizers[cl100k_base]",
+            "params": {
+                "model": "cl100k_base"
+            },
+            "param": "cl100k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.8779742500046268,
+                "max": 0.8871280829989701,
+                "mean": 0.8802978580017224,
+                "stddev": 0.003857291293095072,
+                "rounds": 5,
+                "median": 0.8785068330034846,
+                "iqr": 0.0030883017516316613,
+                "q1": 0.8782986872502079,
+                "q3": 0.8813869890018395,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.8779742500046268,
+                "hd15iqr": 0.8871280829989701,
+                "ops": 1.135979135823415,
+                "total": 4.401489290008612,
+                "data": [
+                    0.8871280829989701,
+                    0.8784068329987349,
+                    0.879473291002796,
+                    0.8779742500046268,
+                    0.8785068330034846
+                ],
+                "iterations": 1
+            }
+        },
+        {
+            "group": "batch/o200k_base",
+            "name": "test_tokenizers[o200k_base]",
+            "fullname": "benchmarks/test_bench_encode.py::TestBatchEncode::test_tokenizers[o200k_base]",
+            "params": {
+                "model": "o200k_base"
+            },
+            "param": "o200k_base",
+            "extra_info": {
+                "input_bytes": 4207495
+            },
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.8859965830051806,
+                "max": 0.8987075420009205,
+                "mean": 0.8895667502016295,
+                "stddev": 0.005176381912455641,
+                "rounds": 5,
+                "median": 0.8875778750007157,
+                "iqr": 0.0039348024929495296,
+                "q1": 0.8869525210047868,
+                "q3": 0.8908873234977364,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.8859965830051806,
+                "hd15iqr": 0.8987075420009205,
+                "ops": 1.1241427355207911,
+                "total": 4.447833751008147,
+                "data": [
+                    0.8875778750007157,
+                    0.8859965830051806,
+                    0.8872711670046556,
+                    0.8987075420009205,
+                    0.888280583996675
+                ],
+                "iterations": 1
+            }
+        }
+    ],
+    "datetime": "2026-03-10T08:15:43.924211+00:00",
+    "version": "5.2.3"
+}
