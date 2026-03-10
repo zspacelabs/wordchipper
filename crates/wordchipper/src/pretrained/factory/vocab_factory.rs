@@ -86,7 +86,7 @@ pub fn resolve_vocab(name: &str) -> WCResult<VocabDescription> {
     with_vocab_factory(&mut |f: &VocabFactory| f.resolve_vocab(name))
 }
 
-/// Load a [`UnifiedTokenVocab`] by name.
+/// Load a [`LabeledVocab`] by name.
 ///
 /// ## Returns
 /// * `Ok(LabeledVocab<u32>)` - on success.
