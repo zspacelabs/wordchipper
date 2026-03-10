@@ -8,16 +8,13 @@ on:
 permissions:
   contents: read
 
-defaults:
-  run:
-    working-directory: bindings/python
-
 jobs:
   sdist:
     name: sdist
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal
       - uses: PyO3/maturin-action@v1
         with:
           command: sdist
@@ -52,10 +49,19 @@ jobs:
             target: x86_64-pc-windows-msvc
     steps:
       - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal
+      - uses: actions/setup-python@v5
+        with:
+          python-version: |
+            3.9
+            3.10
+            3.11
+            3.12
+            3.13
       - uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist
+          args: --release --out dist --find-interpreter
           working-directory: bindings/python
           sccache: true
           manylinux: auto
