@@ -12,9 +12,9 @@ authors.workspace = true
 workspace = true
 
 [dependencies]
-wordchipper = { version = "0.8.0", path = "../wordchipper", features = ["client"] }
-wordchipper-training = { version = "0.8.0", path = "../wordchipper-training" }
-wordchipper-cli-util = { version = "0.8.0", path = "../wordchipper-cli-util" }
+wordchipper = { version = "0.8.1", path = "../wordchipper", features = ["client"] }
+wordchipper-training = { version = "0.8.1", path = "../wordchipper-training" }
+wordchipper-cli-util = { version = "0.8.1", path = "../wordchipper-cli-util" }
 log = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
 clap-markdown = { workspace = true }

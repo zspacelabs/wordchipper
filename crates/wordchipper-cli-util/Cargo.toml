@@ -12,7 +12,7 @@ authors.workspace = true
 workspace = true
 
 [dependencies]
-wordchipper = { version = "0.8.0", path = "../wordchipper", features = ["client"] }
+wordchipper = { version = "0.8.1", path = "../wordchipper", features = ["client"] }
 stderrlog = { workspace = true }
 log = { workspace = true }
 clap = { workspace = true, features = ["derive"] }

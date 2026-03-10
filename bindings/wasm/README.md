@@ -1,6 +1,6 @@
 # wordchipper (WASM)
 
-WebAssembly bindings for the [wordchipper](https://github.com/crutcher/wordchipper) BPE tokenizer
+WebAssembly bindings for the [wordchipper](https://github.com/zspacelabs/wordchipper) BPE tokenizer
 library. Works in browsers and Node.js.
 
 ## Quick Start
@@ -60,7 +60,7 @@ tok.free(); // release WASM memory
 ## Available Models
 
 | Model           | Description                               |
-| --------------- | ----------------------------------------- |
+|-----------------|-------------------------------------------|
 | `r50k_base`     | GPT-2                                     |
 | `p50k_base`     | Codex                                     |
 | `p50k_edit`     | Codex (edit, shares p50k_base vocab)      |

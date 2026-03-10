@@ -2,8 +2,8 @@
 
 [![Crates.io Version](https://img.shields.io/crates/v/wordchipper-training)](https://crates.io/crates/wordchipper-training)
 [![Documentation](https://img.shields.io/docsrs/wordchipper-training)](https://docs.rs/wordchipper/latest/wordchipper-training/)
-[![Test Status](https://github.com/crutcher/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/crutcher/wordchipper/actions/workflows/ci.yml)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/crutcher/wordchipper)
+[![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zspacelabs/wordchipper)
 
 Part of the [wordchipper tokenizer suite](https://crates.io/crates/wordchipper).
 
@@ -20,7 +20,7 @@ This crate provides utilities for training WordChipper tokenizers and vocabulari
 ### Suite Crates
 
 This is the training implementation crate for the
-[wordchipper tokenizer suite](https://github.com/crutcher/wordchipper).
+[wordchipper tokenizer suite](https://github.com/zspacelabs/wordchipper).
 
 The core additional user-facing crates are:
 

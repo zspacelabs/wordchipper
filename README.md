@@ -2,9 +2,9 @@
 
 [![Crates.io Version](https://img.shields.io/crates/v/wordchipper)](https://crates.io/crates/wordchipper)
 [![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wordchipper/)
-[![Test Status](https://github.com/crutcher/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/crutcher/wordchipper/actions/workflows/ci.yml)
+[![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
 [![license](https://shields.io/badge/license-MIT-blue)](LICENSE)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/crutcher/wordchipper)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zspacelabs/wordchipper)
 
 I am usually available as `@crutcher` on the Burn Discord:
 
@@ -18,7 +18,7 @@ for many current models.
 
 The productionization towards an LTR stable release can be
 tracked in the
-[Alpha Release Tracking Issue](https://github.com/crutcher/wordchipper/issues/2).
+[Alpha Release Tracking Issue](https://github.com/zspacelabs/wordchipper/issues/2).
 
 ## Overview
 

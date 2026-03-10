@@ -1,6 +1,6 @@
 # wordchipper
 
-Python bindings for the [wordchipper](https://github.com/crutcher/wordchipper) BPE tokenizer
+Python bindings for the [wordchipper](https://github.com/zspacelabs/wordchipper) BPE tokenizer
 library.
 
 ## Installation

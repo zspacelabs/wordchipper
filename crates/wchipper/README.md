@@ -2,7 +2,7 @@
 
 [![Crates.io Version](https://img.shields.io/crates/v/wchipper)](https://crates.io/crates/wchipper)
 [![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wchipper/)
-[![Test Status](https://github.com/crutcher/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/crutcher/wordchipper/actions/workflows/ci.yml)
+[![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
 
 A text LLM tokenizer command line multi-tool.
 
@@ -13,7 +13,7 @@ Part of the [wordchipper tokenizer suite](https://crates.io/crates/wordchipper).
 ### Suite Crates
 
 This is the binary tokenizer multi-tool for the
-[wordchipper tokenizer suite](https://github.com/crutcher/wordchipper).
+[wordchipper tokenizer suite](https://github.com/zspacelabs/wordchipper).
 
 The core additional user-facing crates are:
 

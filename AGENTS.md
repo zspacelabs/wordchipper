@@ -10,7 +10,7 @@ Context for coding agents working on **wordchipper**. Read this before writing a
 HPC environments. It provides training, encoding, and decoding of BPE vocabularies, with
 compatibility for `tiktoken` and `nanochat/rustbpe` formats.
 
-- **Repository**: https://github.com/crutcher/wordchipper
+- **Repository**: https://github.com/zspacelabs/wordchipper
 - **License**: MIT
 - **Rust Edition**: 2024
 - **MSRV**: 1.93.0
@@ -39,11 +39,11 @@ wordchipper/
 
 ### Published Crates
 
-| Crate | Purpose |
-|---|---|
-| `wordchipper` | Core encode/decode/vocab library |
-| `wordchipper-training` | BPE vocabulary trainer |
-| `wordchipper-cli` | Command-line interface |
+| Crate                    | Purpose                                                      |
+|--------------------------|--------------------------------------------------------------|
+| `wordchipper`            | Core encode/decode/vocab library                             |
+| `wordchipper-training`   | BPE vocabulary trainer                                       |
+| `wordchipper-cli`        | Command-line interface                                       |
 | `wordchipper-disk-cache` | Disk cache for vocab downloads (not intended for direct use) |
 
 ---
@@ -112,17 +112,17 @@ All of the following must pass on every push/PR to `main`:
 
 ## Feature Flags (`wordchipper` crate)
 
-| Feature | Default | Purpose |
-|---|---|---|
-| `std` | ✓ | Standard library support |
-| `fast-hash` | ✓ | Fast hashing via foldhash (works in no_std) |
-| `parallel` | ✓ | Batch parallelism via rayon (implies `concurrent`) |
+| Feature      | Default        | Purpose                                               |
+|--------------|----------------|-------------------------------------------------------|
+| `std`        | ✓              | Standard library support                              |
+| `fast-hash`  | ✓              | Fast hashing via foldhash (works in no_std)           |
+| `parallel`   | ✓              | Batch parallelism via rayon (implies `concurrent`)    |
 | `concurrent` | via `parallel` | Thread pool and concurrency utilities (implies `std`) |
-| `client` | | Load and run pretrained encoders/decoders |
-| `download` | via `client` | Network vocab downloading |
-| `datagym` | via `client` | DataGym I/O for training data |
-| `tracing` | | `tracing` instrumentation points |
-| `testing` | | Utilities for downstream test crates |
+| `client`     |                | Load and run pretrained encoders/decoders             |
+| `download`   | via `client`   | Network vocab downloading                             |
+| `datagym`    | via `client`   | DataGym I/O for training data                         |
+| `tracing`    |                | `tracing` instrumentation points                      |
+| `testing`    |                | Utilities for downstream test crates                  |
 
 `wordchipper-training` has no default features; enable `tracing` optionally.
 
@@ -150,15 +150,15 @@ The crate uses unconditional `#![no_std]` with `#[cfg(feature = "std")] extern c
 
 ### Key Types
 
-| Type | Role |
-|---|---|
-| `UnifiedTokenVocab<T>` | Primary user-facing vocabulary; owns `ByteMapVocab`, `SpanMapVocab`, `PairMapVocab`, and `TextSpanningConfig` |
-| `Tokenizer<T>` | Wraps vocab + encoder + decoder; primary entry point |
-| `TokenizerOptions` | Builder for `Tokenizer`; controls parallelism and other options |
-| `TextSpanningConfig<T>` | Regex patterns + special tokens for pre-tokenization |
-| `SpanMapVocab<T>` | `Vec<u8> → T` dictionary |
-| `PairMapVocab<T>` | `(T, T) → T` BPE merge rules |
-| `ByteMapVocab<T>` | Bijective `u8 ↔ T` byte map (256 entries) |
+| Type                    | Role                                                                                                          |
+|-------------------------|---------------------------------------------------------------------------------------------------------------|
+| `UnifiedTokenVocab<T>`  | Primary user-facing vocabulary; owns `ByteMapVocab`, `SpanMapVocab`, `PairMapVocab`, and `TextSpanningConfig` |
+| `Tokenizer<T>`          | Wraps vocab + encoder + decoder; primary entry point                                                          |
+| `TokenizerOptions`      | Builder for `Tokenizer`; controls parallelism and other options                                               |
+| `TextSpanningConfig<T>` | Regex patterns + special tokens for pre-tokenization                                                          |
+| `SpanMapVocab<T>`       | `Vec<u8> → T` dictionary                                                                                      |
+| `PairMapVocab<T>`       | `(T, T) → T` BPE merge rules                                                                                  |
+| `ByteMapVocab<T>`       | Bijective `u8 ↔ T` byte map (256 entries)                                                                     |
 
 `T` is generic over `TokenType` (`u16`, `u32`, `u64`). `u32` is standard; use `u16` only for
 vocabs ≤ 65535 tokens.
