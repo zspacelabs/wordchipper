@@ -25,13 +25,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 pub enum Commands {
     /// Rust benchmark plots.
     RustBenchPlots(commands::rust_bench_plots_cmd::RustBenchPlots),
+
+    /// Python benchmark plots.
+    PythonBenchPlots(commands::python_bench_plots_cmd::PythonBenchPlots),
 }
 
 impl Commands {
     /// Run the subcommand.
     pub fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
+        use Commands::*;
         match self {
-            Commands::RustBenchPlots(cmd) => cmd.run(),
+            RustBenchPlots(cmd) => cmd.run(),
+            PythonBenchPlots(cmd) => cmd.run(),
         }
     }
 }

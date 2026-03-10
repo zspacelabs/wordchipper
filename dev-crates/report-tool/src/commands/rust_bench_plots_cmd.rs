@@ -19,8 +19,10 @@ use plotters_backend::text_anchor::{
 use wordchipper_cli_util::logging::LogArgs;
 
 use crate::util::{
-    bench_data,
-    bench_data::par_bench::ParBenchData,
+    bench_data::{
+        RustParBenchData,
+        rust_bench_median_bps,
+    },
     bounds_tools,
     bounds_tools::{
         iter_frange,
@@ -65,9 +67,11 @@ impl RustBenchPlots {
 
         let shape = (800, 600);
 
-        let par_data = ParBenchData::load_data(data_dir.join("rust_parallel"))?;
+        let par_data = RustParBenchData::load_data(data_dir.join("rust_parallel"))?;
+
         let par_output = output_dir.join("rust_parallel");
         std::fs::create_dir_all(&par_output)?;
+
         for model in self.models.iter() {
             build_model_graphs(model, &par_output, shape, &par_data)?;
         }
@@ -80,7 +84,7 @@ fn build_model_graphs<P: AsRef<Path>>(
     model: &str,
     output_dir: &P,
     shape: (u32, u32),
-    data: &ParBenchData,
+    data: &RustParBenchData,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
 
@@ -97,7 +101,7 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
     model: &str,
     shape: (u32, u32),
     output_dir: &P,
-    data: &ParBenchData,
+    data: &RustParBenchData,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
 
@@ -193,7 +197,7 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
         }
 
         fn select((threads, bench_results): &(u32, BenchResult)) -> (u32, f64) {
-            (*threads, bench_data::median_bps(bench_results))
+            (*threads, rust_bench_median_bps(bench_results))
         }
 
         let render: Vec<MarkerSeries<(u32, f64)>> =
@@ -284,7 +288,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
     span_encoder: &str,
     shape: (u32, u32),
     output_dir: &P,
-    data: &ParBenchData,
+    data: &RustParBenchData,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
 
@@ -294,13 +298,13 @@ fn build_throughput_graph<P: AsRef<Path>>(
         (
             "bpe_openai",
             base_style
-                .with_marker_type(MarkerType::Circle)
+                .with_marker_type(MarkerType::CrossCircle)
                 .with_fill_style(Some(colors::DEEPORANGE_200.into())),
         ),
         (
             "tiktoken",
             base_style
-                .with_marker_type(MarkerType::Square)
+                .with_marker_type(MarkerType::CrossSquare)
                 .with_fill_style(Some(colors::PURPLE_200.into())),
         ),
         (
@@ -400,7 +404,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
             let scale_desc = if log_scale { "log" } else { "linear" };
 
             fn select((threads, bench_results): &(u32, BenchResult)) -> (u32, f64) {
-                (*threads, bench_data::median_bps(bench_results))
+                (*threads, rust_bench_median_bps(bench_results))
             }
 
             let mut schedule: Vec<MarkerSeries<(u32, BenchResult)>> = Default::default();
@@ -415,7 +419,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
             let y_range = iter_frange(schedule.iter().flat_map(|s| {
                 s.ys()
                     .iter()
-                    .map(bench_data::median_bps)
+                    .map(rust_bench_median_bps)
                     .collect::<Vec<f64>>()
             }))
             .unwrap();
@@ -460,36 +464,13 @@ fn build_throughput_graph<P: AsRef<Path>>(
                     for ms in schedule.iter() {
                         chart
                             .draw_series(ms.points.iter().map(|(threads, bench_results)| {
-                                let bps = bench_data::median_bps(bench_results);
+                                let bps = rust_bench_median_bps(bench_results);
                                 let coord = (*threads, bps);
                                 ms.style.marker(coord, SIZE)
                             }))?
                             .label(ms.name.clone())
                             .legend(move |coord| ms.style.marker(coord, SIZE));
                     }
-
-                    /*
-                    if log_scale {
-                        for ms in schedule.iter() {
-                            chart
-                                .draw_series(ms.points.iter().map(|(threads, bench_results)| {
-                                    let bps = median_bps(bench_results);
-                                    let coord = (*threads, bps);
-                                    let allocs = alloc_count(bench_results).unwrap_or(0);
-                                    let deallocs = dealloc_count(bench_results).unwrap_or(0);
-
-                                    EmptyElement::at(coord)
-                                        + Text::new(
-                                            format!("{}:{}", allocs, deallocs),
-                                            (5, 10),
-                                            ("sans-serif", 12).into_font(),
-                                        )
-                                }))?
-                                .label(ms.name.clone())
-                                .legend(move |coord| ms.style.marker(coord, SIZE));
-                        }
-                    }
-                     */
 
                     if is_top {
                         chart
