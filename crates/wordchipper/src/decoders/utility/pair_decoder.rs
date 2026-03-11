@@ -121,7 +121,7 @@ mod tests {
     use super::*;
     use crate::{
         alloc::sync::Arc,
-        decoders::utility::testing::common_decoder_unit_test,
+        decoders::utility::testing::common_decoder_tests,
         pretrained::openai::OA_CL100K_BASE_PATTERN,
         spanners::TextSpanningConfig,
         vocab::{
@@ -149,6 +149,7 @@ mod tests {
         assert_eq!(decoder.token_pairs(), &decoder.token_pairs);
         assert_eq!(&decoder.byte_vocab, vocab.byte_vocab());
 
-        common_decoder_unit_test(vocab, &decoder);
+        let decoder: Arc<dyn TokenDecoder<T>> = Arc::new(decoder);
+        common_decoder_tests(vocab, decoder);
     }
 }

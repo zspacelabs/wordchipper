@@ -9,10 +9,7 @@ use crate::{
         vec::Vec,
     },
     decoders::TokenDecoder,
-    support::{
-        strings::string_from_utf8_lossy,
-        traits::static_is_send_sync_check,
-    },
+    support::strings::string_from_utf8_lossy,
     vocab::{
         UnifiedTokenVocab,
         VocabIndex,
@@ -20,12 +17,10 @@ use crate::{
 };
 
 /// Common Unittest for TokenDecoder implementations.
-pub fn common_decoder_unit_test<T: TokenType, D: TokenDecoder<T>>(
+pub fn common_decoder_tests<T: TokenType>(
     vocab: Arc<UnifiedTokenVocab<T>>,
-    decoder: &D,
+    decoder: Arc<dyn TokenDecoder<T>>,
 ) {
-    static_is_send_sync_check(decoder);
-
     let samples = vec![
         "hello world",
         "hello san francisco",

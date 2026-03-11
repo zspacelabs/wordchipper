@@ -138,3 +138,42 @@ impl TokenizerOptions {
         .into()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_coherent() {
+        let options = TokenizerOptions::default()
+            .with_parallel(false)
+            .with_concurrent(false);
+        assert_eq!(options.is_concurrent(), false);
+
+        let options = TokenizerOptions::default()
+            .with_parallel(true)
+            .with_concurrent(false);
+        assert_eq!(options.is_concurrent(), true);
+
+        let options = TokenizerOptions::default()
+            .with_parallel(false)
+            .with_concurrent(true);
+        assert_eq!(options.is_concurrent(), true);
+    }
+
+    #[test]
+    fn test_tokenizer_options_defaults() {
+        let options = TokenizerOptions::default();
+        assert_eq!(options.encoder, TokenEncoderOptions::default());
+        assert_eq!(options.decoder, TokenDecoderOptions::default());
+        assert_eq!(options.accelerated_lexers(), true);
+        assert_eq!(options.parallel(), false);
+
+        let options = options.with_parallel(true).with_accelerated_lexers(false);
+        assert_eq!(options.accelerated_lexers(), false);
+        assert_eq!(options.parallel(), true);
+
+        assert_eq!(options.encoder.parallel(), true);
+        assert_eq!(options.decoder.parallel(), true);
+    }
+}

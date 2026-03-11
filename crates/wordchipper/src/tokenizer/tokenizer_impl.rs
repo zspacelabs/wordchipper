@@ -117,3 +117,36 @@ impl<T: TokenType> TokenDecoder<T> for Tokenizer<T> {
         self.decoder.try_decode_batch_to_strings(batch)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        TokenizerOptions,
+        decoders::utility::testing::common_decoder_tests,
+        encoders::testing::common_encoder_tests,
+        pretrained::openai::OA_CL100K_BASE_PATTERN,
+        spanners::TextSpanningConfig,
+        vocab::utility::testing::{
+            build_test_shift_byte_vocab,
+            build_test_vocab,
+        },
+    };
+
+    #[test]
+    fn test_tokenizer_impl() {
+        type T = u32;
+
+        let vocab: Arc<UnifiedTokenVocab<T>> = build_test_vocab(
+            build_test_shift_byte_vocab(10),
+            TextSpanningConfig::from_pattern(OA_CL100K_BASE_PATTERN),
+        )
+        .into();
+
+        let tokenizer = TokenizerOptions::default().build(vocab.clone());
+
+        common_encoder_tests(vocab.clone(), tokenizer.clone());
+
+        common_decoder_tests(vocab.clone(), tokenizer.clone());
+    }
+}

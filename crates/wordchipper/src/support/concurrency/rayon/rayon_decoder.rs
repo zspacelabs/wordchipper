@@ -85,7 +85,7 @@ mod tests {
     use crate::{
         TokenDecoderOptions,
         UnifiedTokenVocab,
-        decoders::utility::testing::common_decoder_unit_test,
+        decoders::utility::testing::common_decoder_tests,
         pretrained::openai::OA_CL100K_BASE_PATTERN,
         spanners::TextSpanningConfig,
         vocab::utility::testing::{
@@ -109,6 +109,6 @@ mod tests {
             .build(vocab.clone());
         let decoder = ParallelRayonDecoder::new(inner);
 
-        common_decoder_unit_test(vocab, &decoder);
+        common_decoder_tests(vocab, Arc::new(decoder));
     }
 }
