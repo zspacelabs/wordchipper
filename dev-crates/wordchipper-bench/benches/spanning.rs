@@ -17,7 +17,6 @@ use wordchipper::{
         TextSpanner,
         TextSpannerBuilder,
         TextSpanningConfig,
-        span_lexers::SpanLexer,
     },
     support::regex::ConstRegexPattern,
 };
@@ -43,17 +42,21 @@ fn english_text() -> String {
 fn build_regex_only_spanner(
     pattern: impl Into<wordchipper::support::regex::RegexPattern>
 ) -> Arc<dyn TextSpanner> {
-    TextSpanningConfig::from_pattern(pattern)
+    let builder: TextSpannerBuilder<u32> = TextSpanningConfig::from_pattern(pattern).into();
+
+    builder
         .with_concurrent(false)
-        .with_accelerators(false)
+        .with_accelerated_lexers(false)
         .with_regex_automata(false)
         .build()
 }
 
 fn build_regex_automata_spanner(pattern: ConstRegexPattern) -> Arc<dyn TextSpanner> {
-    TextSpanningConfig::from_pattern(pattern)
+    let builder: TextSpannerBuilder<u32> = TextSpanningConfig::from_pattern(pattern).into();
+
+    builder
         .with_concurrent(false)
-        .with_accelerators(false)
+        .with_accelerated_lexers(false)
         .with_regex_automata(true)
         .build()
 }
