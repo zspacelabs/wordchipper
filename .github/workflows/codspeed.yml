@@ -1,0 +1,25 @@
+name: CodSpeed
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  benchmarks:
+    name: Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-codspeed
+        run: cargo install cargo-codspeed --locked
+      - name: Build benchmarks
+        run: cargo codspeed build -p wordchipper-bench
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v4
+        with:
+          mode: simulation
+          run: cargo codspeed run -p wordchipper-bench
