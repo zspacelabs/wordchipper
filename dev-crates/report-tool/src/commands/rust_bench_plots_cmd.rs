@@ -30,6 +30,7 @@ use crate::util::{
     },
     human_format,
     plotting::{
+        DashStyle,
         MarkerLevel,
         MarkerSeries,
         MarkerStyle,
@@ -299,13 +300,13 @@ fn build_throughput_graph<P: AsRef<Path>>(
             "bpe_openai",
             base_style
                 .with_marker_type(MarkerType::CrossCircle)
-                .with_fill_style(Some(colors::DEEPORANGE_200.into())),
+                .with_fill_style(Some(colors::PINK_100.into())),
         ),
         (
             "tiktoken",
             base_style
                 .with_marker_type(MarkerType::CrossSquare)
-                .with_fill_style(Some(colors::PURPLE_200.into())),
+                .with_fill_style(Some(colors::PURPLE_100.into())),
         ),
         (
             "tokenizers",
@@ -322,45 +323,49 @@ fn build_throughput_graph<P: AsRef<Path>>(
     .collect();
 
     let fr_series = MarkerSeries::new(
-        "wordchipper:fancy-regex",
+        "wc:fancy-regex (fallback)",
         base_style
             .with_marker_type(MarkerType::TriUp)
             .with_marker_level(MarkerLevel::Para)
-            .with_fill_style(colors::GREEN_A200.filled()),
+            .with_fill_style(colors::AMBER_A200.filled()),
         data.try_select_series(&format!(
             "encoding_parallel::{model}::wordchipper::regex::{span_encoder}"
         ))?,
     );
 
     let ra_series = MarkerSeries::new(
-        "wordchipper:regex-automata",
+        "wc:regex-automata (default)",
         base_style
             .with_marker_type(MarkerType::Diamond)
             .with_marker_level(MarkerLevel::Para)
-            .with_fill_style(colors::AMBER_A200.filled()),
+            .with_fill_style(colors::GREEN_A200.filled()),
         data.try_select_series(&format!(
             "encoding_parallel::{model}::wordchipper::regex_automata::{span_encoder}"
         ))?,
     );
 
     let logos_series = MarkerSeries::new(
-        "wordchipper:logos",
+        "wc:logos (custom per pattern)",
         base_style
             .with_marker_type(MarkerType::TriDown)
             .with_marker_level(MarkerLevel::Para)
-            .with_fill_style(colors::LIGHTBLUE_A200.filled()),
+            .with_fill_style(colors::LIGHTBLUE_A200.filled())
+            .with_dash_style(DashStyle {
+                size: 4,
+                spacing: 8,
+            }),
         data.try_select_series(&format!(
             "encoding_parallel::{model}::wordchipper::logos::{span_encoder}"
         ))?,
     );
 
-    const SIZE: i32 = 6;
-    const LINE_WIDTH: u32 = 4;
+    const SIZE: i32 = 7;
+    const LINE_WIDTH: u32 = 5;
 
     for (chart_name, group) in [
         ("fast_regex", vec![&fr_series]),
-        ("ra", vec![&fr_series, &ra_series]),
-        ("logos", vec![&fr_series, &ra_series, &logos_series]),
+        ("ra", vec![&ra_series, &fr_series]),
+        ("logos", vec![&logos_series, &ra_series, &fr_series]),
     ] {
         let plot_path = output_dir.join(format!("wc_{chart_name}_vrs_brandx.rust.{model}.svg"));
         log::info!("Plotting to {}", plot_path.display());
@@ -398,7 +403,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
             "wordchipper:{chart_name} {scale_desc} throughput, rust, model: \"{model}\"",
         );
          */
-        let (top, bottom) = charts.split_vertically(root.dim_in_pixel().1 / 3);
+        let (top, bottom) = charts.split_vertically(charts.dim_in_pixel().1 / 2);
 
         for (is_top, log_scale, da) in [(true, false, top), (false, true, bottom)] {
             let scale_desc = if log_scale { "log" } else { "linear" };
@@ -455,10 +460,19 @@ fn build_throughput_graph<P: AsRef<Path>>(
 
                     // Render the lines under the markers.
                     for ms in schedule.iter() {
-                        chart.draw_series(LineSeries::new(
-                            ms.map_points(select),
-                            ms.style.line_style().stroke_width(LINE_WIDTH),
-                        ))?;
+                        if let Some(dash_style) = ms.style.dash_style {
+                            chart.draw_series(DashedLineSeries::new(
+                                ms.map_points(select),
+                                dash_style.size,
+                                dash_style.spacing,
+                                ms.style.line_style().stroke_width(LINE_WIDTH),
+                            ))?;
+                        } else {
+                            chart.draw_series(LineSeries::new(
+                                ms.map_points(select),
+                                ms.style.line_style().stroke_width(LINE_WIDTH),
+                            ))?;
+                        }
                     }
 
                     for ms in schedule.iter() {
