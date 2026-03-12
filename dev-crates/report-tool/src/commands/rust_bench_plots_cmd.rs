@@ -435,7 +435,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
                         //               .caption(caption, ("sans-serif", 20).into_font())
                         .margin(0)
                         .x_label_area_size(40)
-                        .y_label_area_size(70)
+                        .y_label_area_size(80)
                         .build_cartesian_2d(x_range.log_scale().base(2.0), $y_range)?;
 
                     if is_top {
