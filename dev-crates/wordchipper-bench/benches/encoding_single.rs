@@ -133,7 +133,7 @@ mod english {
                         bencher,
                         &english_text(),
                         OA_R50K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         false,
                     );
                 }
@@ -192,7 +192,7 @@ mod english {
                         bencher,
                         &english_text(),
                         OA_R50K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         true,
                     );
                 }
@@ -278,7 +278,7 @@ mod english {
                         bencher,
                         &english_text(),
                         OA_CL100K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         false,
                     );
                 }
@@ -337,7 +337,7 @@ mod english {
                         bencher,
                         &english_text(),
                         OA_CL100K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         true,
                     );
                 }
@@ -423,7 +423,7 @@ mod english {
                         bencher,
                         &english_text(),
                         OA_O200K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         false,
                     );
                 }
@@ -482,7 +482,7 @@ mod english {
                         bencher,
                         &english_text(),
                         OA_O200K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         true,
                     );
                 }
@@ -558,7 +558,7 @@ mod diverse {
                         bencher,
                         &diverse_text(),
                         OA_R50K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         false,
                     );
                 }
@@ -617,7 +617,7 @@ mod diverse {
                         bencher,
                         &diverse_text(),
                         OA_R50K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         true,
                     );
                 }
@@ -703,7 +703,7 @@ mod diverse {
                         bencher,
                         &diverse_text(),
                         OA_CL100K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         false,
                     );
                 }
@@ -762,7 +762,7 @@ mod diverse {
                         bencher,
                         &diverse_text(),
                         OA_CL100K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         true,
                     );
                 }
@@ -848,7 +848,7 @@ mod diverse {
                         bencher,
                         &diverse_text(),
                         OA_O200K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         false,
                     );
                 }
@@ -907,7 +907,7 @@ mod diverse {
                         bencher,
                         &diverse_text(),
                         OA_O200K_BASE,
-                        SpanEncoderSelector::MergeHeap,
+                        SpanEncoderSelector::MergeTailHeap,
                         true,
                     );
                 }

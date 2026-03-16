@@ -157,8 +157,14 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
             (
                 "buffer_sweep",
                 MarkerStyle::default()
-                    .with_marker_type(MarkerType::Circle)
+                    .with_marker_type(MarkerType::TriUp)
                     .with_fill_style(Some(colors::GREEN_200.into())),
+            ),
+            (
+                "tail_sweep",
+                MarkerStyle::default()
+                    .with_marker_type(MarkerType::TriDown)
+                    .with_fill_style(Some(colors::DEEPORANGE_200.into())),
             ),
             (
                 "priority_merge",
@@ -167,22 +173,22 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
                     .with_fill_style(Some(colors::PURPLE_200.into())),
             ),
             (
-                "tail_sweep",
-                MarkerStyle::default()
-                    .with_marker_type(MarkerType::Diamond)
-                    .with_fill_style(Some(colors::DEEPORANGE_200.into())),
-            ),
-            (
                 "bpe_backtrack",
                 MarkerStyle::default()
-                    .with_marker_type(MarkerType::TriUp)
+                    .with_marker_type(MarkerType::Circle)
                     .with_fill_style(Some(colors::LIGHTBLUE_200.into())),
             ),
             (
-                "merge_heap",
+                "merge_buffer_heap",
                 MarkerStyle::default()
-                    .with_marker_type(MarkerType::TriDown)
+                    .with_marker_type(MarkerType::Diamond)
                     .with_fill_style(Some(colors::BLUEGREY_200.into())),
+            ),
+            (
+                "merge_tail_heap",
+                MarkerStyle::default()
+                    .with_marker_type(MarkerType::CrossDiamond)
+                    .with_fill_style(Some(colors::AMBER_200.into())),
             ),
         ];
 

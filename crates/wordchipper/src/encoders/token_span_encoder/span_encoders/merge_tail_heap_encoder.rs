@@ -15,11 +15,11 @@ use crate::{
 /// This encoder builds and maintains a best-merge heap of potential merges,
 /// to avoid secondary lookups in the pair vocab.
 #[derive(Default, Debug, Clone)]
-pub struct MergeHeapSpanEncoder<T: TokenType> {
+pub struct MergeTailHeapEncoder<T: TokenType> {
     pair_ranks: Vec<T>,
 }
 
-impl<T: TokenType> SpanEncoder<T> for MergeHeapSpanEncoder<T> {
+impl<T: TokenType> SpanEncoder<T> for MergeTailHeapEncoder<T> {
     fn encode_append_compound_span(
         &mut self,
         vocab: &UnifiedTokenVocab<T>,
@@ -112,7 +112,7 @@ mod tests {
         let encoder = TokenSpanEncoder::<T>::new_with_selector(
             TextSpannerBuilder::default(&vocab),
             vocab.clone(),
-            SpanEncoderSelector::MergeHeap,
+            SpanEncoderSelector::MergeTailHeap,
         );
         let encoder: Arc<dyn TokenEncoder<T>> = Arc::new(encoder);
         common_encoder_tests(vocab.into(), encoder)

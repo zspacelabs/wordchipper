@@ -9,14 +9,13 @@ use crate::{
     encoders::token_span_encoder::{
         SpanEncoder,
         span_encoders::{
+            BpeBacktrackSpanEncoder,
+            BpeVocab,
             BufferSweepSpanEncoder,
-            MergeHeapSpanEncoder,
+            MergeBufferHeapEncoder,
+            MergeTailHeapEncoder,
             PriorityMergeSpanEncoder,
             TailSweepSpanEncoder,
-            bpe_backtrack_encoder::{
-                BpeBacktrackSpanEncoder,
-                BpeVocab,
-            },
         },
     },
     vocab::UnifiedTokenVocab,
@@ -58,8 +57,11 @@ pub enum SpanEncoderSelector {
     /// Use the [`TailSweepSpanEncoder`] encoder.
     TailSweep,
 
-    /// Use the [`MergeHeapSpanEncoder`] encoder.
-    MergeHeap,
+    /// Use the [`MergeBufferHeapEncoder`] encoder.
+    MergeBufferHeap,
+
+    /// Use the [`MergeTailHeapEncoder`] encoder.
+    MergeTailHeap,
 
     /// Use the [`PriorityMergeSpanEncoder`] encoder.
     PriorityMerge,
@@ -106,9 +108,10 @@ impl SpanEncoderSelector {
                 Arc::new(|| Box::new(BufferSweepSpanEncoder::<T>::default()))
             }
             TailSweep => Arc::new(|| Box::new(TailSweepSpanEncoder::<T>::default())),
-            ConcurrentDefault | MergeHeap => {
-                Arc::new(|| Box::new(MergeHeapSpanEncoder::<T>::default()))
+            ConcurrentDefault | MergeTailHeap => {
+                Arc::new(|| Box::new(MergeTailHeapEncoder::<T>::default()))
             }
+            MergeBufferHeap => Arc::new(|| Box::new(MergeBufferHeapEncoder::<T>::default())),
             SingleThreadDefault | PriorityMerge => {
                 Arc::new(|| Box::new(PriorityMergeSpanEncoder::<T>::default()))
             }
