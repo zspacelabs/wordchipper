@@ -5,11 +5,6 @@ use plotters::{
     prelude::*,
     style::full_palette as colors,
 };
-use plotters_backend::text_anchor::{
-    HPos,
-    Pos,
-    VPos,
-};
 
 use crate::{
     commands::benchmark_plots::{
@@ -218,7 +213,7 @@ fn build_rust_throughput_plots<P: AsRef<Path>>(
         ("logos", vec![&logos_series, &ra_series, &fr_series]),
     ] {
         let mut schedule: Vec<MarkerSeries<(u32, BenchResult)>> = Default::default();
-        schedule.extend(group.clone());
+        schedule.extend(group.into_iter().cloned());
         schedule.extend(external.clone());
 
         let series: Vec<MarkerSeries<(u32, f64)>> = schedule
