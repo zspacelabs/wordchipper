@@ -1,0 +1,7 @@
+Name, Thread 4, Thread 8, Thread 16, Thread 32, Thread 64
+wc:logos (custom per pattern), 247.7 MiB/s, 495.5 MiB/s, 962.3 MiB/s, 1.7 GiB/s, 2.7 GiB/s
+wc:regex-automata (default), 153.9 MiB/s, 308.2 MiB/s, 588.3 MiB/s, 1.0 GiB/s, 1.6 GiB/s
+wc:fancy-regex (fallback), 49.7 MiB/s, 99.6 MiB/s, 189.7 MiB/s, 345.7 MiB/s, 523.0 MiB/s
+bpe_openai, 54.1 MiB/s, 96.6 MiB/s, 76.0 MiB/s, 71.6 MiB/s, 63.8 MiB/s
+tiktoken, 11.3 MiB/s, 38.5 MiB/s, 93.6 MiB/s, 140.1 MiB/s, 140.5 MiB/s
+tokenizers, 12.5 MiB/s, 21.8 MiB/s, 24.8 MiB/s, 34.1 MiB/s, 46.4 MiB/s

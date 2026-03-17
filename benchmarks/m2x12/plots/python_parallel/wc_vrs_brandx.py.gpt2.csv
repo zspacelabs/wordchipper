@@ -1,0 +1,7 @@
+Name, Thread 1, Thread 2, Thread 4, Thread 8, Thread 12
+wc::rayon::logos (custom per pattern), 79.4 MiB/s, 123.0 MiB/s, 175.7 MiB/s, 205.8 MiB/s, 210.8 MiB/s
+wc::rayon::regex-automata (default), 47.4 MiB/s, 79.4 MiB/s, 122.7 MiB/s, 169.1 MiB/s, 187.7 MiB/s
+wc::threadpool::logos (custom per pattern), 65.9 MiB/s, 108.5 MiB/s, 142.8 MiB/s, 145.3 MiB/s, 145.6 MiB/s
+wc::threadpool::regex-automata (default), 41.8 MiB/s, 74.8 MiB/s, 118.0 MiB/s, 138.5 MiB/s, 138.0 MiB/s
+tiktoken, 104.2 MiB/s, 104.5 MiB/s, 102.5 MiB/s, 102.2 MiB/s, 101.7 MiB/s
+tokenizers, 4.6 MiB/s, 8.4 MiB/s, 15.6 MiB/s, 14.9 MiB/s, 5.8 MiB/s
