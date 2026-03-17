@@ -42,55 +42,60 @@ fn main() {
     divan::main();
 }
 
-const BATCH_SIZE: usize = 1024;
-
 struct Batch {
     samples: Vec<String>,
     total_bytes: usize,
 }
 
 impl Batch {
+    fn new(samples: Vec<String>) -> Self {
+        let total_bytes = samples.iter().map(|s| s.len()).sum();
+        Self {
+            samples,
+            total_bytes,
+        }
+    }
+
     fn strs(&self) -> Vec<&str> {
         self.samples.iter().map(|s| s.as_str()).collect()
     }
 }
+
+const BATCH_SIZE: usize = 10240;
+const MAX_SHARD: usize = 100;
 
 fn load_batch() -> Batch {
     let mut cache = DatasetCacheConfig::default()
         .init()
         .expect("failed to initialize dataset cache");
 
-    let reader = cache
-        .read_batches(0, true)
-        .expect("failed to read dataset batches");
-
     let mut samples = Vec::with_capacity(BATCH_SIZE);
-    for batch in reader {
-        let batch = batch.unwrap();
-        let column = batch
-            .column_by_name("text")
-            .expect("missing 'text' column")
-            .as_any()
-            .downcast_ref::<arrow::array::StringArray>()
-            .unwrap();
 
-        for val in column {
-            samples.push(val.unwrap().to_string());
-            if samples.len() >= BATCH_SIZE {
-                let total_bytes = samples.iter().map(|s| s.len()).sum();
-                return Batch {
-                    samples,
-                    total_bytes,
-                };
+    'outer: for shard in 0..=MAX_SHARD {
+        log::info!("reading shard {}", shard);
+        let reader = cache
+            .read_batches(shard, true)
+            .expect("failed to read dataset batches");
+
+        for batch in reader {
+            let batch = batch.unwrap();
+            let column = batch
+                .column_by_name("text")
+                .expect("missing 'text' column")
+                .as_any()
+                .downcast_ref::<arrow::array::StringArray>()
+                .unwrap();
+
+            for val in column {
+                samples.push(val.unwrap().to_string());
+                if samples.len() >= BATCH_SIZE {
+                    break 'outer;
+                }
             }
         }
     }
 
-    let total_bytes = samples.iter().map(|s| s.len()).sum();
-    Batch {
-        samples,
-        total_bytes,
-    }
+    Batch::new(samples)
 }
 
 static BATCH: LazyLock<Batch> = LazyLock::new(load_batch);
@@ -145,7 +150,7 @@ fn bench_wc(
     let encoder = build_encoder_wc::<u32>(model, selector, mode);
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
-        .bench(|| encoder.try_encode_batch(black_box(&strs)).unwrap());
+        .bench_local(|| encoder.try_encode_batch(black_box(&strs)).unwrap());
 }
 
 fn bench_tt(
@@ -155,7 +160,7 @@ fn bench_tt(
     let strs = BATCH.strs();
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
-        .bench(|| {
+        .bench_local(|| {
             strs.par_iter()
                 .map(|s| bpe.encode_with_special_tokens(s))
                 .collect::<Vec<_>>()
@@ -170,7 +175,7 @@ fn bench_hf(
     let strs = BATCH.strs();
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
-        .bench(|| tok.encode_batch(black_box(strs.clone()), true).unwrap());
+        .bench_local(|| tok.encode_batch(black_box(strs.clone()), true).unwrap());
 }
 
 fn bench_bpe_openai(
@@ -180,7 +185,7 @@ fn bench_bpe_openai(
     let strs = BATCH.strs();
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
-        .bench(|| strs.par_iter().map(|s| tok.encode(s)).collect::<Vec<_>>());
+        .bench_local(|| strs.par_iter().map(|s| tok.encode(s)).collect::<Vec<_>>());
 }
 
 mod r50k {

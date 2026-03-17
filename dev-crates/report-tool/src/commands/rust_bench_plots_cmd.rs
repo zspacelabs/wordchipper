@@ -106,8 +106,8 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
 
-    const SIZE: i32 = 6;
-    const LINE_WIDTH: u32 = 4;
+    const SIZE: i32 = 10;
+    const LINE_WIDTH: u32 = 6;
 
     let plot_path = output_dir.join(format!("span_encoder_relative.rust.{model}.svg"));
     log::info!("Plotting to {}", plot_path.display());
@@ -161,28 +161,28 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
                     .with_fill_style(Some(colors::GREEN_200.into())),
             ),
             (
-                "priority_merge",
-                MarkerStyle::default()
-                    .with_marker_type(MarkerType::Square)
-                    .with_fill_style(Some(colors::PURPLE_200.into())),
-            ),
-            (
                 "tail_sweep",
                 MarkerStyle::default()
                     .with_marker_type(MarkerType::Diamond)
                     .with_fill_style(Some(colors::DEEPORANGE_200.into())),
             ),
             (
-                "bpe_backtrack",
-                MarkerStyle::default()
-                    .with_marker_type(MarkerType::TriUp)
-                    .with_fill_style(Some(colors::LIGHTBLUE_200.into())),
-            ),
-            (
                 "merge_heap",
                 MarkerStyle::default()
                     .with_marker_type(MarkerType::TriDown)
                     .with_fill_style(Some(colors::BLUEGREY_200.into())),
+            ),
+            (
+                "priority_merge",
+                MarkerStyle::default()
+                    .with_marker_type(MarkerType::Square)
+                    .with_fill_style(Some(colors::PURPLE_200.into())),
+            ),
+            (
+                "bpe_backtrack",
+                MarkerStyle::default()
+                    .with_marker_type(MarkerType::TriUp)
+                    .with_fill_style(Some(colors::LIGHTBLUE_200.into())),
             ),
         ];
 
@@ -233,22 +233,32 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
             }
         };
 
+        let show_x_label = idx == 2;
+
         let mut chart = ChartBuilder::on(drawing_area)
-            .caption(lexer_label, ("sans-serif", 20).into_font())
-            .x_label_area_size(40)
-            .y_label_area_size(50)
+            .caption(
+                format!("lexer: {}", lexer_label),
+                ("sans-serif", 20).into_font(),
+            )
+            .margin(10)
+            .x_label_area_size(if show_x_label { 60 } else { 0 })
+            .y_label_area_size(70)
             .build_cartesian_2d(x_range.log_scale().base(2.0), y_range)?;
 
-        if idx == sub_charts.len() - 1 {
+        if show_x_label {
             chart
                 .configure_mesh()
                 .x_desc("Thread Count")
+                .x_label_style(("sans-serif", 20.0).into_font())
                 .y_desc("Relative Median Throughput")
+                .y_label_style(("sans-serif", 20.0).into_font())
                 .draw()?;
         } else {
             chart
                 .configure_mesh()
+                .x_label_style(("sans-serif", 20.0).into_font())
                 .y_desc("Relative Median Throughput")
+                .y_label_style(("sans-serif", 20.0).into_font())
                 .draw()?;
         }
 
@@ -270,9 +280,9 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
         if idx == 0 {
             chart
                 .configure_series_labels()
+                .label_font(("sans-serif", 24).into_font())
                 .position(SeriesLabelPosition::LowerLeft)
                 .margin(12)
-                .legend_area_size(15)
                 .background_style(WHITE.mix(0.8))
                 .border_style(BLACK)
                 .draw()?;
@@ -359,8 +369,8 @@ fn build_throughput_graph<P: AsRef<Path>>(
         ))?,
     );
 
-    const SIZE: i32 = 7;
-    const LINE_WIDTH: u32 = 5;
+    const SIZE: i32 = 10;
+    const LINE_WIDTH: u32 = 6;
 
     for (chart_name, group) in [
         ("fast_regex", vec![&fr_series]),
@@ -438,14 +448,16 @@ fn build_throughput_graph<P: AsRef<Path>>(
                 ($y_range:expr) => {{
                     let mut chart = ChartBuilder::on(&da)
                         //               .caption(caption, ("sans-serif", 20).into_font())
-                        .margin(0)
+                        .margin(10)
                         .x_label_area_size(40)
-                        .y_label_area_size(80)
+                        .y_label_area_size(120)
                         .build_cartesian_2d(x_range.log_scale().base(2.0), $y_range)?;
 
                     if is_top {
                         chart
                             .configure_mesh()
+                            .x_label_style(("sans-serif", 20.0).into_font())
+                            .y_label_style(("sans-serif", 20.0).into_font())
                             .y_desc(format!("Median Throughput: {scale_desc}"))
                             .y_label_formatter(&|&bps| human_format::format_bps(bps))
                             .draw()?;
@@ -454,6 +466,8 @@ fn build_throughput_graph<P: AsRef<Path>>(
                             .configure_mesh()
                             .x_desc("Thread Count")
                             .y_desc(format!("Median Throughput: {scale_desc}"))
+                            .x_label_style(("sans-serif", 20.0).into_font())
+                            .y_label_style(("sans-serif", 20.0).into_font())
                             .y_label_formatter(&|&bps| human_format::format_bps(bps))
                             .draw()?;
                     }
@@ -489,10 +503,10 @@ fn build_throughput_graph<P: AsRef<Path>>(
                     if is_top {
                         chart
                             .configure_series_labels()
+                            .label_font(("sans-serif", 22).into_font())
                             .position(SeriesLabelPosition::UpperLeft)
                             .background_style(WHITE.mix(0.8))
                             .margin(SIZE * 2)
-                            .legend_area_size(15)
                             .border_style(BLACK)
                             .draw()?;
                     }
