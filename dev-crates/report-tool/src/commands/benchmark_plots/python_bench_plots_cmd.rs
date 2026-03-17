@@ -143,19 +143,17 @@ fn build_python_throughput_graph<P: AsRef<Path>>(
             .join(", ")
     );
 
-    let plot_path = output_dir.join(format!("wc_vrs_brandx.py.{model}.svg"));
-    log::info!("Plotting to {}", plot_path.display());
-
     let series: Vec<MarkerSeries<(u32, f64)>> = groups
         .into_iter()
         .map(|ms| ms.map(|(t, br)| (*t, py_bench_median_bps(br))))
         .collect();
 
+    let plot_path_stem = output_dir.join(format!("wc_vrs_brandx.py.{model}"));
     build_throughput_plot(
         "wordchipper python throughput",
         &format!("arch: \"{arch}\", model: \"{model}\""),
         options,
-        &plot_path,
+        &plot_path_stem,
         &series,
     )
 }

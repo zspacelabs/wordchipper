@@ -120,13 +120,13 @@ fn build_rust_relative_span_encoder_plots<P: AsRef<Path>>(
         .map(|(lexer_label, group)| (lexer_label.as_str(), group.as_slice()))
         .collect();
 
-    let plot_path = output_dir.join(format!("span_encoder_relative.rust.{model}.svg"));
+    let plot_path_stem = output_dir.join(format!("span_encoder_relative.rust.{model}"));
 
     plots::build_relative_span_encoder_plot(
         "SpanEncoder Relative Throughput",
         &format!("arch: \"{arch}\", model: \"{model}\""),
         options,
-        &plot_path,
+        &plot_path_stem,
         &view,
     )
 }
@@ -221,13 +221,12 @@ fn build_rust_throughput_plots<P: AsRef<Path>>(
             .map(|ms| ms.map(|(t, br)| (*t, rust_bench_median_bps(br))))
             .collect();
 
-        let plot_path = output_dir.join(format!("wc_{chart_name}_vrs_brandx.rust.{model}.svg"));
-
+        let plot_path_stem = output_dir.join(format!("wc_{chart_name}_vrs_brandx.rust.{model}"));
         plots::build_throughput_plot(
             "wordchipper rust throughput",
             &format!("arch: \"{arch}\", model: \"{model}\""),
             options,
-            &plot_path,
+            &plot_path_stem,
             &series,
         )?;
     }

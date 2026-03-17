@@ -1,3 +1,4 @@
+#![allow(clippy::type_complexity)]
 mod benchmark_plots_cmd;
 mod graph_style;
 mod plots;

@@ -1,5 +1,10 @@
 use std::{
     collections::BTreeMap,
+    fs::File,
+    io::{
+        BufWriter,
+        Write,
+    },
     path::Path,
 };
 
@@ -42,15 +47,70 @@ use crate::{
     },
 };
 
-#[allow(clippy::type_complexity)]
+pub fn build_relative_encoder_table<P: AsRef<Path>>(
+    stem_path: &P,
+    lexer_groups: &[(&str, Vec<MarkerSeries<(u32, f64)>>)],
+) -> Result<(), Box<dyn std::error::Error>> {
+    let stem_path = stem_path.as_ref();
+    let table_path = stem_path.with_added_extension("csv");
+
+    log::info!("Writing table to {}", table_path.display());
+    let mut writer = BufWriter::new(File::create(table_path)?);
+
+    let threads = lexer_groups.first().unwrap().1.first().unwrap().xs();
+
+    let mut header = vec!["Lexer".to_string(), "Encoder".to_string()];
+    header.extend(threads.iter().map(|t| format!("Thread {}", t)));
+    writeln!(writer, "{}", header.join(", "))?;
+
+    for (lexer_label, group) in lexer_groups.iter() {
+        for series in group.iter() {
+            assert_eq!(threads, series.xs());
+
+            let mut row = vec![lexer_label.to_string(), series.name.clone()];
+            row.extend(series.ys().iter().map(|y| format!("{y:.2}")));
+
+            writeln!(writer, "{}", row.join(", "))?;
+        }
+    }
+
+    writer.flush()?;
+
+    drop(writer);
+
+    Ok(())
+}
+
 pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
     title: &str,
     caption: &str,
     options: GraphStyleOptions,
-    plot_path: &P,
+    stem_path: &P,
     lexer_groups: &[(&str, &[MarkerSeries<(u32, f64)>])],
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let plot_path = plot_path.as_ref();
+    let stem_path = stem_path.as_ref();
+
+    let mut relative_groups: Vec<(&str, Vec<MarkerSeries<(u32, f64)>>)> = Default::default();
+    for &(lexer_label, group) in lexer_groups.iter() {
+        // Normalize the points to the max value.
+        let mut baseline: BTreeMap<u32, f64> = Default::default();
+        for ms in group.iter() {
+            for &(t, v) in ms.points.iter() {
+                let entry = baseline.entry(t).or_default();
+                *entry = bounds_tools::fmax(*entry, v);
+            }
+        }
+        let render: Vec<MarkerSeries<(u32, f64)>> = group
+            .iter()
+            .map(|s| s.map(|&(t, v)| (t, v / baseline[&t])))
+            .collect();
+
+        relative_groups.push((lexer_label, render));
+    }
+
+    build_relative_encoder_table(&stem_path, &relative_groups)?;
+
+    let plot_path = stem_path.with_added_extension("svg");
     log::info!("Plotting to {}", plot_path.display());
 
     let root = SVGBackend::new(&plot_path, options.shape).into_drawing_area();
@@ -83,24 +143,11 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
 
     let sub_charts = charts.split_evenly((lexer_groups.len(), 1));
 
-    for (idx, &(lexer_label, group)) in lexer_groups.iter().enumerate() {
+    for (idx, (lexer_label, group)) in relative_groups.iter().enumerate() {
         let drawing_area = &sub_charts[idx];
 
-        // Normalize the points to the max value.
-        let mut baseline: BTreeMap<u32, f64> = Default::default();
-        for ms in group.iter() {
-            for &(t, v) in ms.points.iter() {
-                let entry = baseline.entry(t).or_default();
-                *entry = bounds_tools::fmax(*entry, v);
-            }
-        }
-        let render: Vec<MarkerSeries<(u32, f64)>> = group
-            .iter()
-            .map(|s| s.map(|&(t, v)| (t, v / baseline[&t])))
-            .collect();
-
-        let x_range = iter_range(render.iter().flat_map(|s| s.xs())).unwrap();
-        let y_range = iter_frange(render.iter().flat_map(|s| s.ys())).unwrap();
+        let x_range = iter_range(group.iter().flat_map(|s| s.xs())).unwrap();
+        let y_range = iter_frange(group.iter().flat_map(|s| s.ys())).unwrap();
 
         let show_x_label = idx == lexer_groups.len() - 1;
 
@@ -132,14 +179,14 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
         }
 
         // Render the lines under the markers.
-        for ms in render.iter() {
+        for ms in group.iter() {
             chart.draw_series(LineSeries::new(
                 ms.points.clone(),
                 ms.style.line_style().stroke_width(options.line_width),
             ))?;
         }
 
-        for ms in render.iter() {
+        for ms in group.iter() {
             chart
                 .draw_series(
                     ms.points
@@ -167,14 +214,49 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
     Ok(())
 }
 
+pub fn build_throughput_table<P: AsRef<Path>>(
+    stem_path: &P,
+    series: &[MarkerSeries<(u32, f64)>],
+) -> Result<(), Box<dyn std::error::Error>> {
+    let stem_path = stem_path.as_ref();
+    let table_path = stem_path.with_added_extension("csv");
+
+    log::info!("Writing table to {}", table_path.display());
+    let mut writer = BufWriter::new(File::create(table_path)?);
+
+    let threads = series.first().unwrap().xs();
+    let mut header = vec!["Name".to_string()];
+    header.extend(threads.iter().map(|t| format!("Thread {}", t)));
+    writeln!(writer, "{}", header.join(", "))?;
+
+    for series in series.iter() {
+        assert_eq!(threads, series.xs());
+
+        let mut row = vec![series.name.clone()];
+        row.extend(series.ys().iter().map(|y| human_format::format_bps(*y)));
+
+        writeln!(writer, "{}", row.join(", "))?;
+    }
+
+    writer.flush()?;
+
+    drop(writer);
+
+    Ok(())
+}
+
 pub fn build_throughput_plot<P: AsRef<Path>>(
     title: &str,
     caption: &str,
     options: GraphStyleOptions,
-    plot_path: &P,
+    stem_path: &P,
     series: &[MarkerSeries<(u32, f64)>],
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let plot_path = plot_path.as_ref();
+    let stem_path = stem_path.as_ref();
+
+    build_throughput_table(&stem_path, series)?;
+
+    let plot_path = stem_path.with_added_extension("svg");
     log::info!("Plotting to {}", plot_path.display());
 
     let root = SVGBackend::new(&plot_path, options.shape).into_drawing_area();
