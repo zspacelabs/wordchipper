@@ -12,7 +12,11 @@ use crate::{
         SpanEncoder,
         SpanEncoderSelector,
     },
-    spanners::TextSpanner,
+    prelude::*,
+    spanners::{
+        SpanRef,
+        TextSpanner,
+    },
     vocab::SpecialVocab,
 };
 
@@ -98,14 +102,37 @@ impl<T: TokenType> TokenEncoder<T> for TokenSpanEncoder<T> {
     ) -> WCResult<()> {
         cfg_if::cfg_if! {
             if #[cfg(feature = "concurrent")] {
-                let mut se = self.se_pool.get().lock().expect("SpanEncoder mutex poisoned: a thread panicked during encoding");
+                let mut se = self
+                    .se_pool
+                    .get()
+                    .lock()
+                    .expect("SpanEncoder mutex poisoned: a thread panicked during encoding");
             } else {
                 let mut se = (self.se_builder)();
             }
         }
 
         self.spanner.for_each_split_span(text, &mut |span_ref| {
-            se.encode_append_span_ref(&self.vocab, text, span_ref, tokens);
+            match span_ref {
+                SpanRef::Word(range) => {
+                    let span = unsafe { text.get_unchecked(range).as_bytes() };
+                    if let Some(token) = self.vocab.lookup_token(span) {
+                        tokens.push(token);
+                    } else {
+                        se.encode_append_compound_span(&self.vocab, span, tokens);
+                    }
+                }
+                SpanRef::Special(range) => {
+                    let span = unsafe { text.get_unchecked(range).as_bytes() };
+                    if let Some(token) = self.vocab.lookup_special_token(span) {
+                        tokens.push(token);
+                    } else {
+                        let span = String::from_utf8_lossy(span).to_string();
+                        panic!("special token \"{span}\" not found in vocab");
+                    }
+                }
+                SpanRef::Gap(_) => (),
+            }
             true
         });
 

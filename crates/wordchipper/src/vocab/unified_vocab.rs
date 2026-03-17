@@ -184,6 +184,14 @@ impl<T: TokenType> UnifiedTokenVocab<T> {
         self.spanning.specials()
     }
 
+    /// Lookup a special token by span.
+    pub fn lookup_special_token(
+        &self,
+        span: &[u8],
+    ) -> Option<T> {
+        self.spanning.specials().lookup_token(span)
+    }
+
     /// Get a mutable view of the [`SpecialVocab`]
     pub fn special_vocab_mut(&mut self) -> &mut SpecialVocab<T> {
         self.spanning.specials_mut()
