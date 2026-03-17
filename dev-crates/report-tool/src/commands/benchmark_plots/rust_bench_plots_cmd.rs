@@ -226,9 +226,9 @@ fn build_rust_throughput_plots<P: AsRef<Path>>(
         plots::build_throughput_plot(
             "wordchipper rust throughput",
             &format!("arch: \"{arch}\", model: \"{model}\""),
-            &series,
             options,
             &plot_path,
+            &series,
         )?;
     }
 

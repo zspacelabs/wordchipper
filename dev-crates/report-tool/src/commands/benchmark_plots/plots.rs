@@ -170,9 +170,9 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
 pub fn build_throughput_plot<P: AsRef<Path>>(
     title: &str,
     caption: &str,
-    series: &[MarkerSeries<(u32, f64)>],
     options: GraphStyleOptions,
     plot_path: &P,
+    series: &[MarkerSeries<(u32, f64)>],
 ) -> Result<(), Box<dyn std::error::Error>> {
     let plot_path = plot_path.as_ref();
     log::info!("Plotting to {}", plot_path.display());

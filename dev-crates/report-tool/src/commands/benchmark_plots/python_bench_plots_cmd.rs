@@ -154,8 +154,8 @@ fn build_python_throughput_graph<P: AsRef<Path>>(
     build_throughput_plot(
         "wordchipper python throughput",
         &format!("arch: \"{arch}\", model: \"{model}\""),
-        &series,
         options,
         &plot_path,
+        &series,
     )
 }
