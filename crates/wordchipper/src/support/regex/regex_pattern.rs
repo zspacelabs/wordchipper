@@ -131,6 +131,7 @@ impl RegexPattern {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::alloc::format;
 
     #[test]
     fn test_const_regex_pattern() {
