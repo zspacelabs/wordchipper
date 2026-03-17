@@ -47,6 +47,10 @@ pub struct PythonBenchPlots {
     )]
     models: Vec<String>,
 
+    /// Machine arch name.
+    #[clap(long, default_value = "amd3990X")]
+    arch: String,
+
     /// Path to the benchmark data.
     #[clap(long, default_value = "benchmarks/amd3990X/data")]
     data_dir: String,
@@ -86,7 +90,7 @@ impl PythonBenchPlots {
         std::fs::create_dir_all(&par_output)?;
 
         for model in self.models.iter() {
-            build_model_graphs(model, &par_output, SHAPE, &par_data)?;
+            build_model_graphs(&self.arch, model, &par_output, SHAPE, &par_data)?;
         }
 
         Ok(())
@@ -94,6 +98,7 @@ impl PythonBenchPlots {
 }
 
 fn build_model_graphs<P: AsRef<Path>>(
+    arch: &str,
     model: &str,
     output_dir: &P,
     shape: (u32, u32),
@@ -105,13 +110,16 @@ fn build_model_graphs<P: AsRef<Path>>(
 
     let tall_shape = (w, h * 3 / 2);
 
-    build_throughput_graph(model, tall_shape, &output_dir, data)?;
+    build_throughput_graph(arch, model, tall_shape, &output_dir, data)?;
 
     Ok(())
 }
 
-#[allow(unused)]
+const SIZE: i32 = 10;
+const LINE_WIDTH: u32 = 6;
+
 fn build_throughput_graph<P: AsRef<Path>>(
+    arch: &str,
     model: &str,
     shape: (u32, u32),
     output_dir: &P,
@@ -121,24 +129,6 @@ fn build_throughput_graph<P: AsRef<Path>>(
 
     let mut groups: Vec<MarkerSeries<(u32, Value)>> = Default::default();
 
-    if let Some(series) = data.select_series(&format!("tokenizers[{model}]")) {
-        groups.push(MarkerSeries::new(
-            "tokenizers",
-            MarkerStyle::default()
-                .with_marker_type(MarkerType::Diamond)
-                .with_fill_style(Some(colors::BLUEGREY_100.into())),
-            series,
-        ));
-    }
-    if let Some(series) = data.select_series(&format!("tiktoken[{model}]")) {
-        groups.push(MarkerSeries::new(
-            "tiktoken",
-            MarkerStyle::default()
-                .with_marker_type(MarkerType::CrossSquare)
-                .with_fill_style(Some(colors::PURPLE_100.into())),
-            series,
-        ));
-    }
     /*
     if let Some(series) = data.select_series(&format!("tokenizers_threadpool[{model}]")) {
         groups.push(MarkerSeries::new(
@@ -160,16 +150,6 @@ fn build_throughput_graph<P: AsRef<Path>>(
     }
      */
 
-    if let Some(series) = data.select_series(&format!("wordchipper_parallel[{model}]")) {
-        groups.push(MarkerSeries::new(
-            "wc::rayon::regex-automata (default)",
-            MarkerStyle::default()
-                .with_marker_type(MarkerType::TriUp)
-                .with_marker_level(MarkerLevel::Para)
-                .with_fill_style(Some(colors::GREEN_A200.into())),
-            series,
-        ));
-    }
     if let Some(series) = data.select_series(&format!("wordchipper_parallel_accel[{model}]")) {
         groups.push(MarkerSeries::new(
             "wc::rayon::logos (custom per pattern)",
@@ -184,12 +164,13 @@ fn build_throughput_graph<P: AsRef<Path>>(
             series,
         ));
     }
-    if let Some(series) = data.select_series(&format!("wordchipper_threadpool[{model}]")) {
+    if let Some(series) = data.select_series(&format!("wordchipper_parallel[{model}]")) {
         groups.push(MarkerSeries::new(
-            "wc::threadpool::regex-automata (default)",
+            "wc::rayon::regex-automata (default)",
             MarkerStyle::default()
                 .with_marker_type(MarkerType::TriUp)
-                .with_fill_style(Some(colors::LIGHTGREEN_A200.into())),
+                .with_marker_level(MarkerLevel::Para)
+                .with_fill_style(Some(colors::GREEN_A200.into())),
             series,
         ));
     }
@@ -206,6 +187,33 @@ fn build_throughput_graph<P: AsRef<Path>>(
             series,
         ));
     }
+    if let Some(series) = data.select_series(&format!("wordchipper_threadpool[{model}]")) {
+        groups.push(MarkerSeries::new(
+            "wc::threadpool::regex-automata (default)",
+            MarkerStyle::default()
+                .with_marker_type(MarkerType::TriUp)
+                .with_fill_style(Some(colors::LIGHTGREEN_A200.into())),
+            series,
+        ));
+    }
+    if let Some(series) = data.select_series(&format!("tiktoken[{model}]")) {
+        groups.push(MarkerSeries::new(
+            "tiktoken",
+            MarkerStyle::default()
+                .with_marker_type(MarkerType::CrossSquare)
+                .with_fill_style(Some(colors::PURPLE_100.into())),
+            series,
+        ));
+    }
+    if let Some(series) = data.select_series(&format!("tokenizers[{model}]")) {
+        groups.push(MarkerSeries::new(
+            "tokenizers",
+            MarkerStyle::default()
+                .with_marker_type(MarkerType::Diamond)
+                .with_fill_style(Some(colors::BLUEGREY_100.into())),
+            series,
+        ));
+    }
 
     log::info!(
         "loaded: {:#?}",
@@ -215,9 +223,6 @@ fn build_throughput_graph<P: AsRef<Path>>(
             .collect::<Vec<_>>()
             .join(", ")
     );
-
-    const SIZE: i32 = 7;
-    const LINE_WIDTH: u32 = 5;
 
     let plot_path = output_dir.join(format!("wc_vrs_brandx.py.{model}.svg"));
     log::info!("Plotting to {}", plot_path.display());
@@ -245,7 +250,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
         title_style,
     ))?;
     title_area.draw(&Text::new(
-        format!("model: \"{model}\"",),
+        format!("arch: \"{arch}\", model: \"{model}\"",),
         (title_area.dim_in_pixel().0 as i32 / 2, 40),
         subtitle_style,
     ))?;
@@ -279,18 +284,22 @@ fn build_throughput_graph<P: AsRef<Path>>(
                     //               .caption(caption, ("sans-serif", 20).into_font())
                     .margin(0)
                     .x_label_area_size(40)
-                    .y_label_area_size(80)
+                    .y_label_area_size(120)
                     .build_cartesian_2d(x_range.log_scale().base(2.0), $y_range)?;
 
                 if is_top {
                     chart
                         .configure_mesh()
+                        .x_label_style(("sans-serif", 20.0).into_font())
+                        .y_label_style(("sans-serif", 20.0).into_font())
                         .y_desc(format!("Median Throughput: {scale_desc}"))
                         .y_label_formatter(&|&bps| human_format::format_bps(bps))
                         .draw()?;
                 } else {
                     chart
                         .configure_mesh()
+                        .x_label_style(("sans-serif", 20.0).into_font())
+                        .y_label_style(("sans-serif", 20.0).into_font())
                         .x_desc("Thread Count")
                         .y_desc(format!("Median Throughput: {scale_desc}"))
                         .y_label_formatter(&|&bps| human_format::format_bps(bps))
@@ -325,13 +334,13 @@ fn build_throughput_graph<P: AsRef<Path>>(
                         .legend(move |coord| ms.style.marker(coord, SIZE));
                 }
 
-                if is_top {
+                if !is_top {
                     chart
                         .configure_series_labels()
-                        .position(SeriesLabelPosition::UpperLeft)
+                        .label_font(("sans-serif", 18).into_font())
+                        .position(SeriesLabelPosition::LowerLeft)
                         .background_style(WHITE.mix(0.8))
                         .margin(SIZE * 2)
-                        .legend_area_size(15)
                         .border_style(BLACK)
                         .draw()?;
                 }

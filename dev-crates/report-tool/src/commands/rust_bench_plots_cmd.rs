@@ -45,6 +45,10 @@ pub struct RustBenchPlots {
     #[clap(long, value_delimiter = ',', default_value = "r50k,cl100k,o200k")]
     models: Vec<String>,
 
+    /// Machine arch name.
+    #[clap(long, default_value = "amd3990X")]
+    arch: String,
+
     /// Path to the benchmark data.
     #[clap(long, default_value = "benchmarks/amd3990X/data")]
     data_dir: String,
@@ -74,14 +78,18 @@ impl RustBenchPlots {
         std::fs::create_dir_all(&par_output)?;
 
         for model in self.models.iter() {
-            build_model_graphs(model, &par_output, shape, &par_data)?;
+            build_model_graphs(&self.arch, model, &par_output, shape, &par_data)?;
         }
 
         Ok(())
     }
 }
 
+const SIZE: i32 = 10;
+const LINE_WIDTH: u32 = 6;
+
 fn build_model_graphs<P: AsRef<Path>>(
+    arch: &str,
     model: &str,
     output_dir: &P,
     shape: (u32, u32),
@@ -93,21 +101,19 @@ fn build_model_graphs<P: AsRef<Path>>(
 
     let tall_shape = (w, h * 3 / 2);
 
-    build_throughput_graph(model, "buffer_sweep", tall_shape, &output_dir, data)?;
+    build_throughput_graph(arch, model, "buffer_sweep", tall_shape, &output_dir, data)?;
 
-    build_rel_span_encoder_graphs(model, tall_shape, &output_dir, data)
+    build_rel_span_encoder_graphs(arch, model, tall_shape, &output_dir, data)
 }
 
 fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
+    arch: &str,
     model: &str,
     shape: (u32, u32),
     output_dir: &P,
     data: &RustParBenchData,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
-
-    const SIZE: i32 = 10;
-    const LINE_WIDTH: u32 = 6;
 
     let plot_path = output_dir.join(format!("span_encoder_relative.rust.{model}.svg"));
     log::info!("Plotting to {}", plot_path.display());
@@ -131,7 +137,7 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
         title_style,
     ))?;
     title_area.draw(&Text::new(
-        format!("model: \"{model}\"",),
+        format!("arch: \"{arch}\", model: \"{model}\"",),
         (title_area.dim_in_pixel().0 as i32 / 2, 40),
         subtitle_style,
     ))?;
@@ -295,6 +301,7 @@ fn build_rel_span_encoder_graphs<P: AsRef<Path>>(
 }
 
 fn build_throughput_graph<P: AsRef<Path>>(
+    arch: &str,
     model: &str,
     span_encoder: &str,
     shape: (u32, u32),
@@ -369,9 +376,6 @@ fn build_throughput_graph<P: AsRef<Path>>(
         ))?,
     );
 
-    const SIZE: i32 = 10;
-    const LINE_WIDTH: u32 = 6;
-
     for (chart_name, group) in [
         ("fast_regex", vec![&fr_series]),
         ("ra", vec![&ra_series, &fr_series]),
@@ -403,7 +407,7 @@ fn build_throughput_graph<P: AsRef<Path>>(
             title_style,
         ))?;
         title_area.draw(&Text::new(
-            format!("model: \"{model}\"",),
+            format!("arch: \"{arch}\", model: \"{model}\"",),
             (title_area.dim_in_pixel().0 as i32 / 2, 40),
             subtitle_style,
         ))?;
