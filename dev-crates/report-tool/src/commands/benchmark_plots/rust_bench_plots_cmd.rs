@@ -217,29 +217,16 @@ fn build_rust_throughput_plots<P: AsRef<Path>>(
         ("ra", vec![&ra_series, &fr_series]),
         ("logos", vec![&logos_series, &ra_series, &fr_series]),
     ] {
-        let plot_path = output_dir.join(format!("wc_{chart_name}_vrs_brandx.rust.{model}.svg"));
-
-        let _title_style = TextStyle {
-            font: ("sans-serif", 24).into_font(),
-            color: BLACK.to_backend_color(),
-            pos: Pos::new(HPos::Center, VPos::Top),
-        };
-        let _subtitle_style = TextStyle {
-            font: ("sans-serif", 18).into_font(),
-            color: BLACK.to_backend_color(),
-            pos: Pos::new(HPos::Center, VPos::Top),
-        };
-
         let mut schedule: Vec<MarkerSeries<(u32, BenchResult)>> = Default::default();
-        for &g in &group {
-            schedule.push(g.clone());
-        }
+        schedule.extend(group.clone());
         schedule.extend(external.clone());
 
         let series: Vec<MarkerSeries<(u32, f64)>> = schedule
             .into_iter()
             .map(|ms| ms.map(|(t, br)| (*t, rust_bench_median_bps(br))))
             .collect();
+
+        let plot_path = output_dir.join(format!("wc_{chart_name}_vrs_brandx.rust.{model}.svg"));
 
         plots::build_throughput_plot(
             "wordchipper rust throughput",
