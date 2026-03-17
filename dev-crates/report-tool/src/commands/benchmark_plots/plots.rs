@@ -14,6 +14,7 @@ use plotters::{
     prelude::{
         BLACK,
         Color,
+        DashedLineSeries,
         IntoFont,
         IntoLogRange,
         LineSeries,
@@ -36,6 +37,7 @@ use crate::{
             iter_frange,
             iter_range,
         },
+        human_format,
         plotting::MarkerSeries,
     },
 };
@@ -291,7 +293,6 @@ pub fn build_throughput_plot<P: AsRef<Path>>(
                 Ok::<_, Box<dyn std::error::Error>>(())
             }};
         }
-
         if log_scale {
             draw_chart!(y_range.log_scale().base(2.0))?;
         } else {
