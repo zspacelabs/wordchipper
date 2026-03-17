@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="python-bench-plots" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <configuration default="false" name="benchmark plots" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="buildProfileId" value="dev" />
-    <option name="command" value="run --package report-tool --bin report-tool -- python-bench-plots --debug-series" />
+    <option name="command" value="run --package report-tool --bin report-tool -- benchmark-plots" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <envs />
     <option name="emulateTerminal" value="true" />
@@ -14,6 +14,7 @@
     <option name="isRedirectInput" value="false" />
     <option name="redirectInputPath" value="" />
     <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Format" run_configuration_type="CargoCommandRunConfiguration" />
       <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
     </method>
   </configuration>

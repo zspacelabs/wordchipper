@@ -1,9 +1,8 @@
-extern crate core;
-
 pub mod commands;
 pub mod util;
 
 use clap::Parser;
+use commands::benchmark_plots;
 
 /// Text tokenizer multi-tool.
 #[derive(clap::Parser, Debug)]
@@ -23,11 +22,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// Subcommands for wordchipper-cli
 #[derive(clap::Subcommand, Debug)]
 pub enum Commands {
-    /// Rust benchmark plots.
-    RustBenchPlots(commands::rust_bench_plots_cmd::RustBenchPlots),
-
-    /// Python benchmark plots.
-    PythonBenchPlots(commands::python_bench_plots_cmd::PythonBenchPlots),
+    /// Build the benchmark plots.
+    BenchmarkPlots(benchmark_plots::BenchmarkPlots),
 }
 
 impl Commands {
@@ -35,8 +31,7 @@ impl Commands {
     pub fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
         use Commands::*;
         match self {
-            RustBenchPlots(cmd) => cmd.run(),
-            PythonBenchPlots(cmd) => cmd.run(),
+            BenchmarkPlots(cmd) => cmd.run(),
         }
     }
 }
