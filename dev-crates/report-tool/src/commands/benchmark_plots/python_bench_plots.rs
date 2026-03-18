@@ -126,6 +126,15 @@ fn build_python_throughput_graph<P: AsRef<Path>>(
             series,
         ));
     }
+    if let Some(series) = data.select_series(&format!("bpe_openai[{model}]")) {
+        groups.push(MarkerSeries::new(
+            "bpe-openai",
+            MarkerStyle::default()
+                .with_marker_type(MarkerType::Circle)
+                .with_fill_style(Some(colors::ORANGE_100.into())),
+            series,
+        ));
+    }
     if let Some(series) = data.select_series(&format!("tokenizers[{model}]")) {
         groups.push(MarkerSeries::new(
             "tokenizers",
