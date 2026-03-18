@@ -2,7 +2,7 @@
 
 # Run the benchmark for the par_batch feature
 
-THREADS=(4 8 16 32 64)
+THREADS=(4 8 12 32 64)
 
 WORKSPACE_ROOT=$(dirname $(cargo locate-project --workspace --message-format plain))
 
