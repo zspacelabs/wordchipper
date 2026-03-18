@@ -1,16 +1,16 @@
-Lexer, Encoder, Thread 1, Thread 2, Thread 4, Thread 8, Thread 12
-logos, buffer_sweep, 0.95, 0.95, 0.95, 0.95, 0.93
-logos, tail_sweep, 0.95, 0.96, 0.95, 0.96, 1.00
-logos, merge_heap, 1.00, 1.00, 1.00, 1.00, 0.92
-logos, priority_merge, 0.86, 0.86, 0.86, 0.61, 0.86
-logos, bpe_backtrack, 0.92, 0.96, 0.94, 0.93, 0.97
-regex-automata, buffer_sweep, 0.97, 0.98, 0.97, 1.00, 1.00
-regex-automata, tail_sweep, 0.97, 0.98, 0.98, 1.00, 1.00
-regex-automata, merge_heap, 1.00, 1.00, 1.00, 1.00, 0.98
-regex-automata, priority_merge, 0.91, 0.90, 0.89, 0.84, 0.91
-regex-automata, bpe_backtrack, 0.94, 0.94, 0.97, 0.98, 0.97
-fast-regex, buffer_sweep, 1.00, 1.00, 1.00, 1.00, 0.99
-fast-regex, tail_sweep, 0.99, 1.00, 0.99, 0.99, 0.98
-fast-regex, merge_heap, 0.99, 1.00, 1.00, 1.00, 1.00
-fast-regex, priority_merge, 0.98, 0.98, 0.98, 0.97, 0.98
-fast-regex, bpe_backtrack, 0.97, 0.99, 0.99, 1.00, 0.98
+Lexer, Encoder, Thread 2, Thread 4, Thread 8, Thread 12
+logos, buffer_sweep, 0.94, 0.93, 0.95, 0.96
+logos, tail_sweep, 0.94, 0.93, 0.95, 0.96
+logos, merge_heap, 1.00, 1.00, 1.00, 1.00
+logos, priority_merge, 0.83, 0.83, 0.84, 0.83
+logos, bpe_backtrack, 0.89, 0.86, 0.91, 0.90
+regex-automata, buffer_sweep, 0.97, 0.97, 0.98, 1.00
+regex-automata, tail_sweep, 0.94, 0.96, 0.98, 0.97
+regex-automata, merge_heap, 1.00, 1.00, 1.00, 1.00
+regex-automata, priority_merge, 0.90, 0.89, 0.78, 0.90
+regex-automata, bpe_backtrack, 0.95, 0.95, 0.94, 0.97
+fast-regex, buffer_sweep, 1.00, 0.99, 1.00, 0.96
+fast-regex, tail_sweep, 1.00, 1.00, 0.99, 1.00
+fast-regex, merge_heap, 1.00, 1.00, 1.00, 0.96
+fast-regex, priority_merge, 0.98, 0.97, 0.98, 0.94
+fast-regex, bpe_backtrack, 0.99, 0.98, 0.98, 0.93

@@ -1,7 +1,7 @@
-Name, Thread 1, Thread 2, Thread 4, Thread 8, Thread 12
-wc::rayon::logos, 79.4 MiB/s, 123.0 MiB/s, 175.7 MiB/s, 205.8 MiB/s, 210.8 MiB/s
-wc::rayon::regex-automata, 47.4 MiB/s, 79.4 MiB/s, 122.7 MiB/s, 169.1 MiB/s, 187.7 MiB/s
-wc::threadpool::logos, 65.9 MiB/s, 108.5 MiB/s, 142.8 MiB/s, 145.3 MiB/s, 145.6 MiB/s
-wc::threadpool::regex-automata, 41.8 MiB/s, 74.8 MiB/s, 118.0 MiB/s, 138.5 MiB/s, 138.0 MiB/s
-tiktoken, 104.2 MiB/s, 104.5 MiB/s, 102.5 MiB/s, 102.2 MiB/s, 101.7 MiB/s
-tokenizers, 4.6 MiB/s, 8.4 MiB/s, 15.6 MiB/s, 14.9 MiB/s, 5.8 MiB/s
+Name, Thread 2, Thread 4, Thread 8, Thread 12
+wc::rayon::logos, 102.1 MiB/s, 164.5 MiB/s, 198.4 MiB/s, 207.6 MiB/s
+wc::rayon::regex-automata, 75.4 MiB/s, 117.2 MiB/s, 166.2 MiB/s, 181.0 MiB/s
+wc::threadpool::logos, 94.7 MiB/s, 147.8 MiB/s, 138.0 MiB/s, 141.1 MiB/s
+wc::threadpool::regex-automata, 69.4 MiB/s, 110.5 MiB/s, 137.0 MiB/s, 136.2 MiB/s
+tiktoken, 36.0 MiB/s, 65.8 MiB/s, 95.6 MiB/s, 88.7 MiB/s
+tokenizers, 7.8 MiB/s, 14.5 MiB/s, 15.4 MiB/s, 7.1 MiB/s

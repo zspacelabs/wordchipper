@@ -1,7 +1,8 @@
-Name, Thread 1, Thread 2, Thread 4, Thread 8, Thread 12
-wc::rayon::logos, 83.0 MiB/s, 129.7 MiB/s, 183.2 MiB/s, 214.2 MiB/s, 228.7 MiB/s
-wc::rayon::regex-automata, 49.4 MiB/s, 83.3 MiB/s, 128.2 MiB/s, 174.3 MiB/s, 190.0 MiB/s
-wc::threadpool::logos, 69.1 MiB/s, 111.9 MiB/s, 145.3 MiB/s, 148.1 MiB/s, 149.6 MiB/s
-wc::threadpool::regex-automata, 43.5 MiB/s, 77.9 MiB/s, 120.6 MiB/s, 140.9 MiB/s, 139.4 MiB/s
-tiktoken, 100.1 MiB/s, 99.6 MiB/s, 96.8 MiB/s, 98.5 MiB/s, 96.2 MiB/s
-tokenizers, 4.6 MiB/s, 8.3 MiB/s, 15.2 MiB/s, 15.1 MiB/s, 6.0 MiB/s
+Name, Thread 2, Thread 4, Thread 8, Thread 12
+wc::rayon::logos, 106.9 MiB/s, 165.5 MiB/s, 213.2 MiB/s, 220.0 MiB/s
+wc::rayon::regex-automata, 77.1 MiB/s, 121.5 MiB/s, 170.5 MiB/s, 188.0 MiB/s
+wc::threadpool::logos, 97.1 MiB/s, 150.5 MiB/s, 144.3 MiB/s, 146.1 MiB/s
+wc::threadpool::regex-automata, 76.1 MiB/s, 122.4 MiB/s, 137.5 MiB/s, 136.0 MiB/s
+tiktoken, 34.6 MiB/s, 62.7 MiB/s, 97.5 MiB/s, 84.1 MiB/s
+bpe-openai, 28.1 MiB/s, 27.1 MiB/s, 28.5 MiB/s, 27.8 MiB/s
+tokenizers, 7.8 MiB/s, 14.1 MiB/s, 15.0 MiB/s, 5.8 MiB/s
