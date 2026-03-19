@@ -34,7 +34,7 @@ pub enum SpanEncoderSelector {
     /// It is benchmarked to be the fastest and most efficient encoder for
     /// concurrent use.
     ///
-    /// This is currently an alias for: [`MergeHeap`](`Self::MergeHeap`)
+    /// This is currently an alias for: [`PriorityMerge`](`Self::PriorityMerge`)
     #[default]
     ConcurrentDefault,
 
@@ -106,10 +106,8 @@ impl SpanEncoderSelector {
                 Arc::new(|| Box::new(BufferSweepSpanEncoder::<T>::default()))
             }
             TailSweep => Arc::new(|| Box::new(TailSweepSpanEncoder::<T>::default())),
-            ConcurrentDefault | MergeHeap => {
-                Arc::new(|| Box::new(MergeHeapSpanEncoder::<T>::default()))
-            }
-            SingleThreadDefault | PriorityMerge => {
+            MergeHeap => Arc::new(|| Box::new(MergeHeapSpanEncoder::<T>::default())),
+            ConcurrentDefault | SingleThreadDefault | PriorityMerge => {
                 Arc::new(|| Box::new(PriorityMergeSpanEncoder::<T>::default()))
             }
             BpeBacktrack => {
