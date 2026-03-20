@@ -1,8 +1,8 @@
 Name, Thread 2, Thread 4, Thread 8, Thread 12
-wc::rayon::logos, 106.9 MiB/s, 165.5 MiB/s, 213.2 MiB/s, 220.0 MiB/s
-wc::rayon::regex-automata, 77.1 MiB/s, 121.5 MiB/s, 170.5 MiB/s, 188.0 MiB/s
-wc::threadpool::logos, 97.1 MiB/s, 150.5 MiB/s, 144.3 MiB/s, 146.1 MiB/s
-wc::threadpool::regex-automata, 76.1 MiB/s, 122.4 MiB/s, 137.5 MiB/s, 136.0 MiB/s
-tiktoken, 34.6 MiB/s, 62.7 MiB/s, 97.5 MiB/s, 84.1 MiB/s
-bpe-openai, 28.1 MiB/s, 27.1 MiB/s, 28.5 MiB/s, 27.8 MiB/s
-tokenizers, 7.8 MiB/s, 14.1 MiB/s, 15.0 MiB/s, 5.8 MiB/s
+wc::rayon::logos, 122.3 MiB/s:107.6 MiB/s:91.9 MiB/s, 181.4 MiB/s:160.8 MiB/s:128.4 MiB/s, 222.2 MiB/s:211.7 MiB/s:193.8 MiB/s, 225.1 MiB/s:219.1 MiB/s:206.3 MiB/s
+wc::rayon::regex-automata, 79.3 MiB/s:75.7 MiB/s:63.2 MiB/s, 124.1 MiB/s:115.6 MiB/s:89.2 MiB/s, 176.7 MiB/s:170.0 MiB/s:162.4 MiB/s, 192.5 MiB/s:186.7 MiB/s:174.5 MiB/s
+wc::threadpool::logos, 111.7 MiB/s:98.8 MiB/s:85.9 MiB/s, 154.8 MiB/s:144.7 MiB/s:111.4 MiB/s, 148.2 MiB/s:142.2 MiB/s:120.1 MiB/s, 148.9 MiB/s:144.1 MiB/s:120.1 MiB/s
+wc::threadpool::regex-automata, 76.6 MiB/s:75.1 MiB/s:70.1 MiB/s, 124.4 MiB/s:120.8 MiB/s:104.4 MiB/s, 140.0 MiB/s:136.8 MiB/s:118.1 MiB/s, 140.6 MiB/s:134.7 MiB/s:113.1 MiB/s
+tiktoken, 35.0 MiB/s:34.1 MiB/s:33.0 MiB/s, 63.2 MiB/s:62.1 MiB/s:56.8 MiB/s, 99.8 MiB/s:89.0 MiB/s:76.3 MiB/s, 97.5 MiB/s:87.7 MiB/s:81.3 MiB/s
+bpe-openai, 29.4 MiB/s:28.2 MiB/s:27.4 MiB/s, 28.9 MiB/s:27.7 MiB/s:26.8 MiB/s, 28.8 MiB/s:28.5 MiB/s:28.0 MiB/s, 28.2 MiB/s:27.6 MiB/s:26.1 MiB/s
+tokenizers, 8.3 MiB/s:7.8 MiB/s:7.3 MiB/s, 15.3 MiB/s:14.3 MiB/s:13.7 MiB/s, 15.3 MiB/s:15.0 MiB/s:14.8 MiB/s, 5.8 MiB/s:5.7 MiB/s:5.7 MiB/s

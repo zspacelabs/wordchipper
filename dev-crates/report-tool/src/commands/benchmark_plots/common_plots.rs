@@ -20,6 +20,7 @@ use plotters::{
         BLACK,
         Color,
         DashedLineSeries,
+        ErrorBar,
         IntoFont,
         IntoLogRange,
         LineSeries,
@@ -47,9 +48,31 @@ use crate::util::{
     },
 };
 
-pub fn build_relative_encoder_table<P: AsRef<Path>>(
+#[derive(Debug, Clone)]
+pub struct LegendLocation {
+    pub top: bool,
+    pub label_pos: SeriesLabelPosition,
+}
+
+impl Default for LegendLocation {
+    fn default() -> Self {
+        Self {
+            top: true,
+            label_pos: SeriesLabelPosition::UpperRight,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct MinMaxStat {
+    pub min: f64,
+    pub max: f64,
+    pub mean: f64,
+}
+
+pub fn build_minmax_relative_encoder_table<P: AsRef<Path>>(
     stem_path: &P,
-    lexer_groups: &[(&str, Vec<MarkerSeries<(u32, f64)>>)],
+    lexer_groups: &[(&str, Vec<MarkerSeries<(u32, MinMaxStat)>>)],
 ) -> Result<(), Box<dyn std::error::Error>> {
     let stem_path = stem_path.as_ref();
     let table_path = stem_path.with_added_extension("csv");
@@ -68,7 +91,12 @@ pub fn build_relative_encoder_table<P: AsRef<Path>>(
             assert_eq!(threads, series.xs());
 
             let mut row = vec![lexer_label.to_string(), series.name.clone()];
-            row.extend(series.ys().iter().map(|y| format!("{y:.2}")));
+            row.extend(
+                series
+                    .ys()
+                    .iter()
+                    .map(|stat| format!("{:.2}:{:.2}:{:.2}", stat.min, stat.mean, stat.max)),
+            );
 
             writeln!(writer, "{}", row.join(", "))?;
         }
@@ -81,34 +109,47 @@ pub fn build_relative_encoder_table<P: AsRef<Path>>(
     Ok(())
 }
 
-pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
+pub fn build_minmax_relative_span_encoder_plot<P: AsRef<Path>>(
     title: &str,
     caption: &str,
     options: GraphStyleOptions,
     stem_path: &P,
-    lexer_groups: &[(&str, &[MarkerSeries<(u32, f64)>])],
+    lexer_groups: &[(&str, &[MarkerSeries<(u32, MinMaxStat)>])],
 ) -> Result<(), Box<dyn std::error::Error>> {
     let stem_path = stem_path.as_ref();
 
-    let mut relative_groups: Vec<(&str, Vec<MarkerSeries<(u32, f64)>>)> = Default::default();
+    let mut relative_groups: Vec<(&str, Vec<MarkerSeries<(u32, MinMaxStat)>>)> = Default::default();
+
     for &(lexer_label, group) in lexer_groups.iter() {
         // Normalize the points to the max value.
         let mut baseline: BTreeMap<u32, f64> = Default::default();
         for ms in group.iter() {
-            for &(t, v) in ms.points.iter() {
+            for &(t, stat) in ms.points.iter() {
                 let entry = baseline.entry(t).or_default();
-                *entry = bounds_tools::fmax(*entry, v);
+                *entry = bounds_tools::fmax(*entry, stat.mean);
             }
         }
-        let render: Vec<MarkerSeries<(u32, f64)>> = group
+        let render: Vec<MarkerSeries<(u32, MinMaxStat)>> = group
             .iter()
-            .map(|s| s.map(|&(t, v)| (t, v / baseline[&t])))
+            .map(|s| {
+                s.map(|&(t, stat)| {
+                    let scale = 1.0 / baseline[&t];
+                    (
+                        t,
+                        MinMaxStat {
+                            min: stat.min * scale,
+                            max: stat.max * scale,
+                            mean: stat.mean * scale,
+                        },
+                    )
+                })
+            })
             .collect();
 
         relative_groups.push((lexer_label, render));
     }
 
-    build_relative_encoder_table(&stem_path, &relative_groups)?;
+    build_minmax_relative_encoder_table(&stem_path, &relative_groups)?;
 
     let plot_path = stem_path.with_added_extension("svg");
     log::info!("Plotting to {}", plot_path.display());
@@ -147,7 +188,12 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
         let drawing_area = &sub_charts[idx];
 
         let x_range = iter_range(group.iter().flat_map(|s| s.xs())).unwrap();
-        let y_range = iter_frange(group.iter().flat_map(|s| s.ys())).unwrap();
+        let y_range = iter_frange(
+            group
+                .iter()
+                .flat_map(|s| s.ys().into_iter().flat_map(|stat| vec![stat.min, stat.max])),
+        )
+        .unwrap();
 
         let show_x_label = idx == lexer_groups.len() - 1;
 
@@ -182,16 +228,43 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
         for ms in group.iter() {
             let mut line_style = ms.style.line_style().stroke_width(options.line_width);
             line_style.color.3 = 0.7;
-            chart.draw_series(LineSeries::new(ms.points.clone(), line_style))?;
+
+            let points = ms
+                .points
+                .iter()
+                .map(|(t, s)| (*t, s.mean))
+                .collect::<Vec<_>>();
+
+            chart.draw_series(LineSeries::new(points, line_style))?;
+        }
+
+        for ms in group.iter() {
+            let mut line_style = ms.style.line_style().stroke_width(options.line_width);
+            line_style.color.3 = 0.6;
+
+            chart.draw_series(
+                ms.points
+                    .iter()
+                    .map(|(threads, stat)| {
+                        ErrorBar::new_vertical(
+                            *threads,
+                            stat.min,
+                            stat.mean,
+                            stat.max,
+                            line_style,
+                            options.size,
+                        )
+                    })
+                    .collect::<Vec<_>>(),
+            )?;
         }
 
         for ms in group.iter() {
             chart
-                .draw_series(
-                    ms.points
-                        .iter()
-                        .map(|&coord| ms.style.marker(coord, options.size)),
-                )?
+                .draw_series(ms.points.iter().map(|(threads, stat)| {
+                    let coord = (*threads, stat.mean);
+                    ms.style.marker(coord, options.size)
+                }))?
                 .label(ms.name.clone())
                 .legend(move |coord| ms.style.marker(coord, options.size));
         }
@@ -213,9 +286,9 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
     Ok(())
 }
 
-pub fn build_throughput_table<P: AsRef<Path>>(
+pub fn build_minmax_throughput_table<P: AsRef<Path>>(
     stem_path: &P,
-    series: &[MarkerSeries<(u32, f64)>],
+    series: &[MarkerSeries<(u32, MinMaxStat)>],
 ) -> Result<(), Box<dyn std::error::Error>> {
     let stem_path = stem_path.as_ref();
     let table_path = stem_path.with_added_extension("csv");
@@ -232,7 +305,14 @@ pub fn build_throughput_table<P: AsRef<Path>>(
         assert_eq!(threads, series.xs());
 
         let mut row = vec![series.name.clone()];
-        row.extend(series.ys().iter().map(|y| human_format::format_bps(*y)));
+        row.extend(series.ys().iter().map(|stat| {
+            format!(
+                "{}:{}:{}",
+                human_format::format_bps(stat.min),
+                human_format::format_bps(stat.mean),
+                human_format::format_bps(stat.max)
+            )
+        }));
 
         writeln!(writer, "{}", row.join(", "))?;
     }
@@ -244,32 +324,17 @@ pub fn build_throughput_table<P: AsRef<Path>>(
     Ok(())
 }
 
-#[derive(Debug, Clone)]
-pub struct LegendLocation {
-    pub top: bool,
-    pub label_pos: SeriesLabelPosition,
-}
-
-impl Default for LegendLocation {
-    fn default() -> Self {
-        Self {
-            top: true,
-            label_pos: SeriesLabelPosition::UpperRight,
-        }
-    }
-}
-
-pub fn build_throughput_plot<P: AsRef<Path>>(
+pub fn build_minmax_throughput_plot<P: AsRef<Path>>(
     title: &str,
     caption: &str,
     options: GraphStyleOptions,
     stem_path: &P,
-    series: &[MarkerSeries<(u32, f64)>],
+    series: &[MarkerSeries<(u32, MinMaxStat)>],
     legend_loc: LegendLocation,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let stem_path = stem_path.as_ref();
 
-    build_throughput_table(&stem_path, series)?;
+    build_minmax_throughput_table(&stem_path, series)?;
 
     let plot_path = stem_path.with_added_extension("svg");
     log::info!("Plotting to {}", plot_path.display());
@@ -314,7 +379,12 @@ pub fn build_throughput_plot<P: AsRef<Path>>(
         let scale_desc = if log_scale { "log" } else { "linear" };
 
         let x_range = iter_range(series.iter().flat_map(|s| s.xs())).unwrap();
-        let y_range = iter_frange(series.iter().flat_map(|s| s.ys())).unwrap();
+        let y_range = iter_frange(
+            series
+                .iter()
+                .flat_map(|s| s.ys().into_iter().flat_map(|stat| vec![stat.min, stat.max])),
+        )
+        .unwrap();
 
         // ATTENTION: This is weird.
         // The plotters chart machinery makes extensive and heavy use of specialized
@@ -335,14 +405,14 @@ pub fn build_throughput_plot<P: AsRef<Path>>(
                         .configure_mesh()
                         .x_label_style(("sans-serif", 20.0).into_font())
                         .y_label_style(("sans-serif", 20.0).into_font())
-                        .y_desc(format!("Median Throughput: {scale_desc}"))
+                        .y_desc(format!("Throughput: {scale_desc}"))
                         .y_label_formatter(&|&bps| human_format::format_bps(bps))
                         .draw()?;
                 } else {
                     chart
                         .configure_mesh()
                         .x_desc("Thread Count")
-                        .y_desc(format!("Median Throughput: {scale_desc}"))
+                        .y_desc(format!("Throughput: {scale_desc}"))
                         .x_label_style(("sans-serif", 20.0).into_font())
                         .y_label_style(("sans-serif", 20.0).into_font())
                         .y_label_formatter(&|&bps| human_format::format_bps(bps))
@@ -354,24 +424,56 @@ pub fn build_throughput_plot<P: AsRef<Path>>(
                     let mut line_style = ms.style.line_style().stroke_width(options.line_width);
                     line_style.color.3 = 0.6;
 
+                    let points = ms
+                        .points
+                        .iter()
+                        .map(|(t, s)| (*t, s.mean))
+                        .collect::<Vec<_>>();
+
                     if let Some(dash_style) = ms.style.dash_style {
                         chart.draw_series(DashedLineSeries::new(
-                            ms.points.clone(),
+                            points,
                             dash_style.size,
                             dash_style.spacing,
                             line_style,
                         ))?;
                     } else {
-                        chart.draw_series(LineSeries::new(ms.points.clone(), line_style))?;
+                        chart.draw_series(LineSeries::new(points, line_style))?;
                     }
                 }
 
                 for ms in series.iter() {
+                    let mut line_style = ms.style.line_style().stroke_width(options.line_width);
+                    line_style.color.3 = 0.6;
+
+                    chart.draw_series(
+                        ms.points
+                            .iter()
+                            .map(|(threads, stat)| {
+                                ErrorBar::new_vertical(
+                                    *threads,
+                                    stat.min,
+                                    stat.mean,
+                                    stat.max,
+                                    line_style,
+                                    options.size,
+                                )
+                            })
+                            .collect::<Vec<_>>(),
+                    )?;
+                }
+
+                for ms in series.iter() {
                     chart
-                        .draw_series(ms.points.iter().map(|(threads, bps)| {
-                            let coord = (*threads, *bps);
-                            ms.style.marker(coord, options.size)
-                        }))?
+                        .draw_series(
+                            ms.points
+                                .iter()
+                                .map(|(threads, stat)| {
+                                    let coord = (*threads, stat.mean);
+                                    ms.style.marker(coord, options.size)
+                                })
+                                .collect::<Vec<_>>(),
+                        )?
                         .label(ms.name.clone())
                         .legend(move |coord| ms.style.marker(coord, options.size));
                 }

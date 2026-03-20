@@ -9,13 +9,13 @@ use plotters::{
 use crate::{
     commands::benchmark_plots::{
         common_plots,
-        common_plots::LegendLocation,
+        common_plots::{
+            LegendLocation,
+            MinMaxStat,
+        },
     },
     util::{
-        bench_data::{
-            RustParBenchData,
-            rust_bench_median_bps,
-        },
+        bench_data::RustParBenchData,
         plotting::{
             DashStyle,
             GraphStyleOptions,
@@ -51,7 +51,7 @@ fn build_rust_relative_span_encoder_plots<P: AsRef<Path>>(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = output_dir.as_ref();
 
-    let mut lexer_groups: Vec<(String, Vec<MarkerSeries<(u32, f64)>>)> = Default::default();
+    let mut lexer_groups: Vec<(String, Vec<MarkerSeries<(u32, MinMaxStat)>>)> = Default::default();
 
     for (lexer_label, lexer_key) in [
         ("logos", "logos"),
@@ -111,19 +111,31 @@ fn build_rust_relative_span_encoder_plots<P: AsRef<Path>>(
             lexer_label.to_string(),
             plot_series
                 .iter()
-                .map(|s| s.map(|(t, br)| (*t, rust_bench_median_bps(br))))
+                .map(|s| {
+                    s.map(|(t, br)| {
+                        let bps = br.throughput_bps.as_ref().unwrap();
+                        (
+                            *t,
+                            MinMaxStat {
+                                min: bps.slowest.unwrap(),
+                                max: bps.fastest.unwrap(),
+                                mean: bps.mean.unwrap(),
+                            },
+                        )
+                    })
+                })
                 .collect(),
         ));
     }
 
-    let view: Vec<(&str, &[MarkerSeries<(u32, f64)>])> = lexer_groups
+    let view: Vec<(&str, &[MarkerSeries<(u32, MinMaxStat)>])> = lexer_groups
         .iter()
         .map(|(lexer_label, group)| (lexer_label.as_str(), group.as_slice()))
         .collect();
 
     let plot_path_stem = output_dir.join(format!("span_encoder_relative.rust.{model}"));
 
-    common_plots::build_relative_span_encoder_plot(
+    common_plots::build_minmax_relative_span_encoder_plot(
         "SpanEncoder Relative Throughput",
         &format!("arch: \"{arch}\", model: \"{model}\""),
         options,
@@ -221,13 +233,25 @@ fn build_rust_throughput_plots<P: AsRef<Path>>(
         schedule.extend(group.into_iter().cloned());
         schedule.extend(external.clone());
 
-        let series: Vec<MarkerSeries<(u32, f64)>> = schedule
+        let series: Vec<MarkerSeries<(u32, MinMaxStat)>> = schedule
             .into_iter()
-            .map(|ms| ms.map(|(t, br)| (*t, rust_bench_median_bps(br))))
+            .map(|ms| {
+                ms.map(|(t, br)| {
+                    let bps = br.throughput_bps.as_ref().unwrap();
+                    (
+                        *t,
+                        MinMaxStat {
+                            min: bps.slowest.unwrap(),
+                            max: bps.fastest.unwrap(),
+                            mean: bps.mean.unwrap(),
+                        },
+                    )
+                })
+            })
             .collect();
 
         let plot_path_stem = output_dir.join(format!("wc_{chart_name}_vrs_brandx.rust.{model}"));
-        common_plots::build_throughput_plot(
+        common_plots::build_minmax_throughput_plot(
             "wordchipper rust throughput",
             &format!("arch: \"{arch}\", model: \"{model}\""),
             options,

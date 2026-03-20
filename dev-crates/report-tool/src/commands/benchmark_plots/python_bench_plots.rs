@@ -9,12 +9,13 @@ use serde_json::Value;
 use crate::{
     commands::benchmark_plots::common_plots::{
         LegendLocation,
-        build_throughput_plot,
+        MinMaxStat,
+        build_minmax_throughput_plot,
     },
     util::{
         bench_data::{
             PythonParBenchData,
-            py_bench_median_bps,
+            py_bench_input_bytes,
         },
         plotting::{
             DashStyle,
@@ -160,13 +161,34 @@ fn build_python_throughput_graph<P: AsRef<Path>>(
             .join(", ")
     );
 
-    let series: Vec<MarkerSeries<(u32, f64)>> = groups
+    let series: Vec<MarkerSeries<(u32, MinMaxStat)>> = groups
         .into_iter()
-        .map(|ms| ms.map(|(t, br)| (*t, py_bench_median_bps(br))))
+        .map(|ms| {
+            ms.map(|(t, v)| {
+                let input_bytes = py_bench_input_bytes(v).unwrap() as f64;
+
+                let stats = v
+                    .as_object()
+                    .unwrap()
+                    .get("stats")
+                    .unwrap()
+                    .as_object()
+                    .unwrap();
+
+                (
+                    *t,
+                    MinMaxStat {
+                        min: input_bytes / stats.get("min").unwrap().as_f64().unwrap(),
+                        max: input_bytes / stats.get("max").unwrap().as_f64().unwrap(),
+                        mean: input_bytes / stats.get("mean").unwrap().as_f64().unwrap(),
+                    },
+                )
+            })
+        })
         .collect();
 
     let plot_path_stem = output_dir.join(format!("wc_vrs_brandx.py.{model}"));
-    build_throughput_plot(
+    build_minmax_throughput_plot(
         "wordchipper python throughput",
         &format!("arch: \"{arch}\", model: \"{model}\""),
         options,
