@@ -1,8 +1,8 @@
 Name, Thread 4, Thread 8, Thread 16, Thread 32, Thread 64
-wc::rayon::logos, 77.5 MiB/s/74.9 MiB/s/70.3 MiB/s, 88.9 MiB/s/88.3 MiB/s/87.1 MiB/s, 107.0 MiB/s/104.2 MiB/s/92.1 MiB/s, 119.1 MiB/s/117.5 MiB/s/115.8 MiB/s, 124.6 MiB/s/122.7 MiB/s/120.2 MiB/s
-wc::rayon::regex-automata, 70.5 MiB/s/69.1 MiB/s/65.2 MiB/s, 81.4 MiB/s/80.2 MiB/s/78.5 MiB/s, 95.7 MiB/s/94.2 MiB/s/91.5 MiB/s, 112.0 MiB/s/110.2 MiB/s/106.6 MiB/s, 116.6 MiB/s/112.7 MiB/s/101.8 MiB/s
-wc::threadpool::logos, 48.7 MiB/s/44.4 MiB/s/39.2 MiB/s, 49.4 MiB/s/48.2 MiB/s/42.6 MiB/s, 46.8 MiB/s/45.9 MiB/s/41.2 MiB/s, 47.3 MiB/s/43.6 MiB/s/38.4 MiB/s, 47.6 MiB/s/45.9 MiB/s/41.3 MiB/s
-wc::threadpool::regex-automata, 62.0 MiB/s/57.0 MiB/s/46.5 MiB/s, 49.1 MiB/s/47.3 MiB/s/41.3 MiB/s, 48.4 MiB/s/47.0 MiB/s/41.6 MiB/s, 48.0 MiB/s/46.4 MiB/s/41.6 MiB/s, 46.9 MiB/s/45.6 MiB/s/40.7 MiB/s
-tiktoken, 35.7 MiB/s/33.7 MiB/s/29.1 MiB/s, 52.0 MiB/s/47.4 MiB/s/38.0 MiB/s, 47.2 MiB/s/44.5 MiB/s/38.3 MiB/s, 39.6 MiB/s/34.0 MiB/s/27.5 MiB/s, 35.4 MiB/s/24.3 MiB/s/20.6 MiB/s
-bpe-openai, 15.5 MiB/s/13.1 MiB/s/9.5 MiB/s, 14.4 MiB/s/11.4 MiB/s/10.3 MiB/s, 10.9 MiB/s/10.3 MiB/s/9.8 MiB/s, 15.0 MiB/s/12.0 MiB/s/9.7 MiB/s, 13.7 MiB/s/11.3 MiB/s/10.2 MiB/s
-tokenizers, 10.0 MiB/s/9.7 MiB/s/9.4 MiB/s, 16.3 MiB/s/16.2 MiB/s/16.2 MiB/s, 21.2 MiB/s/20.9 MiB/s/20.2 MiB/s, 21.0 MiB/s/20.2 MiB/s/19.7 MiB/s, 23.7 MiB/s/23.2 MiB/s/22.6 MiB/s
+wc::rayon::logos, 77.5 MiB/s:74.9 MiB/s:70.3 MiB/s, 88.9 MiB/s:88.3 MiB/s:87.1 MiB/s, 107.0 MiB/s:104.2 MiB/s:92.1 MiB/s, 119.1 MiB/s:117.5 MiB/s:115.8 MiB/s, 124.6 MiB/s:122.7 MiB/s:120.2 MiB/s
+wc::rayon::regex-automata, 70.5 MiB/s:69.1 MiB/s:65.2 MiB/s, 81.4 MiB/s:80.2 MiB/s:78.5 MiB/s, 95.7 MiB/s:94.2 MiB/s:91.5 MiB/s, 112.0 MiB/s:110.2 MiB/s:106.6 MiB/s, 116.6 MiB/s:112.7 MiB/s:101.8 MiB/s
+wc::threadpool::logos, 48.7 MiB/s:44.4 MiB/s:39.2 MiB/s, 49.4 MiB/s:48.2 MiB/s:42.6 MiB/s, 46.8 MiB/s:45.9 MiB/s:41.2 MiB/s, 47.3 MiB/s:43.6 MiB/s:38.4 MiB/s, 47.6 MiB/s:45.9 MiB/s:41.3 MiB/s
+wc::threadpool::regex-automata, 62.0 MiB/s:57.0 MiB/s:46.5 MiB/s, 49.1 MiB/s:47.3 MiB/s:41.3 MiB/s, 48.4 MiB/s:47.0 MiB/s:41.6 MiB/s, 48.0 MiB/s:46.4 MiB/s:41.6 MiB/s, 46.9 MiB/s:45.6 MiB/s:40.7 MiB/s
+tiktoken, 35.7 MiB/s:33.7 MiB/s:29.1 MiB/s, 52.0 MiB/s:47.4 MiB/s:38.0 MiB/s, 47.2 MiB/s:44.5 MiB/s:38.3 MiB/s, 39.6 MiB/s:34.0 MiB/s:27.5 MiB/s, 35.4 MiB/s:24.3 MiB/s:20.6 MiB/s
+bpe-openai, 15.5 MiB/s:13.1 MiB/s:9.5 MiB/s, 14.4 MiB/s:11.4 MiB/s:10.3 MiB/s, 10.9 MiB/s:10.3 MiB/s:9.8 MiB/s, 15.0 MiB/s:12.0 MiB/s:9.7 MiB/s, 13.7 MiB/s:11.3 MiB/s:10.2 MiB/s
+tokenizers, 10.0 MiB/s:9.7 MiB/s:9.4 MiB/s, 16.3 MiB/s:16.2 MiB/s:16.2 MiB/s, 21.2 MiB/s:20.9 MiB/s:20.2 MiB/s, 21.0 MiB/s:20.2 MiB/s:19.7 MiB/s, 23.7 MiB/s:23.2 MiB/s:22.6 MiB/s

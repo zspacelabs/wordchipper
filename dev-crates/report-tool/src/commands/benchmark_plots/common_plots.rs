@@ -95,7 +95,7 @@ pub fn build_minmax_relative_encoder_table<P: AsRef<Path>>(
                 series
                     .ys()
                     .iter()
-                    .map(|stat| format!("{:.2}/{:.2}/{:.2}", stat.min, stat.mean, stat.max)),
+                    .map(|stat| format!("{:.2}:{:.2}:{:.2}", stat.min, stat.mean, stat.max)),
             );
 
             writeln!(writer, "{}", row.join(", "))?;
@@ -307,7 +307,7 @@ pub fn build_minmax_throughput_table<P: AsRef<Path>>(
         let mut row = vec![series.name.clone()];
         row.extend(series.ys().iter().map(|stat| {
             format!(
-                "{}/{}/{}",
+                "{}:{}:{}",
                 human_format::format_bps(stat.min),
                 human_format::format_bps(stat.mean),
                 human_format::format_bps(stat.max)
