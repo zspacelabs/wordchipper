@@ -180,10 +180,9 @@ pub fn build_relative_span_encoder_plot<P: AsRef<Path>>(
 
         // Render the lines under the markers.
         for ms in group.iter() {
-            chart.draw_series(LineSeries::new(
-                ms.points.clone(),
-                ms.style.line_style().stroke_width(options.line_width),
-            ))?;
+            let mut line_style = ms.style.line_style().stroke_width(options.line_width);
+            line_style.color.3 = 0.7;
+            chart.draw_series(LineSeries::new(ms.points.clone(), line_style))?;
         }
 
         for ms in group.iter() {
@@ -352,18 +351,18 @@ pub fn build_throughput_plot<P: AsRef<Path>>(
 
                 // Render the lines under the markers.
                 for ms in series.iter() {
+                    let mut line_style = ms.style.line_style().stroke_width(options.line_width);
+                    line_style.color.3 = 0.6;
+
                     if let Some(dash_style) = ms.style.dash_style {
                         chart.draw_series(DashedLineSeries::new(
                             ms.points.clone(),
                             dash_style.size,
                             dash_style.spacing,
-                            ms.style.line_style().stroke_width(options.line_width),
+                            line_style,
                         ))?;
                     } else {
-                        chart.draw_series(LineSeries::new(
-                            ms.points.clone(),
-                            ms.style.line_style().stroke_width(options.line_width),
-                        ))?;
+                        chart.draw_series(LineSeries::new(ms.points.clone(), line_style))?;
                     }
                 }
 

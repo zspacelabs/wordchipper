@@ -128,7 +128,7 @@ fn build_python_throughput_graph<P: AsRef<Path>>(
             "tiktoken",
             MarkerStyle::default()
                 .with_marker_type(MarkerType::CrossSquare)
-                .with_fill_style(Some(colors::PURPLE_100.into())),
+                .with_fill_style(Some(colors::PURPLE_A100.into())),
             series,
         ));
     }
@@ -137,7 +137,7 @@ fn build_python_throughput_graph<P: AsRef<Path>>(
             "bpe-openai",
             MarkerStyle::default()
                 .with_marker_type(MarkerType::Circle)
-                .with_fill_style(Some(colors::ORANGE_100.into())),
+                .with_fill_style(Some(colors::ORANGE_A100.into())),
             series,
         ));
     }
@@ -146,7 +146,7 @@ fn build_python_throughput_graph<P: AsRef<Path>>(
             "tokenizers",
             MarkerStyle::default()
                 .with_marker_type(MarkerType::Diamond)
-                .with_fill_style(Some(colors::BLUEGREY_100.into())),
+                .with_fill_style(Some(colors::BLUEGREY_A100.into())),
             series,
         ));
     }

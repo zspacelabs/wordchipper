@@ -5,53 +5,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 612300000.0,
-      "slowest": 664700000.0,
-      "median": 646200000.0,
-      "mean": 646000000.0
+      "fastest": 831000000.0,
+      "slowest": 890100000.0,
+      "median": 872900000.0,
+      "mean": 870500000.0
     },
     "throughput_bps": {
-      "fastest": 79210000.0,
-      "slowest": 72970000.0,
-      "median": 75060000.0,
-      "mean": 75080000.0
+      "fastest": 58360000.0,
+      "slowest": 54490000.0,
+      "median": 55560000.0,
+      "mean": 55710000.0
     },
     "allocs": {
       "alloc_bytes": {
-        "fastest": 354600.0,
+        "fastest": 245700.0,
         "slowest": 245700.0,
         "median": 245700.0,
-        "mean": 246800.0
+        "mean": 245700.0
       },
       "alloc_count": {
-        "fastest": 298.0,
+        "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 3.98
-      },
-      "dealloc_bytes": {
-        "fastest": 2050.0,
-        "slowest": 0.0,
-        "median": 0.0,
-        "mean": 20.5
-      },
-      "dealloc_count": {
-        "fastest": 4.0,
-        "slowest": 0.0,
-        "median": 0.0,
-        "mean": 0.04
+        "mean": 1.01
       },
       "max_alloc_bytes": {
-        "fastest": 354100.0,
+        "fastest": 245700.0,
         "slowest": 245700.0,
         "median": 245700.0,
-        "mean": 246800.0
+        "mean": 245700.0
       },
       "max_alloc_count": {
-        "fastest": 296.0,
+        "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 3.96
+        "mean": 1.01
       }
     }
   },
@@ -61,38 +49,38 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 312900000.0,
-      "slowest": 386500000.0,
-      "median": 330100000.0,
-      "mean": 331300000.0
+      "fastest": 388600000.0,
+      "slowest": 460200000.0,
+      "median": 402200000.0,
+      "mean": 407300000.0
     },
     "throughput_bps": {
-      "fastest": 154900000.0,
-      "slowest": 125400000.0,
-      "median": 146900000.0,
-      "mean": 146300000.0
+      "fastest": 124800000.0,
+      "slowest": 105400000.0,
+      "median": 120500000.0,
+      "mean": 119000000.0
     },
     "allocs": {
       "alloc_bytes": {
-        "fastest": 247200.0,
+        "fastest": 245700.0,
         "slowest": 245700.0,
         "median": 245700.0,
         "mean": 245700.0
       },
       "alloc_count": {
-        "fastest": 2.0,
+        "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
         "mean": 1.02
       },
       "max_alloc_bytes": {
-        "fastest": 247200.0,
+        "fastest": 245700.0,
         "slowest": 245700.0,
         "median": 245700.0,
         "mean": 245700.0
       },
       "max_alloc_count": {
-        "fastest": 2.0,
+        "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
         "mean": 1.02
@@ -105,16 +93,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 1341000000.0,
-      "slowest": 1448000000.0,
-      "median": 1356000000.0,
-      "mean": 1358000000.0
+      "fastest": 1354000000.0,
+      "slowest": 1419000000.0,
+      "median": 1387000000.0,
+      "mean": 1388000000.0
     },
     "throughput_bps": {
-      "fastest": 36150000.0,
-      "slowest": 33470000.0,
-      "median": 35750000.0,
-      "mean": 35690000.0
+      "fastest": 35800000.0,
+      "slowest": 34160000.0,
+      "median": 34960000.0,
+      "mean": 34940000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -130,16 +118,16 @@
         "mean": 2.01
       },
       "dealloc_bytes": {
-        "fastest": 8080999.999999999,
-        "slowest": 8036000.0,
-        "median": 8138999.999999999,
-        "mean": 7850000.0
+        "fastest": 8269000.0,
+        "slowest": 8096000.0,
+        "median": 7825000.0,
+        "mean": 7911000.0
       },
       "dealloc_count": {
-        "fastest": 13745.0,
-        "slowest": 13735.0,
-        "median": 13818.0,
-        "mean": 13204.0
+        "fastest": 14059.0,
+        "slowest": 13651.0,
+        "median": 13146.0,
+        "mean": 13358.0
       },
       "max_alloc_bytes": {
         "fastest": 2621000.0,
@@ -161,40 +149,40 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 29180000.0,
-      "slowest": 34450000.0,
-      "median": 30600000.0,
-      "mean": 30690000.0
+      "fastest": 28770000.0,
+      "slowest": 31620000.0,
+      "median": 30190000.0,
+      "mean": 30180000.0
     },
     "throughput_bps": {
-      "fastest": 1661000000.0,
-      "slowest": 1407000000.0,
-      "median": 1584000000.0,
-      "mean": 1580000000.0
+      "fastest": 1685000000.0,
+      "slowest": 1533000000.0,
+      "median": 1606000000.0,
+      "mean": 1607000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
-        "median": 328400.0,
+        "median": 327600.0,
         "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
-        "median": 1.5,
+        "median": 1.0,
         "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
-        "median": 328400.0,
+        "median": 327600.0,
         "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
-        "median": 1.5,
+        "median": 1.0,
         "mean": 1.02
       },
       "shrink_bytes": {
@@ -217,41 +205,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 24890000.0,
-      "slowest": 29600000.0,
-      "median": 25920000.0,
-      "mean": 25980000.0
+      "fastest": 24570000.0,
+      "slowest": 28270000.0,
+      "median": 25640000.0,
+      "mean": 25740000.0
     },
     "throughput_bps": {
-      "fastest": 1948000000.0,
-      "slowest": 1638000000.0,
-      "median": 1870000000.0,
-      "mean": 1866000000.0
+      "fastest": 1973000000.0,
+      "slowest": 1715000000.0,
+      "median": 1891000000.0,
+      "mean": 1884000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -273,41 +261,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 25620000.0,
-      "slowest": 28450000.0,
-      "median": 26800000.0,
-      "mean": 26780000.0
+      "fastest": 25020000.0,
+      "slowest": 27260000.0,
+      "median": 26160000.0,
+      "mean": 26160000.0
     },
     "throughput_bps": {
-      "fastest": 1892000000.0,
-      "slowest": 1704000000.0,
-      "median": 1809000000.0,
-      "mean": 1810000000.0
+      "fastest": 1938000000.0,
+      "slowest": 1778000000.0,
+      "median": 1853000000.0,
+      "mean": 1853000000.0
     },
     "allocs": {
       "alloc_bytes": {
-        "fastest": 327600.0,
+        "fastest": 329200.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
-        "fastest": 1.0,
+        "fastest": 2.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
-        "fastest": 327600.0,
+        "fastest": 329200.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
-        "fastest": 1.0,
+        "fastest": 2.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -329,16 +317,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 30040000.0,
-      "slowest": 34570000.0,
-      "median": 31660000.0,
-      "mean": 31610000.0
+      "fastest": 29680000.0,
+      "slowest": 32270000.000000004,
+      "median": 31180000.0,
+      "mean": 31080000.0
     },
     "throughput_bps": {
-      "fastest": 1614000000.0,
-      "slowest": 1402000000.0,
-      "median": 1531000000.0,
-      "mean": 1534000000.0
+      "fastest": 1633000000.0,
+      "slowest": 1502000000.0,
+      "median": 1555000000.0,
+      "mean": 1560000000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -385,16 +373,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 24930000.0,
-      "slowest": 30850000.0,
-      "median": 25900000.0,
-      "mean": 26090000.0
+      "fastest": 24540000.0,
+      "slowest": 29340000.0,
+      "median": 25800000.0,
+      "mean": 25790000.0
     },
     "throughput_bps": {
-      "fastest": 1945000000.0,
-      "slowest": 1572000000.0,
-      "median": 1872000000.0,
-      "mean": 1859000000.0
+      "fastest": 1976000000.0,
+      "slowest": 1653000000.0,
+      "median": 1879000000.0,
+      "mean": 1880000000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -441,16 +429,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 132500000.0,
-      "slowest": 154400000.0,
-      "median": 139000000.0,
-      "mean": 139400000.0
+      "fastest": 128199999.99999999,
+      "slowest": 142900000.0,
+      "median": 133800000.00000001,
+      "mean": 133600000.0
     },
     "throughput_bps": {
-      "fastest": 365900000.0,
-      "slowest": 314000000.0,
-      "median": 348800000.0,
-      "mean": 347700000.0
+      "fastest": 378300000.0,
+      "slowest": 339300000.0,
+      "median": 362300000.0,
+      "mean": 362900000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -497,41 +485,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 128699999.99999999,
-      "slowest": 140400000.0,
-      "median": 133699999.99999999,
-      "mean": 134000000.0
+      "fastest": 125800000.0,
+      "slowest": 142000000.0,
+      "median": 130199999.99999999,
+      "mean": 130500000.0
     },
     "throughput_bps": {
-      "fastest": 376700000.0,
-      "slowest": 345200000.0,
-      "median": 362500000.0,
-      "mean": 361900000.0
+      "fastest": 385400000.0,
+      "slowest": 341300000.0,
+      "median": 372400000.0,
+      "mean": 371400000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -553,41 +541,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 130600000.0,
-      "slowest": 149900000.0,
-      "median": 135500000.0,
-      "mean": 136200000.0
+      "fastest": 126100000.0,
+      "slowest": 140700000.0,
+      "median": 131900000.0,
+      "mean": 132000000.0
     },
     "throughput_bps": {
-      "fastest": 371100000.0,
-      "slowest": 323500000.0,
-      "median": 357700000.0,
-      "mean": 355900000.0
+      "fastest": 384600000.0,
+      "slowest": 344500000.0,
+      "median": 367600000.0,
+      "mean": 367300000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -609,39 +597,39 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 133500000.0,
-      "slowest": 146700000.0,
-      "median": 139600000.0,
-      "mean": 139600000.0
+      "fastest": 132100000.0,
+      "slowest": 157700000.0,
+      "median": 137300000.0,
+      "mean": 137300000.0
     },
     "throughput_bps": {
-      "fastest": 363200000.0,
-      "slowest": 330500000.0,
-      "median": 347300000.0,
-      "mean": 347200000.0
+      "fastest": 367100000.0,
+      "slowest": 307400000.0,
+      "median": 353200000.0,
+      "mean": 353100000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 327600.0,
+        "slowest": 329200.0,
         "median": 327600.0,
         "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
-        "slowest": 1.0,
+        "slowest": 2.0,
         "median": 1.0,
         "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 327600.0,
+        "slowest": 329200.0,
         "median": 327600.0,
         "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
-        "slowest": 1.0,
+        "slowest": 2.0,
         "median": 1.0,
         "mean": 1.02
       },
@@ -665,16 +653,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 128100000.0,
-      "slowest": 142100000.0,
-      "median": 134199999.99999999,
-      "mean": 134300000.0
+      "fastest": 125300000.0,
+      "slowest": 141600000.0,
+      "median": 131800000.00000001,
+      "mean": 132300000.00000001
     },
     "throughput_bps": {
-      "fastest": 378500000.0,
-      "slowest": 341300000.0,
-      "median": 361300000.0,
-      "mean": 360900000.0
+      "fastest": 386800000.0,
+      "slowest": 342400000.0,
+      "median": 367700000.0,
+      "mean": 366600000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -721,16 +709,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 45930000.0,
-      "slowest": 59020000.0,
-      "median": 48160000.0,
-      "mean": 48190000.0
+      "fastest": 45030000.0,
+      "slowest": 52620000.0,
+      "median": 47140000.0,
+      "mean": 47180000.0
     },
     "throughput_bps": {
-      "fastest": 1054999999.9999999,
-      "slowest": 821800000.0,
-      "median": 1006999999.9999999,
-      "mean": 1006000000.0
+      "fastest": 1077000000.0,
+      "slowest": 921700000.0,
+      "median": 1028000000.0,
+      "mean": 1026999999.9999999
     },
     "allocs": {
       "alloc_bytes": {
@@ -777,41 +765,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 41370000.0,
-      "slowest": 57870000.0,
-      "median": 43690000.0,
-      "mean": 43800000.0
+      "fastest": 41100000.0,
+      "slowest": 45610000.0,
+      "median": 42830000.0,
+      "mean": 42940000.0
     },
     "throughput_bps": {
-      "fastest": 1172000000.0,
-      "slowest": 838000000.0,
-      "median": 1110000000.0,
-      "mean": 1107000000.0
+      "fastest": 1180000000.0,
+      "slowest": 1063000000.0,
+      "median": 1132000000.0,
+      "mean": 1129000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -833,41 +821,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 42150000.0,
-      "slowest": 58400000.0,
-      "median": 44090000.0,
-      "mean": 44210000.0
+      "fastest": 40190000.0,
+      "slowest": 45420000.0,
+      "median": 42400000.0,
+      "mean": 42440000.0
     },
     "throughput_bps": {
-      "fastest": 1150000000.0,
-      "slowest": 830400000.0,
-      "median": 1099000000.0,
-      "mean": 1097000000.0
+      "fastest": 1206000000.0,
+      "slowest": 1067000000.0,
+      "median": 1143000000.0,
+      "mean": 1142000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -889,41 +877,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 46770000.0,
-      "slowest": 63840000.0,
-      "median": 48910000.0,
-      "mean": 49130000.0
+      "fastest": 45100000.0,
+      "slowest": 51180000.0,
+      "median": 47020000.0,
+      "mean": 47160000.0
     },
     "throughput_bps": {
-      "fastest": 1036999999.9999999,
-      "slowest": 759600000.0,
-      "median": 991700000.0,
-      "mean": 987200000.0
+      "fastest": 1075000000.0,
+      "slowest": 947700000.0,
+      "median": 1030999999.9999999,
+      "mean": 1028000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -945,41 +933,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 41970000.0,
-      "slowest": 59530000.0,
-      "median": 43810000.0,
-      "mean": 44060000.0
+      "fastest": 39820000.0,
+      "slowest": 47260000.0,
+      "median": 41790000.0,
+      "mean": 41810000.0
     },
     "throughput_bps": {
-      "fastest": 1155000000.0,
-      "slowest": 814600000.0,
-      "median": 1107000000.0,
-      "mean": 1100000000.0
+      "fastest": 1217000000.0,
+      "slowest": 1026000000.0,
+      "median": 1160000000.0,
+      "mean": 1160000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 329200.0,
+        "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
-        "slowest": 2.0,
+        "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 329200.0,
+        "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
-        "slowest": 2.0,
+        "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1001,16 +989,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 889000000.0,
-      "slowest": 925600000.0,
-      "median": 896600000.0,
-      "mean": 897400000.0
+      "fastest": 691200000.0,
+      "slowest": 718900000.0,
+      "median": 705500000.0,
+      "mean": 704800000.0
     },
     "throughput_bps": {
-      "fastest": 54550000.0,
-      "slowest": 52400000.0,
-      "median": 54090000.0,
-      "mean": 54040000.0
+      "fastest": 70170000.0,
+      "slowest": 67460000.0,
+      "median": 68750000.0,
+      "mean": 68810000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -1045,16 +1033,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 256700000.0,
-      "slowest": 302000000.0,
-      "median": 272000000.0,
-      "mean": 272400000.0
+      "fastest": 266300000.0,
+      "slowest": 317300000.0,
+      "median": 278100000.0,
+      "mean": 278800000.0
     },
     "throughput_bps": {
-      "fastest": 188900000.0,
-      "slowest": 160500000.0,
-      "median": 178300000.0,
-      "mean": 178000000.0
+      "fastest": 182100000.0,
+      "slowest": 152800000.0,
+      "median": 174300000.0,
+      "mean": 173900000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -1067,69 +1055,13 @@
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 245700.0,
         "slowest": 245700.0,
         "median": 245700.0,
         "mean": 245700.0
-      },
-      "max_alloc_count": {
-        "fastest": 1.0,
-        "slowest": 1.0,
-        "median": 1.0,
-        "mean": 1.01
-      }
-    }
-  },
-  {
-    "name": "encoding_parallel::o200k::tokenizers",
-    "bench": "encoding_parallel",
-    "samples": 100,
-    "iters": 100,
-    "time_ns": {
-      "fastest": 1353000000.0,
-      "slowest": 1470000000.0,
-      "median": 1365000000.0,
-      "mean": 1368000000.0
-    },
-    "throughput_bps": {
-      "fastest": 35850000.0,
-      "slowest": 32970000.0,
-      "median": 35510000.0,
-      "mean": 35440000.0
-    },
-    "allocs": {
-      "alloc_bytes": {
-        "fastest": 2785000.0,
-        "slowest": 2785000.0,
-        "median": 2785000.0,
-        "mean": 2785000.0
-      },
-      "alloc_count": {
-        "fastest": 2.0,
-        "slowest": 2.0,
-        "median": 2.0,
-        "mean": 2.02
-      },
-      "dealloc_bytes": {
-        "fastest": 7532000.0,
-        "slowest": 8121000.0,
-        "median": 7753000.0,
-        "mean": 7840000.0
-      },
-      "dealloc_count": {
-        "fastest": 12527.0,
-        "slowest": 13775.0,
-        "median": 12973.0,
-        "mean": 13183.0
-      },
-      "max_alloc_bytes": {
-        "fastest": 2621000.0,
-        "slowest": 2621000.0,
-        "median": 2621000.0,
-        "mean": 2621000.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
@@ -1140,46 +1072,102 @@
     }
   },
   {
+    "name": "encoding_parallel::o200k::tokenizers",
+    "bench": "encoding_parallel",
+    "samples": 100,
+    "iters": 100,
+    "time_ns": {
+      "fastest": 1381000000.0,
+      "slowest": 1436000000.0,
+      "median": 1394000000.0,
+      "mean": 1395000000.0
+    },
+    "throughput_bps": {
+      "fastest": 35100000.0,
+      "slowest": 33750000.0,
+      "median": 34790000.0,
+      "mean": 34750000.0
+    },
+    "allocs": {
+      "alloc_bytes": {
+        "fastest": 2786000.0,
+        "slowest": 2785000.0,
+        "median": 2785000.0,
+        "mean": 2785000.0
+      },
+      "alloc_count": {
+        "fastest": 3.0,
+        "slowest": 2.0,
+        "median": 2.0,
+        "mean": 2.01
+      },
+      "dealloc_bytes": {
+        "fastest": 7788000.0,
+        "slowest": 8045999.999999999,
+        "median": 7788000.0,
+        "mean": 7915000.0
+      },
+      "dealloc_count": {
+        "fastest": 13129.0,
+        "slowest": 13693.0,
+        "median": 13110.0,
+        "mean": 13354.0
+      },
+      "max_alloc_bytes": {
+        "fastest": 2622000.0,
+        "slowest": 2621000.0,
+        "median": 2621000.0,
+        "mean": 2621000.0
+      },
+      "max_alloc_count": {
+        "fastest": 2.0,
+        "slowest": 1.0,
+        "median": 1.0,
+        "mean": 1.01
+      }
+    }
+  },
+  {
     "name": "encoding_parallel::o200k::wordchipper::logos::bpe_backtrack",
     "bench": "encoding_parallel",
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 33540000.0,
-      "slowest": 37770000.0,
-      "median": 35150000.0,
-      "mean": 35190000.0
+      "fastest": 32460000.0,
+      "slowest": 40520000.0,
+      "median": 34060000.0,
+      "mean": 34140000.0
     },
     "throughput_bps": {
-      "fastest": 1445000000.0,
-      "slowest": 1283000000.0,
-      "median": 1379000000.0,
-      "mean": 1378000000.0
+      "fastest": 1494000000.0,
+      "slowest": 1197000000.0,
+      "median": 1423000000.0,
+      "mean": 1420000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1201,41 +1189,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 29010000.0,
-      "slowest": 31920000.0,
-      "median": 30030000.0,
-      "mean": 30140000.0
+      "fastest": 28110000.0,
+      "slowest": 30650000.0,
+      "median": 29210000.0,
+      "mean": 29240000.0
     },
     "throughput_bps": {
-      "fastest": 1671000000.0,
-      "slowest": 1519000000.0,
-      "median": 1614000000.0,
-      "mean": 1609000000.0
+      "fastest": 1725000000.0,
+      "slowest": 1582000000.0,
+      "median": 1660000000.0,
+      "mean": 1658000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1257,16 +1245,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 30550000.0,
-      "slowest": 34580000.0,
-      "median": 31950000.0,
-      "mean": 31970000.0
+      "fastest": 29070000.0,
+      "slowest": 34060000.0,
+      "median": 30370000.0,
+      "mean": 30340000.0
     },
     "throughput_bps": {
-      "fastest": 1587000000.0,
-      "slowest": 1402000000.0,
-      "median": 1517000000.0,
-      "mean": 1517000000.0
+      "fastest": 1668000000.0,
+      "slowest": 1424000000.0,
+      "median": 1597000000.0,
+      "mean": 1598000000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -1313,41 +1301,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 32150000.0,
-      "slowest": 42270000.0,
-      "median": 34000000.0,
-      "mean": 34110000.0
+      "fastest": 31940000.0,
+      "slowest": 37440000.0,
+      "median": 33159999.999999996,
+      "mean": 33180000.0
     },
     "throughput_bps": {
-      "fastest": 1508000000.0,
-      "slowest": 1147000000.0,
-      "median": 1426000000.0,
-      "mean": 1421000000.0
+      "fastest": 1518000000.0,
+      "slowest": 1295000000.0,
+      "median": 1462000000.0,
+      "mean": 1461000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1369,41 +1357,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 28390000.0,
-      "slowest": 32369999.999999996,
-      "median": 29540000.0,
-      "mean": 29590000.0
+      "fastest": 27210000.0,
+      "slowest": 30270000.0,
+      "median": 28270000.0,
+      "mean": 28340000.0
     },
     "throughput_bps": {
-      "fastest": 1708000000.0,
-      "slowest": 1498000000.0,
-      "median": 1641000000.0,
-      "mean": 1639000000.0
+      "fastest": 1782000000.0,
+      "slowest": 1602000000.0,
+      "median": 1715000000.0,
+      "mean": 1711000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 329200.0,
+        "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
-        "slowest": 2.0,
+        "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 329200.0,
+        "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
-        "slowest": 2.0,
+        "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1425,41 +1413,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 257500000.0,
-      "slowest": 287900000.0,
-      "median": 269100000.0,
-      "mean": 268800000.0
+      "fastest": 255100000.0,
+      "slowest": 280400000.0,
+      "median": 267200000.0,
+      "mean": 267000000.0
     },
     "throughput_bps": {
-      "fastest": 188300000.0,
-      "slowest": 168400000.0,
-      "median": 180200000.0,
-      "mean": 180400000.0
+      "fastest": 190000000.0,
+      "slowest": 172900000.0,
+      "median": 181500000.0,
+      "mean": 181600000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 327600.0,
+        "slowest": 329200.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
-        "slowest": 1.0,
+        "slowest": 2.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 327600.0,
+        "slowest": 329200.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
-        "slowest": 1.0,
+        "slowest": 2.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1481,41 +1469,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 253300000.0,
-      "slowest": 293200000.0,
-      "median": 262500000.0,
-      "mean": 263399999.99999997
+      "fastest": 254400000.0,
+      "slowest": 288100000.0,
+      "median": 265700000.0,
+      "mean": 265899999.99999997
     },
     "throughput_bps": {
-      "fastest": 191400000.0,
-      "slowest": 165300000.0,
-      "median": 184700000.0,
-      "mean": 184100000.0
+      "fastest": 190600000.0,
+      "slowest": 168300000.0,
+      "median": 182500000.0,
+      "mean": 182300000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1537,16 +1525,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 252900000.0,
-      "slowest": 287500000.0,
-      "median": 266100000.00000003,
-      "mean": 266000000.0
+      "fastest": 249300000.0,
+      "slowest": 309500000.0,
+      "median": 265700000.0,
+      "mean": 265899999.99999997
     },
     "throughput_bps": {
-      "fastest": 191700000.0,
-      "slowest": 168700000.0,
-      "median": 182200000.0,
-      "mean": 182200000.0
+      "fastest": 194500000.0,
+      "slowest": 156600000.0,
+      "median": 182500000.0,
+      "mean": 182300000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -1593,41 +1581,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 261600000.00000003,
-      "slowest": 306000000.0,
-      "median": 274400000.0,
-      "mean": 274400000.0
+      "fastest": 255400000.0,
+      "slowest": 295700000.0,
+      "median": 271900000.0,
+      "mean": 271200000.0
     },
     "throughput_bps": {
-      "fastest": 185300000.0,
-      "slowest": 158500000.0,
-      "median": 176700000.0,
-      "mean": 176700000.0
+      "fastest": 189800000.0,
+      "slowest": 163900000.0,
+      "median": 178300000.0,
+      "mean": 178700000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1649,41 +1637,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 258300000.0,
-      "slowest": 284300000.0,
-      "median": 268700000.0,
-      "mean": 268399999.99999997
+      "fastest": 249700000.0,
+      "slowest": 313200000.0,
+      "median": 264200000.0,
+      "mean": 264500000.0
     },
     "throughput_bps": {
-      "fastest": 187700000.0,
-      "slowest": 170600000.0,
-      "median": 180400000.0,
-      "mean": 180600000.0
+      "fastest": 194200000.0,
+      "slowest": 154800000.0,
+      "median": 183500000.0,
+      "mean": 183300000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1705,41 +1693,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 50590000.0,
-      "slowest": 84290000.0,
-      "median": 53330000.0,
-      "mean": 54010000.0
+      "fastest": 48810000.0,
+      "slowest": 59560000.0,
+      "median": 51360000.0,
+      "mean": 51570000.0
     },
     "throughput_bps": {
-      "fastest": 958600000.0,
-      "slowest": 575400000.0,
-      "median": 909500000.0,
-      "mean": 898000000.0
+      "fastest": 993700000.0,
+      "slowest": 814300000.0,
+      "median": 944300000.0,
+      "mean": 940500000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1761,41 +1749,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 45280000.0,
-      "slowest": 80320000.0,
-      "median": 48070000.0,
-      "mean": 48700000.0
+      "fastest": 43530000.0,
+      "slowest": 54920000.0,
+      "median": 46500000.0,
+      "mean": 46640000.0
     },
     "throughput_bps": {
-      "fastest": 1071000000.0,
-      "slowest": 603800000.0,
-      "median": 1008000000.0,
-      "mean": 995900000.0
+      "fastest": 1114000000.0,
+      "slowest": 883000000.0,
+      "median": 1042999999.9999999,
+      "mean": 1038999999.9999999
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1817,41 +1805,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 45440000.0,
-      "slowest": 85010000.0,
-      "median": 48400000.0,
-      "mean": 49220000.0
+      "fastest": 44110000.0,
+      "slowest": 55330000.0,
+      "median": 46470000.0,
+      "mean": 47050000.0
     },
     "throughput_bps": {
-      "fastest": 1067000000.0,
-      "slowest": 570500000.0,
-      "median": 1000999999.9999999,
-      "mean": 985300000.0
+      "fastest": 1099000000.0,
+      "slowest": 876600000.0,
+      "median": 1042999999.9999999,
+      "mean": 1030000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1873,16 +1861,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 49490000.0,
-      "slowest": 80550000.0,
-      "median": 51870000.0,
-      "mean": 52350000.0
+      "fastest": 48070000.0,
+      "slowest": 59130000.0,
+      "median": 50960000.0,
+      "mean": 51340000.0
     },
     "throughput_bps": {
-      "fastest": 980000000.0,
-      "slowest": 602100000.0,
-      "median": 935000000.0,
-      "mean": 926400000.0
+      "fastest": 1008000000.0,
+      "slowest": 820200000.0,
+      "median": 951800000.0,
+      "mean": 944700000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -1929,41 +1917,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 44540000.0,
-      "slowest": 79060000.0,
-      "median": 46960000.0,
-      "mean": 47880000.0
+      "fastest": 42890000.0,
+      "slowest": 54750000.0,
+      "median": 46120000.0,
+      "mean": 46350000.0
     },
     "throughput_bps": {
-      "fastest": 1089000000.0,
-      "slowest": 613500000.0,
-      "median": 1032000000.0,
-      "mean": 1012000000.0
+      "fastest": 1130000000.0,
+      "slowest": 885800000.0,
+      "median": 1050999999.9999999,
+      "mean": 1046000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -1985,16 +1973,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 176500000.0,
-      "slowest": 201500000.0,
-      "median": 185700000.0,
-      "mean": 185600000.0
+      "fastest": 177800000.0,
+      "slowest": 197900000.0,
+      "median": 184400000.0,
+      "mean": 185300000.0
     },
     "throughput_bps": {
-      "fastest": 274700000.0,
-      "slowest": 240600000.0,
-      "median": 261100000.00000003,
-      "mean": 261300000.0
+      "fastest": 272800000.0,
+      "slowest": 245000000.0,
+      "median": 262899999.99999997,
+      "mean": 261700000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -2007,7 +1995,7 @@
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 245700.0,
@@ -2019,7 +2007,7 @@
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       }
     }
   },
@@ -2029,16 +2017,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 1349000000.0,
-      "slowest": 1439000000.0,
-      "median": 1360000000.0,
-      "mean": 1363000000.0
+      "fastest": 1380000000.0,
+      "slowest": 1444000000.0,
+      "median": 1391000000.0,
+      "mean": 1393000000.0
     },
     "throughput_bps": {
-      "fastest": 35930000.0,
-      "slowest": 33700000.0,
-      "median": 35640000.0,
-      "mean": 35570000.0
+      "fastest": 35120000.0,
+      "slowest": 33570000.0,
+      "median": 34850000.0,
+      "mean": 34790000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -2051,19 +2039,19 @@
         "fastest": 2.0,
         "slowest": 2.0,
         "median": 2.0,
-        "mean": 2.02
+        "mean": 2.01
       },
       "dealloc_bytes": {
-        "fastest": 7351000.0,
-        "slowest": 7989000.0,
-        "median": 8208000.0,
-        "mean": 7869000.0
+        "fastest": 7565000.0,
+        "slowest": 8192000.0,
+        "median": 7912000.0,
+        "mean": 7868000.0
       },
       "dealloc_count": {
-        "fastest": 12043.0,
-        "slowest": 13525.0,
-        "median": 14092.0,
-        "mean": 13231.0
+        "fastest": 12567.0,
+        "slowest": 13831.0,
+        "median": 13303.0,
+        "mean": 13247.0
       },
       "max_alloc_bytes": {
         "fastest": 2621000.0,
@@ -2075,7 +2063,7 @@
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       }
     }
   },
@@ -2085,41 +2073,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 26230000.0,
-      "slowest": 29720000.0,
-      "median": 27280000.0,
-      "mean": 27330000.0
+      "fastest": 25680000.0,
+      "slowest": 29040000.0,
+      "median": 26810000.0,
+      "mean": 26910000.0
     },
     "throughput_bps": {
-      "fastest": 1848000000.0,
-      "slowest": 1631000000.0,
-      "median": 1777000000.0,
-      "mean": 1774000000.0
+      "fastest": 1888000000.0,
+      "slowest": 1669000000.0,
+      "median": 1809000000.0,
+      "mean": 1802000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
-        "median": 327600.0,
-        "mean": 327600.0
+        "median": 328400.0,
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
-        "median": 1.0,
-        "mean": 1.01
+        "median": 1.5,
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
-        "median": 327600.0,
-        "mean": 327600.0
+        "median": 328400.0,
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
-        "median": 1.0,
-        "mean": 1.01
+        "median": 1.5,
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2141,16 +2129,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 25600000.0,
-      "slowest": 28820000.0,
-      "median": 26790000.0,
-      "mean": 26760000.0
+      "fastest": 24830000.0,
+      "slowest": 27580000.0,
+      "median": 25940000.0,
+      "mean": 25950000.0
     },
     "throughput_bps": {
-      "fastest": 1894000000.0,
-      "slowest": 1682000000.0,
-      "median": 1810000000.0,
-      "mean": 1812000000.0
+      "fastest": 1952000000.0,
+      "slowest": 1758000000.0,
+      "median": 1869000000.0,
+      "mean": 1869000000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -2197,41 +2185,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 27350000.0,
-      "slowest": 31840000.0,
-      "median": 28540000.0,
-      "mean": 28590000.0
+      "fastest": 25920000.0,
+      "slowest": 28390000.0,
+      "median": 26880000.0,
+      "mean": 26850000.0
     },
     "throughput_bps": {
-      "fastest": 1773000000.0,
-      "slowest": 1523000000.0,
-      "median": 1699000000.0,
-      "mean": 1696000000.0
+      "fastest": 1871000000.0,
+      "slowest": 1708000000.0,
+      "median": 1804000000.0,
+      "mean": 1806000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 327600.0,
+        "slowest": 329200.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
-        "slowest": 1.0,
+        "slowest": 2.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
-        "slowest": 327600.0,
+        "slowest": 329200.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
-        "slowest": 1.0,
+        "slowest": 2.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2253,41 +2241,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 28890000.0,
-      "slowest": 36250000.0,
-      "median": 30210000.0,
-      "mean": 30330000.0
+      "fastest": 28360000.0,
+      "slowest": 31670000.0,
+      "median": 29660000.0,
+      "mean": 29670000.0
     },
     "throughput_bps": {
-      "fastest": 1678000000.0,
-      "slowest": 1338000000.0,
-      "median": 1605000000.0,
-      "mean": 1599000000.0
+      "fastest": 1710000000.0,
+      "slowest": 1531000000.0,
+      "median": 1635000000.0,
+      "mean": 1634000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2309,41 +2297,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 24480000.0,
-      "slowest": 27620000.0,
-      "median": 25700000.0,
-      "mean": 25720000.0
+      "fastest": 24100000.0,
+      "slowest": 27140000.0,
+      "median": 25170000.0,
+      "mean": 25150000.0
     },
     "throughput_bps": {
-      "fastest": 1981000000.0,
-      "slowest": 1756000000.0,
-      "median": 1886000000.0,
-      "mean": 1885000000.0
+      "fastest": 2012000000.0,
+      "slowest": 1787000000.0,
+      "median": 1926000000.0,
+      "mean": 1928000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2365,41 +2353,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 113100000.0,
-      "slowest": 129699999.99999999,
-      "median": 118000000.0,
-      "mean": 118100000.0
+      "fastest": 111600000.0,
+      "slowest": 123000000.0,
+      "median": 115300000.0,
+      "mean": 115800000.0
     },
     "throughput_bps": {
-      "fastest": 428600000.0,
-      "slowest": 373800000.0,
-      "median": 411000000.0,
-      "mean": 410400000.0
+      "fastest": 434200000.0,
+      "slowest": 394100000.0,
+      "median": 420500000.0,
+      "mean": 418800000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2421,16 +2409,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 111400000.0,
-      "slowest": 121400000.0,
-      "median": 115000000.0,
-      "mean": 115100000.0
+      "fastest": 109800000.0,
+      "slowest": 120300000.0,
+      "median": 114800000.0,
+      "mean": 114800000.0
     },
     "throughput_bps": {
-      "fastest": 435300000.0,
-      "slowest": 399200000.0,
-      "median": 421700000.0,
-      "mean": 421100000.0
+      "fastest": 441500000.0,
+      "slowest": 402900000.0,
+      "median": 422400000.0,
+      "mean": 422500000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -2477,41 +2465,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 112600000.0,
-      "slowest": 126500000.0,
-      "median": 117500000.0,
-      "mean": 117700000.0
+      "fastest": 110800000.0,
+      "slowest": 123600000.0,
+      "median": 116100000.0,
+      "mean": 115800000.0
     },
     "throughput_bps": {
-      "fastest": 430700000.0,
-      "slowest": 383200000.0,
-      "median": 412600000.0,
-      "mean": 412000000.0
+      "fastest": 437500000.0,
+      "slowest": 392100000.0,
+      "median": 417600000.0,
+      "mean": 418800000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2533,41 +2521,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 118400000.0,
-      "slowest": 156500000.0,
-      "median": 124100000.0,
-      "mean": 126400000.0
+      "fastest": 114400000.0,
+      "slowest": 128000000.0,
+      "median": 119700000.0,
+      "mean": 119300000.0
     },
     "throughput_bps": {
-      "fastest": 409500000.0,
-      "slowest": 309700000.0,
-      "median": 390700000.0,
-      "mean": 383600000.0
+      "fastest": 423700000.0,
+      "slowest": 378700000.0,
+      "median": 405100000.0,
+      "mean": 406400000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2589,41 +2577,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 112900000.0,
-      "slowest": 144100000.0,
-      "median": 120400000.0,
-      "mean": 122300000.0
+      "fastest": 109100000.0,
+      "slowest": 130000000.0,
+      "median": 113500000.0,
+      "mean": 113900000.0
     },
     "throughput_bps": {
-      "fastest": 429600000.0,
-      "slowest": 336300000.0,
-      "median": 402600000.0,
-      "mean": 396300000.0
+      "fastest": 444200000.0,
+      "slowest": 373000000.0,
+      "median": 427200000.0,
+      "mean": 425700000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2645,41 +2633,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 43850000.0,
-      "slowest": 58270000.0,
-      "median": 45260000.0,
-      "mean": 45630000.0
+      "fastest": 41700000.0,
+      "slowest": 47930000.0,
+      "median": 43340000.0,
+      "mean": 43540000.0
     },
     "throughput_bps": {
-      "fastest": 1106000000.0,
-      "slowest": 832200000.0,
-      "median": 1071000000.0,
-      "mean": 1062000000.0
+      "fastest": 1163000000.0,
+      "slowest": 1012000000.0,
+      "median": 1119000000.0,
+      "mean": 1113000000.0
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327600.0
+        "mean": 327700.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.01
+        "mean": 1.02
       },
       "shrink_bytes": {
         "fastest": 8.0,
@@ -2701,16 +2689,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 41950000.0,
-      "slowest": 55930000.0,
-      "median": 43770000.0,
-      "mean": 44220000.0
+      "fastest": 43800000.0,
+      "slowest": 48680000.0,
+      "median": 45660000.0,
+      "mean": 45600000.0
     },
     "throughput_bps": {
-      "fastest": 1156000000.0,
-      "slowest": 867100000.0,
-      "median": 1108000000.0,
-      "mean": 1096000000.0
+      "fastest": 1107000000.0,
+      "slowest": 996300000.0,
+      "median": 1062000000.0,
+      "mean": 1063000000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -2757,16 +2745,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 42920000.0,
-      "slowest": 51840000.0,
-      "median": 44990000.0,
-      "mean": 45140000.0
+      "fastest": 41290000.0,
+      "slowest": 46990000.0,
+      "median": 42900000.0,
+      "mean": 42920000.0
     },
     "throughput_bps": {
-      "fastest": 1130000000.0,
-      "slowest": 935500000.0,
-      "median": 1078000000.0,
-      "mean": 1074000000.0
+      "fastest": 1174000000.0,
+      "slowest": 1032000000.0,
+      "median": 1130000000.0,
+      "mean": 1130000000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -2813,16 +2801,16 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 46250000.0,
-      "slowest": 61870000.0,
-      "median": 48430000.0,
-      "mean": 48970000.0
+      "fastest": 43910000.0,
+      "slowest": 49160000.0,
+      "median": 46250000.0,
+      "mean": 46180000.0
     },
     "throughput_bps": {
-      "fastest": 1048000000.0,
-      "slowest": 783900000.0,
-      "median": 1000999999.9999999,
-      "mean": 990300000.0
+      "fastest": 1104000000.0,
+      "slowest": 986600000.0,
+      "median": 1048000000.0,
+      "mean": 1050000000.0
     },
     "allocs": {
       "alloc_bytes": {
@@ -2869,41 +2857,41 @@
     "samples": 100,
     "iters": 100,
     "time_ns": {
-      "fastest": 40790000.0,
-      "slowest": 49280000.0,
-      "median": 43340000.0,
-      "mean": 43410000.0
+      "fastest": 43420000.0,
+      "slowest": 47280000.0,
+      "median": 45200000.0,
+      "mean": 45240000.0
     },
     "throughput_bps": {
-      "fastest": 1188000000.0,
-      "slowest": 984100000.0,
-      "median": 1119000000.0,
-      "mean": 1117000000.0
+      "fastest": 1117000000.0,
+      "slowest": 1024999999.9999999,
+      "median": 1073000000.0,
+      "mean": 1072000000.0000001
     },
     "allocs": {
       "alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "max_alloc_bytes": {
         "fastest": 327600.0,
         "slowest": 327600.0,
         "median": 327600.0,
-        "mean": 327700.0
+        "mean": 327600.0
       },
       "max_alloc_count": {
         "fastest": 1.0,
         "slowest": 1.0,
         "median": 1.0,
-        "mean": 1.02
+        "mean": 1.01
       },
       "shrink_bytes": {
         "fastest": 8.0,

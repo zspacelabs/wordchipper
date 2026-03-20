@@ -149,19 +149,19 @@ fn build_rust_throughput_plots<P: AsRef<Path>>(
             "bpe_openai",
             base_style
                 .with_marker_type(MarkerType::CrossCircle)
-                .with_fill_style(Some(colors::PINK_100.into())),
+                .with_fill_style(Some(colors::ORANGE_A100.into())),
         ),
         (
             "tiktoken",
             base_style
                 .with_marker_type(MarkerType::CrossSquare)
-                .with_fill_style(Some(colors::PURPLE_100.into())),
+                .with_fill_style(Some(colors::PURPLE_A100.into())),
         ),
         (
             "tokenizers",
             base_style
                 .with_marker_type(MarkerType::CrossDiamond)
-                .with_fill_style(Some(colors::BLUEGREY_100.into())),
+                .with_fill_style(Some(colors::BLUEGREY_A100.into())),
         ),
     ]
     .into_iter()

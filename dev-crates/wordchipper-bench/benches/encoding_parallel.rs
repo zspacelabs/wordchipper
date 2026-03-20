@@ -148,6 +148,10 @@ fn bench_wc(
 ) {
     let strs = BATCH.strs();
     let encoder = build_encoder_wc::<u32>(model, selector, mode);
+
+    // warmup
+    encoder.try_encode_batch(black_box(&strs)).unwrap();
+
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
         .bench_local(|| encoder.try_encode_batch(black_box(&strs)).unwrap());
@@ -158,6 +162,12 @@ fn bench_tt(
     bpe: &CoreBPE,
 ) {
     let strs = BATCH.strs();
+
+    // warmup
+    strs.par_iter()
+        .map(|s| bpe.encode_with_special_tokens(s))
+        .collect::<Vec<_>>();
+
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
         .bench_local(|| {
@@ -173,6 +183,10 @@ fn bench_hf(
 ) {
     let tok = tokenizers::Tokenizer::from_pretrained(name, None).unwrap();
     let strs = BATCH.strs();
+
+    // warmup
+    tok.encode_batch(black_box(strs.clone()), true).unwrap();
+
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
         .bench_local(|| tok.encode_batch(black_box(strs.clone()), true).unwrap());
@@ -183,6 +197,10 @@ fn bench_bpe_openai(
     tok: &::bpe_openai::Tokenizer,
 ) {
     let strs = BATCH.strs();
+
+    // warmup
+    strs.par_iter().map(|s| tok.encode(s)).collect::<Vec<_>>();
+
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
         .bench_local(|| strs.par_iter().map(|s| tok.encode(s)).collect::<Vec<_>>());

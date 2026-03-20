@@ -49,6 +49,10 @@ class TestSingleEncode:
         options.set_accelerated_lexers(False)
 
         tok = wordchipper.Tokenizer.from_pretrained(model, options)
+
+        # warmup
+        tok.encode(english_text)
+
         benchmark.group = f"single/english/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(english_text)
         benchmark(tok.encode, english_text)
@@ -59,6 +63,10 @@ class TestSingleEncode:
         options.set_accelerated_lexers(True)
 
         tok = wordchipper.Tokenizer.from_pretrained(model, options)
+
+        # warmup
+        tok.encode(english_text)
+
         benchmark.group = f"single/english/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(english_text)
         benchmark(tok.encode, english_text)
@@ -69,6 +77,10 @@ class TestSingleEncode:
         options.set_accelerated_lexers(False)
 
         tok = wordchipper.Tokenizer.from_pretrained(model, options)
+
+        # warmup
+        tok.encode(diverse_text)
+
         benchmark.group = f"single/diverse/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(diverse_text)
         benchmark(tok.encode, diverse_text)
@@ -79,6 +91,10 @@ class TestSingleEncode:
         options.set_accelerated_lexers(True)
 
         tok = wordchipper.Tokenizer.from_pretrained(model, options)
+
+        # warmup
+        tok.encode(diverse_text)
+
         benchmark.group = f"single/diverse/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(diverse_text)
         benchmark(tok.encode, diverse_text)
@@ -87,6 +103,10 @@ class TestSingleEncode:
         import tiktoken
 
         tok = tiktoken.get_encoding(model)
+
+        # warmup
+        tok.encode(english_text, allowed_special="all")
+
         benchmark.group = f"single/english/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(english_text)
         benchmark(tok.encode, english_text, allowed_special="all")
@@ -95,6 +115,10 @@ class TestSingleEncode:
         import tiktoken
 
         tok = tiktoken.get_encoding(model)
+
+        # warmup
+        tok.encode(diverse_text, allowed_special="all")
+
         benchmark.group = f"single/diverse/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(diverse_text)
         benchmark(tok.encode, diverse_text, allowed_special="all")
@@ -103,6 +127,10 @@ class TestSingleEncode:
         from tokenizers import Tokenizer
 
         tok = Tokenizer.from_pretrained(HF_MODELS[model])
+
+        # warmup
+        tok.encode(english_text)
+
         benchmark.group = f"single/english/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(english_text)
         benchmark(tok.encode, english_text)
@@ -111,6 +139,10 @@ class TestSingleEncode:
         from tokenizers import Tokenizer
 
         tok = Tokenizer.from_pretrained(HF_MODELS[model])
+
+        # warmup
+        tok.encode(diverse_text)
+
         benchmark.group = f"single/diverse/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(diverse_text)
         benchmark(tok.encode, diverse_text)
@@ -121,6 +153,10 @@ class TestSingleEncode:
         import bpe_openai as bpe
 
         tok = bpe.get_encoding(model)
+
+        # warmup
+        tok.encode(english_text)
+
         benchmark.group = f"single/english/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(english_text)
         benchmark(tok.encode, english_text)
@@ -131,6 +167,10 @@ class TestSingleEncode:
         import bpe_openai as bpe
 
         tok = bpe.get_encoding(model)
+
+        # warmup
+        tok.encode(diverse_text)
+
         benchmark.group = f"single/diverse/{model}"
         benchmark.extra_info["input_bytes"] = _utf8_len(diverse_text)
         benchmark(tok.encode, diverse_text)
@@ -151,6 +191,10 @@ class TestBatchEncode:
         options.set_accelerated_lexers(True)
 
         tok = wordchipper.Tokenizer.from_pretrained(model, options)
+
+        # warmup
+        tok.encode_batch(texts)
+
         benchmark.group = f"batch/{model}"
         benchmark.extra_info["input_bytes"] = total_bytes
         benchmark(tok.encode_batch, texts)
@@ -163,6 +207,10 @@ class TestBatchEncode:
         options.set_accelerated_lexers(False)
 
         tok = wordchipper.Tokenizer.from_pretrained(model, options)
+
+        # warmup
+        tok.encode_batch(texts)
+
         benchmark.group = f"batch/{model}"
         benchmark.extra_info["input_bytes"] = total_bytes
         benchmark(tok.encode_batch, texts)
@@ -185,6 +233,9 @@ class TestBatchEncode:
             def encode_batch_threaded(texts):
                 return list(pool.map(tok.encode, texts))
 
+            # warmup
+            encode_batch_threaded(texts)
+
             benchmark(encode_batch_threaded, texts)
 
     def test_wordchipper_threadpool_accel(self, benchmark, model, fineweb_batch, max_threads):
@@ -205,6 +256,9 @@ class TestBatchEncode:
             def encode_batch_threaded(texts):
                 return list(pool.map(tok.encode, texts))
 
+            # warmup
+            encode_batch_threaded(texts)
+
             benchmark(encode_batch_threaded, texts)
 
     def test_tiktoken(self, benchmark, model, fineweb_batch, max_threads):
@@ -213,6 +267,10 @@ class TestBatchEncode:
         import tiktoken
 
         tok = tiktoken.get_encoding(model)
+
+        # warmup
+        tok.encode_batch(texts, allowed_special="all")
+
         benchmark.group = f"batch/{model}"
         benchmark.extra_info["input_bytes"] = total_bytes
         num_threads = max_threads or 8
@@ -224,6 +282,10 @@ class TestBatchEncode:
         from tokenizers import Tokenizer
 
         tok = Tokenizer.from_pretrained(HF_MODELS[model])
+
+        # warmup
+        tok.encode_batch(texts)
+
         benchmark.group = f"batch/{model}"
         benchmark.extra_info["input_bytes"] = total_bytes
         benchmark(tok.encode_batch, texts)
@@ -236,6 +298,10 @@ class TestBatchEncode:
         import bpe_openai as bpe
 
         tok = bpe.get_encoding(model)
+
+        # warmup
+        tok.encode_batch(texts, num_threads=max_threads)
+
         benchmark.group = f"batch/{model}"
         benchmark.extra_info["input_bytes"] = total_bytes
         num_threads = max_threads or 8
