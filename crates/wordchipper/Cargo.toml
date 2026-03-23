@@ -118,7 +118,7 @@ foldhash = { workspace = true, optional = true }
 unicode-general-category = { workspace = true }
 
 # "download" feature deps:
-wordchipper-disk-cache = { version = "0.8.1", path = "../wordchipper-disk-cache", optional = true }
+wordchipper-disk-cache = { version = "0.9.0", path = "../wordchipper-disk-cache", optional = true }
 
 # "parallel" feature deps:
 rayon = { workspace = true, optional = true }

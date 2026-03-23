@@ -3,6 +3,8 @@
 [![Crates.io Version](https://img.shields.io/crates/v/wordchipper-training)](https://crates.io/crates/wordchipper-training)
 [![Documentation](https://img.shields.io/docsrs/wordchipper-training)](https://docs.rs/wordchipper/latest/wordchipper-training/)
 [![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
+
+[![Discord](https://img.shields.io/discord/1475229838754316502?label=discord)](https://discord.gg/vBgXHWCeah)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zspacelabs/wordchipper)
 
 Part of the [wordchipper tokenizer suite](https://crates.io/crates/wordchipper).
@@ -25,13 +27,15 @@ This is the training implementation crate for the
 The core additional user-facing crates are:
 
 * [wordchipper](https://crates.io/crates/wordchipper) - the core tokenizer library.
-* [wordchipper-cli](https://crates.io/crates/wordchipper-cli) - a multi-tool tokenizer binary; notably:
+* [wordchipper-cli](https://crates.io/crates/wordchipper-cli) - a multi-tool tokenizer binary;
+  notably:
     * `wordchipper-cli cat` - in-line encoder/decoder tool.
     * `wordchipper-cli train` - tokenizer training tool.
 
 ## Training Tool
 
-A pre-built training tool is shipped as part of the [`wordchipper-cli`](https://crates.io/crates/wordchipper-cli) tool.
+A pre-built training tool is shipped as part of the [
+`wordchipper-cli`](https://crates.io/crates/wordchipper-cli) tool.
 
 ## Training
 
