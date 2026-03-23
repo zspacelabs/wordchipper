@@ -64,6 +64,18 @@ pub fn get_regex_accelerator(pattern: &str) -> Option<Arc<dyn SpanLexer>> {
     None
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_unknown_pattern_returns_none() {
+        assert!(
+            get_regex_accelerator("not_a_real_pattern_that_would_ever_be_registered").is_none()
+        );
+    }
+}
+
 /// Testing utilities for developing accelerated replacement [`SpanLexer`]s.
 #[cfg(any(test, feature = "testing"))]
 pub mod testutil {

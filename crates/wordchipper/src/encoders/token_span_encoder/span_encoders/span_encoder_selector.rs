@@ -29,21 +29,15 @@ use crate::{
 )]
 #[non_exhaustive]
 pub enum SpanEncoderSelector {
-    /// This is the canonical best concurrent encoder.
+    /// This is the canonical "best" concurrent encoder.
     ///
-    /// It is benchmarked to be the fastest and most efficient encoder for
-    /// concurrent use.
-    ///
-    /// This is currently an alias for: [`MergeHeap`](`Self::MergeHeap`)
+    /// This is currently an alias for: [`BpeBacktrack`](`Self::BpeBacktrack`)
     #[default]
     ConcurrentDefault,
 
-    /// This the canonical best single-threaded encoder.
+    /// This the canonical "best" single-threaded encoder.
     ///
-    /// It is benchmarked to be the fastest and most efficient encoder for
-    /// single-threaded use.
-    ///
-    /// This is currently an alias for: [`PriorityMerge`](`Self::PriorityMerge`)
+    /// This is currently an alias for: [`BpeBacktrack`](`Self::BpeBacktrack`)
     SingleThreadDefault,
 
     /// The canonical reference encoder, [`BufferSweepSpanEncoder`].
@@ -71,6 +65,26 @@ pub enum SpanEncoderSelector {
     BpeBacktrack,
 }
 
+#[cfg(test)]
+mod tests {
+    use core::str::FromStr;
+
+    use super::*;
+    use crate::prelude::*;
+
+    #[test]
+    fn test_span_encoder_selector_strum_roundtrip() {
+        for variant in <SpanEncoderSelector as strum::IntoEnumIterator>::iter() {
+            let s = variant.to_string();
+            assert_eq!(
+                SpanEncoderSelector::from_str(&s).unwrap(),
+                variant,
+                "roundtrip failed for variant string: {s}"
+            );
+        }
+    }
+}
+
 impl SpanEncoderSelector {
     /// Get a builder for the configured [`SpanEncoder`].
     ///
@@ -86,13 +100,9 @@ impl SpanEncoderSelector {
                 Arc::new(|| Box::new(BufferSweepSpanEncoder::<T>::default()))
             }
             TailSweep => Arc::new(|| Box::new(TailSweepSpanEncoder::<T>::default())),
-            ConcurrentDefault | MergeHeap => {
-                Arc::new(|| Box::new(MergeHeapSpanEncoder::<T>::default()))
-            }
-            SingleThreadDefault | PriorityMerge => {
-                Arc::new(|| Box::new(PriorityMergeSpanEncoder::<T>::default()))
-            }
-            BpeBacktrack => {
+            MergeHeap => Arc::new(|| Box::new(MergeHeapSpanEncoder::<T>::default())),
+            PriorityMerge => Arc::new(|| Box::new(PriorityMergeSpanEncoder::<T>::default())),
+            ConcurrentDefault | SingleThreadDefault | BpeBacktrack => {
                 let bpe_vocab = Arc::new(BpeVocab::from_vocab(vocab));
                 Arc::new(move || Box::new(BpeBacktrackSpanEncoder::new(bpe_vocab.clone())))
             }

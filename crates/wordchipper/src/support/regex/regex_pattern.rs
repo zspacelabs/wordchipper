@@ -127,3 +127,22 @@ impl RegexPattern {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::alloc::format;
+
+    #[test]
+    fn test_const_regex_pattern() {
+        let pattern = ConstRegexPattern::Basic("foo");
+        assert_eq!(format!("{}", pattern), "foo");
+        assert_eq!(pattern.as_str(), "foo");
+    }
+
+    #[test]
+    fn test_regex_pattern() {
+        let pattern = RegexPattern::from("foo");
+        assert_eq!(pattern.as_str(), "foo");
+    }
+}

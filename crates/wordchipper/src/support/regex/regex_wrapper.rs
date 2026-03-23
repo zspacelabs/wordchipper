@@ -151,6 +151,20 @@ impl RegexWrapper {
     }
 }
 
+/// Global counter of `fancy_regex` match errors skipped by [`MatchesWrapper`].
+///
+/// Incremented each time a `fancy_regex` match iterator yields an error
+/// (e.g. `StackOverflow` or `BacktrackLimitExceeded` on pathological input).
+/// The error is skipped so that tokenization can continue, but callers can
+/// monitor this counter to detect problematic inputs.
+static FANCY_REGEX_ERRORS_SKIPPED: core::sync::atomic::AtomicUsize =
+    core::sync::atomic::AtomicUsize::new(0);
+
+/// Returns the number of `fancy_regex` match errors skipped so far.
+pub fn fancy_regex_errors_skipped() -> usize {
+    FANCY_REGEX_ERRORS_SKIPPED.load(core::sync::atomic::Ordering::Relaxed)
+}
+
 /// Wrapper for regex matches.
 pub enum MatchesWrapper<'r, 'h> {
     /// Wrapper for `regex::Matches`.
@@ -178,9 +192,23 @@ impl<'r, 'h> Iterator for MatchesWrapper<'r, 'h> {
     fn next(&mut self) -> Option<Self::Item> {
         match self {
             Self::Regex(matches) => matches.next(),
-            Self::FancyRegex(matches) => matches
-                .next()
-                .map(|m| unsafe { core::mem::transmute(m.unwrap()) }),
+            Self::FancyRegex(matches) => loop {
+                match matches.next()? {
+                    Ok(m) => {
+                        // SAFETY: `fancy_regex::Match` and `regex::Match` have
+                        // identical layout (start, end, haystack ref). This
+                        // mirrors the existing transmute used before this fix.
+                        return Some(unsafe {
+                            core::mem::transmute::<fancy_regex::Match<'_>, regex::Match<'_>>(m)
+                        });
+                    }
+                    Err(_) => {
+                        FANCY_REGEX_ERRORS_SKIPPED
+                            .fetch_add(1, core::sync::atomic::Ordering::Relaxed);
+                        continue;
+                    }
+                }
+            },
         }
     }
 }
@@ -310,6 +338,33 @@ mod tests {
         assert!(matches!(err, ErrorWrapper::Fancy(_)));
 
         assert!(format!("{}", err).contains("Parsing error"));
+    }
+
+    #[test]
+    fn test_find_span_iter_empty() {
+        use crate::spanners::span_lexers::SpanLexer;
+
+        let rw = RegexPattern::Basic(r"\w+".to_string()).compile().unwrap();
+        let spans: crate::alloc::vec::Vec<_> = rw.find_span_iter("").collect();
+        assert!(spans.is_empty());
+    }
+
+    #[test]
+    fn test_find_span_iter_basic() {
+        use crate::spanners::span_lexers::SpanLexer;
+
+        let rw = RegexPattern::Basic(r"\w+".to_string()).compile().unwrap();
+        let spans: crate::alloc::vec::Vec<_> = rw.find_span_iter("hello world").collect();
+        assert_eq!(spans, crate::alloc::vec![0..5, 6..11]);
+    }
+
+    #[test]
+    fn test_find_span_iter_whitespace_only() {
+        use crate::spanners::span_lexers::SpanLexer;
+
+        let rw = RegexPattern::Basic(r"\w+".to_string()).compile().unwrap();
+        let spans: crate::alloc::vec::Vec<_> = rw.find_span_iter("   ").collect();
+        assert!(spans.is_empty());
     }
 
     #[test]

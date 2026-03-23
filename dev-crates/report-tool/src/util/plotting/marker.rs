@@ -203,12 +203,19 @@ pub struct GraphMarker<Coord, Size: SizeDesc> {
     style: MarkerStyle,
 }
 
+#[derive(Default, Clone, Copy, Debug)]
+pub struct DashStyle {
+    pub size: u32,
+    pub spacing: u32,
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct MarkerStyle {
     pub marker_type: MarkerType,
     pub marker_level: MarkerLevel,
     pub stroke_style: ShapeStyle,
     pub fill_style: Option<ShapeStyle>,
+    pub dash_style: Option<DashStyle>,
 }
 
 impl Default for MarkerStyle {
@@ -218,6 +225,7 @@ impl Default for MarkerStyle {
             marker_level: Default::default(),
             stroke_style: BLACK.into(),
             fill_style: None,
+            dash_style: None,
         }
     }
 }
@@ -229,6 +237,7 @@ impl MarkerStyle {
             marker_level: MarkerLevel::Hypo,
             stroke_style: BLACK.into(),
             fill_style: None,
+            dash_style: None,
         }
     }
 
@@ -276,6 +285,14 @@ impl MarkerStyle {
         if let Some(fill) = self.fill_style.as_mut() {
             fill.filled = true;
         }
+        self
+    }
+
+    pub fn with_dash_style<S: Into<Option<DashStyle>>>(
+        mut self,
+        dash_style: S,
+    ) -> Self {
+        self.dash_style = dash_style.into();
         self
     }
 

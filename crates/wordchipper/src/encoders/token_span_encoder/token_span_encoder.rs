@@ -98,7 +98,7 @@ impl<T: TokenType> TokenEncoder<T> for TokenSpanEncoder<T> {
     ) -> WCResult<()> {
         cfg_if::cfg_if! {
             if #[cfg(feature = "concurrent")] {
-                let mut se = self.se_pool.get().lock().unwrap_or_else(|e| e.into_inner());
+                let mut se = self.se_pool.get().lock().expect("SpanEncoder mutex poisoned: a thread panicked during encoding");
             } else {
                 let mut se = (self.se_builder)();
             }

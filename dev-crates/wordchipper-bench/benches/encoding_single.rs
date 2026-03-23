@@ -1,13 +1,20 @@
 #![allow(missing_docs)]
 
+use std::sync::Arc;
+
 use divan::{
     Bencher,
     black_box,
     counter::BytesCount,
 };
 use wordchipper::{
-    TokenEncoderOptions,
-    encoders::token_span_encoder::SpanEncoderSelector,
+    TokenEncoder,
+    UnifiedTokenVocab,
+    encoders::token_span_encoder::{
+        SpanEncoderSelector,
+        TokenSpanEncoder,
+    },
+    spanners::TextSpannerBuilder,
 };
 use wordchipper_bench::{
     HF_CL100K,
@@ -15,6 +22,7 @@ use wordchipper_bench::{
     OA_CL100K_BASE,
     OA_O200K_BASE,
     OA_R50K_BASE,
+    load_cached_vocab,
 };
 
 #[global_allocator]
@@ -35,21 +43,43 @@ fn english_text() -> String {
     ENGLISH_CORPUS.repeat(10)
 }
 
+pub enum LexerMode {
+    Regex,
+    RegexAutomata,
+    Logos,
+}
+
 pub fn bench_wc(
     bencher: Bencher,
     text: &str,
     model: &str,
     selector: SpanEncoderSelector,
-    accelerator: bool,
+    mode: LexerMode,
 ) {
-    let encoder = wordchipper_bench::load_cached_encoder::<u32>(
-        model,
-        TokenEncoderOptions::default()
-            .with_accelerated_lexers(accelerator)
-            .with_span_encoder(selector)
-            .with_parallel(true)
-            .with_concurrent(false),
-    );
+    let vocab: Arc<UnifiedTokenVocab<u32>> = load_cached_vocab(model).unwrap();
+
+    let mut builder = TextSpannerBuilder::from_vocab(&vocab);
+    builder.set_concurrent(true);
+
+    match mode {
+        LexerMode::Regex => {
+            builder.set_regex_automata(false);
+            builder.set_accelerated_lexers(false);
+        }
+        LexerMode::RegexAutomata => {
+            builder.set_regex_automata(true);
+            builder.set_accelerated_lexers(false);
+        }
+        LexerMode::Logos => {
+            builder.set_regex_automata(false);
+            builder.set_accelerated_lexers(true);
+        }
+    }
+
+    let spanner = builder.build();
+    let encoder: Arc<dyn TokenEncoder<u32>> = Arc::new(TokenSpanEncoder::<u32>::new_with_selector(
+        spanner, vocab, selector,
+    ));
 
     bencher
         .counter(BytesCount::new(text.len()))
@@ -87,7 +117,6 @@ pub fn bench_bpe_openai(
         .counter(BytesCount::new(text.len()))
         .bench(|| tok.encode(black_box(text)));
 }
-
 mod english {
     use super::*;
 
@@ -112,7 +141,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -123,7 +152,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -134,7 +163,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -145,7 +174,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -156,7 +185,66 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        false,
+                        LexerMode::Regex,
+                    );
+                }
+            }
+
+            mod regex_automata {
+                use super::*;
+
+                #[divan::bench]
+                fn buffer_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::BufferSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn tail_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::TailSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn merge_heap(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::MergeHeap,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn priority_merge(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::PriorityMerge,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn bpe_backtrack(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::BpeBacktrack,
+                        LexerMode::RegexAutomata,
                     );
                 }
             }
@@ -171,7 +259,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -182,7 +270,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -193,7 +281,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -204,7 +292,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -215,7 +303,7 @@ mod english {
                         &english_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
             }
@@ -257,7 +345,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -268,7 +356,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -279,7 +367,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -290,7 +378,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -301,7 +389,66 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        false,
+                        LexerMode::Regex,
+                    );
+                }
+            }
+
+            mod regex_automata {
+                use super::*;
+
+                #[divan::bench]
+                fn buffer_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::BufferSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn tail_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::TailSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn merge_heap(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::MergeHeap,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn priority_merge(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::PriorityMerge,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn bpe_backtrack(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::BpeBacktrack,
+                        LexerMode::RegexAutomata,
                     );
                 }
             }
@@ -316,7 +463,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -327,7 +474,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -338,7 +485,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -349,7 +496,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -360,7 +507,7 @@ mod english {
                         &english_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
             }
@@ -402,7 +549,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -413,7 +560,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -424,7 +571,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -435,7 +582,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -446,7 +593,66 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        false,
+                        LexerMode::Regex,
+                    );
+                }
+            }
+
+            mod regex_automata {
+                use super::*;
+
+                #[divan::bench]
+                fn buffer_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::BufferSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn tail_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::TailSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn merge_heap(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::MergeHeap,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn priority_merge(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::PriorityMerge,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn bpe_backtrack(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &english_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::BpeBacktrack,
+                        LexerMode::RegexAutomata,
                     );
                 }
             }
@@ -461,7 +667,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -472,7 +678,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -483,7 +689,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -494,7 +700,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -505,7 +711,7 @@ mod english {
                         &english_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
             }
@@ -537,7 +743,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -548,7 +754,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -559,7 +765,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -570,7 +776,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -581,7 +787,66 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        false,
+                        LexerMode::Regex,
+                    );
+                }
+            }
+
+            mod regex_automata {
+                use super::*;
+
+                #[divan::bench]
+                fn buffer_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::BufferSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn tail_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::TailSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn merge_heap(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::MergeHeap,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn priority_merge(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::PriorityMerge,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn bpe_backtrack(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_R50K_BASE,
+                        SpanEncoderSelector::BpeBacktrack,
+                        LexerMode::RegexAutomata,
                     );
                 }
             }
@@ -596,7 +861,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -607,7 +872,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -618,7 +883,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -629,7 +894,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -640,7 +905,7 @@ mod diverse {
                         &diverse_text(),
                         OA_R50K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
             }
@@ -682,7 +947,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -693,7 +958,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -704,7 +969,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -715,7 +980,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -726,7 +991,66 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        false,
+                        LexerMode::Regex,
+                    );
+                }
+            }
+
+            mod regex_automata {
+                use super::*;
+
+                #[divan::bench]
+                fn buffer_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::BufferSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn tail_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::TailSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn merge_heap(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::MergeHeap,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn priority_merge(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::PriorityMerge,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn bpe_backtrack(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_CL100K_BASE,
+                        SpanEncoderSelector::BpeBacktrack,
+                        LexerMode::RegexAutomata,
                     );
                 }
             }
@@ -741,7 +1065,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -752,7 +1076,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -763,7 +1087,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -774,7 +1098,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -785,7 +1109,7 @@ mod diverse {
                         &diverse_text(),
                         OA_CL100K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
             }
@@ -827,7 +1151,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -838,7 +1162,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -849,7 +1173,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -860,7 +1184,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        false,
+                        LexerMode::Regex,
                     );
                 }
 
@@ -871,7 +1195,66 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        false,
+                        LexerMode::Regex,
+                    );
+                }
+            }
+
+            mod regex_automata {
+                use super::*;
+
+                #[divan::bench]
+                fn buffer_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::BufferSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn tail_sweep(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::TailSweep,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn merge_heap(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::MergeHeap,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn priority_merge(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::PriorityMerge,
+                        LexerMode::RegexAutomata,
+                    );
+                }
+
+                #[divan::bench]
+                fn bpe_backtrack(bencher: Bencher) {
+                    bench_wc(
+                        bencher,
+                        &diverse_text(),
+                        OA_O200K_BASE,
+                        SpanEncoderSelector::BpeBacktrack,
+                        LexerMode::RegexAutomata,
                     );
                 }
             }
@@ -886,7 +1269,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BufferSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -897,7 +1280,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::TailSweep,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -908,7 +1291,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::MergeHeap,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -919,7 +1302,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::PriorityMerge,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
 
@@ -930,7 +1313,7 @@ mod diverse {
                         &diverse_text(),
                         OA_O200K_BASE,
                         SpanEncoderSelector::BpeBacktrack,
-                        true,
+                        LexerMode::Logos,
                     );
                 }
             }

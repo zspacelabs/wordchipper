@@ -33,6 +33,22 @@ pub struct TextSpannerBuilder<T: TokenType> {
     max_pool: Option<NonZeroUsize>,
 }
 
+impl<T: TokenType> From<TextSpanningConfig<T>> for TextSpannerBuilder<T> {
+    fn from(config: TextSpanningConfig<T>) -> Self {
+        Self::new(config)
+    }
+}
+
+impl<T, V> From<V> for TextSpannerBuilder<T>
+where
+    T: TokenType,
+    V: AsRef<UnifiedTokenVocab<T>>,
+{
+    fn from(vocab: V) -> Self {
+        Self::from_vocab(vocab.as_ref())
+    }
+}
+
 impl<T: TokenType> TextSpannerBuilder<T> {
     /// Build a new `Arc<dyn TextSpanner>` with defaults.
     pub fn default(vocab: &UnifiedTokenVocab<T>) -> Arc<dyn TextSpanner> {
@@ -198,5 +214,37 @@ impl<T: TokenType> TextSpannerBuilder<T> {
             });
 
         Arc::new(LexerTextSpanner::new(word_lexer, special_lexer))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pretrained::openai::OA_GPT2_PATTERN;
+
+    #[test]
+    fn test_builder() {
+        type T = u32;
+        let config: TextSpanningConfig<T> =
+            TextSpanningConfig::<u32>::from_pattern(OA_GPT2_PATTERN);
+
+        let builder: TextSpannerBuilder<T> = config.clone().into();
+
+        assert_eq!(builder.config(), &config);
+        assert_eq!(builder.accelerated_lexers(), true);
+        assert_eq!(builder.regex_automata(), true);
+        assert_eq!(builder.concurrent(), true);
+        assert_eq!(builder.max_pool(), None);
+
+        let builder = builder
+            .with_accelerated_lexers(false)
+            .with_regex_automata(false)
+            .with_concurrent(false)
+            .with_max_pool(NonZeroUsize::new(1).unwrap());
+
+        assert_eq!(builder.accelerated_lexers(), false);
+        assert_eq!(builder.regex_automata(), false);
+        assert_eq!(builder.concurrent(), false);
+        assert_eq!(builder.max_pool(), Some(NonZeroUsize::new(1).unwrap()));
     }
 }

@@ -156,6 +156,13 @@ mod tests {
     }
 
     #[test]
+    fn test_o200k_common() {
+        crate::spanners::span_lexers::logos::testutil::common_lexer_tests(
+            crate::alloc::boxed::Box::new(O200kLexer),
+        );
+    }
+
+    #[test]
     fn test_o200k_camel_case() {
         let s = spanner(O200kLexer);
 

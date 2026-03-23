@@ -225,3 +225,75 @@ impl TokenEncoderOptions {
         enc
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_effective_span_encoder() {
+        let options = TokenEncoderOptions::default();
+        assert_eq!(options.span_encoder(), None);
+        assert_eq!(options.accelerated_lexers(), true);
+        assert_eq!(options.parallel(), false);
+        assert_eq!(options.concurrent(), false);
+
+        assert_eq!(
+            options.effective_span_encoder(),
+            SpanEncoderSelector::SingleThreadDefault
+        );
+
+        let options = options.with_parallel(true);
+
+        assert_eq!(
+            options.effective_span_encoder(),
+            SpanEncoderSelector::ConcurrentDefault,
+        );
+
+        let options = options.with_parallel(false).with_concurrent(true);
+
+        assert_eq!(
+            options.effective_span_encoder(),
+            SpanEncoderSelector::ConcurrentDefault,
+        );
+
+        let options = options.with_span_encoder(SpanEncoderSelector::SingleThreadDefault);
+
+        assert_eq!(
+            options.effective_span_encoder(),
+            SpanEncoderSelector::SingleThreadDefault,
+        );
+    }
+
+    #[test]
+    fn test_encoder_options() {
+        let options = TokenEncoderOptions::default();
+        assert_eq!(options.span_encoder(), None);
+        assert_eq!(options.accelerated_lexers(), true);
+        assert_eq!(options.parallel(), false);
+        assert_eq!(options.concurrent(), false);
+
+        assert_eq!(
+            options.is_concurrent(),
+            options.parallel() || options.concurrent()
+        );
+
+        let options = options
+            .with_span_encoder(SpanEncoderSelector::SingleThreadDefault)
+            .with_accelerated_lexers(false)
+            .with_parallel(true)
+            .with_concurrent(true);
+        assert_eq!(
+            options.span_encoder(),
+            Some(SpanEncoderSelector::SingleThreadDefault)
+        );
+        assert_eq!(options.accelerated_lexers(), false);
+        assert_eq!(options.parallel(), true);
+        assert_eq!(options.concurrent(), true);
+
+        assert_eq!(
+            options.is_concurrent(),
+            options.parallel() || options.concurrent()
+        );
+    }
+}

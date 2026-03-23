@@ -168,19 +168,10 @@ mod tests {
     }
 
     #[test]
-    fn test_logos_empty() {
-        let s = spanner(Cl100kLexer);
-        let spans = s.split_spans("");
-        assert!(spans.is_empty());
-    }
-
-    #[test]
-    fn test_logos_whitespace_only() {
-        let s = spanner(Cl100kLexer);
-        let text = "   ";
-        let spans = s.split_spans(text);
-
-        assert_eq!(spans, vec![SpanRef::Word(0..3)]);
+    fn test_cl100k_common() {
+        crate::spanners::span_lexers::logos::testutil::common_lexer_tests(
+            crate::alloc::boxed::Box::new(Cl100kLexer),
+        );
     }
 
     #[test]

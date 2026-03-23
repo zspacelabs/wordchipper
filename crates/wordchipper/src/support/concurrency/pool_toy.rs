@@ -149,6 +149,7 @@ mod tests {
 
         assert_eq!(pool.get(), &10);
         assert_eq!(pool.as_ref(), &10);
+        assert_eq!(*pool, 10);
 
         assert_eq!(
             format!("{:?}", pool),
