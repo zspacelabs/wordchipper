@@ -4205,7 +4205,7 @@ dependencies = [
 
 [[package]]
 name = "wordchipper"
-version = "0.8.1"
+version = "0.9.0"
 dependencies = [
  "aho-corasick",
  "base64 0.22.1",
@@ -4258,7 +4258,7 @@ dependencies = [
 
 [[package]]
 name = "wordchipper-cli"
-version = "0.8.1"
+version = "0.9.0"
 dependencies = [
  "clap",
  "clap-markdown",
@@ -4271,7 +4271,7 @@ dependencies = [
 
 [[package]]
 name = "wordchipper-cli-util"
-version = "0.8.1"
+version = "0.9.0"
 dependencies = [
  "arrow",
  "clap",
@@ -4293,7 +4293,7 @@ dependencies = [
 
 [[package]]
 name = "wordchipper-disk-cache"
-version = "0.8.1"
+version = "0.9.0"
 dependencies = [
  "directories-next",
  "downloader",
@@ -4302,7 +4302,7 @@ dependencies = [
 
 [[package]]
 name = "wordchipper-python"
-version = "0.8.1"
+version = "0.9.0"
 dependencies = [
  "pyo3",
  "wordchipper",
@@ -4310,7 +4310,7 @@ dependencies = [
 
 [[package]]
 name = "wordchipper-training"
-version = "0.8.1"
+version = "0.9.0"
 dependencies = [
  "compact_str",
  "dary_heap",
@@ -4322,7 +4322,7 @@ dependencies = [
 
 [[package]]
 name = "wordchipper-wasm"
-version = "0.8.1"
+version = "0.9.0"
 dependencies = [
  "base64 0.22.1",
  "js-sys",

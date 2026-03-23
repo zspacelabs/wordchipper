@@ -3,6 +3,8 @@
 [![Crates.io Version](https://img.shields.io/crates/v/wordchipper)](https://crates.io/crates/wordchipper)
 [![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wordchipper/)
 [![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
+
+[![Discord](https://img.shields.io/discord/1475229838754316502?label=discord)](https://discord.gg/vBgXHWCeah)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zspacelabs/wordchipper)
 
 ## Status
@@ -24,10 +26,12 @@ This is the main crate for the [wordchipper](https://github.com/zspacelabs/wordc
 
 The core additional user-facing crates are:
 
-* [wordchipper-cli](https://crates.io/crates/wordchipper-cli) - a multi-tool tokenizer binary; notably:
+* [wordchipper-cli](https://crates.io/crates/wordchipper-cli) - a multi-tool tokenizer binary;
+  notably:
     * `wordchipper-cli cat` - in-line encoder/decoder tool.
     * `wordchipper-cli train` - tokenizer training tool.
-* [wordchipper-training](https://crates.io/crates/wordchipper-training) - an extension crate for training tokenizers.
+* [wordchipper-training](https://crates.io/crates/wordchipper-training) - an extension crate for
+  training tokenizers.
 
 ## Encode/Decode Side-by-Side Benchmarks
 
