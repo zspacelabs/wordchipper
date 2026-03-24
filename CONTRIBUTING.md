@@ -2,8 +2,7 @@
 
 ## Before You Start
 
-Read [`AGENTS.md`](AGENTS.md) for project architecture and [`STYLE_GUIDE.md`](STYLE_GUIDE.md) for
-coding conventions. All PRs must pass CI before merge.
+Read [`STYLE_GUIDE.md`](STYLE_GUIDE.md) for coding conventions. All PRs must pass CI before merge.
 
 ---
 
