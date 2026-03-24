@@ -5,14 +5,15 @@
 [![Crates.io Version](https://img.shields.io/crates/v/wordchipper)](https://crates.io/crates/wordchipper)
 [![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wordchipper/)
 [![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
-[![license](https://shields.io/badge/license-MIT-blue)](LICENSE)
+[![license](https://shields.io/badge/license-MIT%2FApache--2.0-blue)](#license)
 
 [![Discord](https://img.shields.io/discord/1475229838754316502?label=discord)](https://discord.gg/vBgXHWCeah)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zspacelabs/wordchipper)
 [![Book](https://img.shields.io/badge/book-wordchipper-blue)](https://zspacelabs.ai/wordchipper/book/index.html)
 
 `wordchipper` is a high-performance Rust byte-pair encoder tokenizer for the OpenAI GPT-2 tokenizer
-family. It achieves throughput speedups relative to [tiktoken-rs](https://github.com/zurawiki/tiktoken-rs)
+family. It achieves throughput speedups relative
+to [tiktoken-rs](https://github.com/zurawiki/tiktoken-rs)
 in rust on a 64 core machine of ~4.3-5.7x (4 to 64 cores) for general regex BPE vocabularies,
 and ~6.9x-9.2x when using custom DFA lexers for specific OpenAI vocabularies.
 Under python wrappers, we see a range of ~2x-4x (4 to 64 cores) speedups over
@@ -44,7 +45,8 @@ tracked in the [Alpha Release Tracking Issue](https://github.com/zspacelabs/word
 | bpe-openai        |             |             | 60.9 MiB/s  | 11.1 MiB/s   |
 | tokenizers        | 49.7 MiB/s  | 20.8 MiB/s  | 50.2 MiB/s  | 23.2 MiB/s   |
 
-Read the full performance paper: [wordchipper: Fast BPE Tokenization with Substitutable Internals](https://zspacelabs.ai/wordchipper/articles/substitutable/)
+Read the full performance
+paper: [wordchipper: Fast BPE Tokenization with Substitutable Internals](https://zspacelabs.ai/wordchipper/articles/substitutable/)
 
 ## `no_std` Support
 
@@ -121,3 +123,10 @@ A Number of internal crates are used for development.
   for the work on `rustbpe`.
 * Thank you to [tiktoken](https://github.com/openai/tiktoken) for their work in the rust
   tokenizer space.
+
+## License
+
+`wordchipper` is distributed under the terms of both the MIT license and the Apache License
+(Version 2.0).
+See [LICENSE-APACHE](./LICENSE-APACHE) and [LICENSE-MIT](./LICENSE-MIT) for details. Opening a pull
+request is assumed to signal agreement with these licensing terms
