@@ -40,6 +40,19 @@ jobs:
       - run: cargo test -p wordchipper --no-default-features --features client,fast-hash
       - run: cargo test -p wordchipper --no-default-features --tests
 
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+      - uses: codecov/codecov-action@v5
+        with:
+          files: lcov.info
+
   cross:
     name: Cross (no_std)
     runs-on: ubuntu-latest
@@ -97,7 +110,7 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [ fmt, clippy, test, cross, wasm, python, lexer-equivalence ]
+    needs: [ fmt, clippy, test, coverage, cross, wasm, python, lexer-equivalence ]
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -105,6 +118,7 @@ jobs:
             "${{ needs.fmt.result }}"
             "${{ needs.clippy.result }}"
             "${{ needs.test.result }}"
+            "${{ needs.coverage.result }}"
             "${{ needs.cross.result }}"
             "${{ needs.wasm.result }}"
             "${{ needs.python.result }}"
