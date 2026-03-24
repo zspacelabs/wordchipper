@@ -23,7 +23,7 @@ Under python wrappers, we see a range of ~2x-4x (4 to 64 cores) speedups over
 The productionization towards an LTR stable release can be
 tracked in the [Alpha Release Tracking Issue](https://github.com/zspacelabs/wordchipper/issues/2).
 
-## Encode/Decode Side-by-Side Benchmarks
+## Encode Side-by-Side Benchmarks
 
 <div style="text-align:center">
 
