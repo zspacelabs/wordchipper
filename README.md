@@ -1,5 +1,7 @@
 <img src="media/logo.png" width="50%" />
 
+*by [ZSpaceLabs](https://zspacelabs.ai)*
+
 [![Crates.io Version](https://img.shields.io/crates/v/wordchipper)](https://crates.io/crates/wordchipper)
 [![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wordchipper/)
 [![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
@@ -7,10 +9,7 @@
 
 [![Discord](https://img.shields.io/discord/1475229838754316502?label=discord)](https://discord.gg/vBgXHWCeah)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zspacelabs/wordchipper)
-
-ZSpaceLabs:
-
-* [zspacelabs.ai](https://zspacelabs.ai)
+[![Book](https://img.shields.io/badge/book-wordchipper-blue)](https://zspacelabs.ai/wordchipper/book/index.html)
 
 `wordchipper` is a high-performance Rust byte-pair encoder tokenizer for the OpenAI GPT-2 tokenizer
 family. It achieves throughput speedups relative to [tiktoken-rs](https://github.com/zurawiki/tiktoken-rs)
@@ -24,7 +23,7 @@ Under python wrappers, we see a range of ~2x-4x (4 to 64 cores) speedups over
 The productionization towards an LTR stable release can be
 tracked in the [Alpha Release Tracking Issue](https://github.com/zspacelabs/wordchipper/issues/2).
 
-## Encode/Decode Side-by-Side Benchmarks
+## Encode Side-by-Side Benchmarks
 
 <div style="text-align:center">
 
@@ -122,4 +121,3 @@ A Number of internal crates are used for development.
   for the work on `rustbpe`.
 * Thank you to [tiktoken](https://github.com/openai/tiktoken) for their work in the rust
   tokenizer space.
-
