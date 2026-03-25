@@ -35,9 +35,10 @@ jobs:
           # Linux x86_64
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-          # Linux aarch64
+          # Linux aarch64 (manylinux_2_28 needed for ring cross-compilation)
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
+            manylinux: manylinux_2_28
           # macOS x86_64 (cross-compile from ARM)
           - os: macos-14
             target: x86_64-apple-darwin
@@ -64,7 +65,7 @@ jobs:
           args: --release --out dist --find-interpreter
           working-directory: bindings/python
           sccache: true
-          manylinux: auto
+          manylinux: ${{ matrix.manylinux || 'auto' }}
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.target }}
