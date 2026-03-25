@@ -28,15 +28,30 @@ default = [
 ]
 
 ## The base set of features needed to load and run pre-trained encoders and decoders.
+## Uses platform-native TLS by default (OpenSSL on Linux). Combine with `rustls-tls`
+## instead of `default-tls` for environments without system OpenSSL (e.g. manylinux).
 client = [
     "download",
     "datagym",
+    "default-tls",
 ]
 
 ## The download feature enables downloading vocabularies from the internet.
 download = [
     "dep:wordchipper-disk-cache",
     "std",
+]
+
+## Use the platform-native TLS backend (OpenSSL on Linux).
+default-tls = [
+    "download",
+    "wordchipper-disk-cache/default-tls",
+]
+
+## Use rustls (pure Rust) TLS backend for downloads. Useful for manylinux builds.
+rustls-tls = [
+    "download",
+    "wordchipper-disk-cache/rustls-tls",
 ]
 
 ## The "std" feature enables the use of the `std` library.
@@ -118,7 +133,7 @@ foldhash = { workspace = true, optional = true }
 unicode-general-category = { workspace = true }
 
 # "download" feature deps:
-wordchipper-disk-cache = { version = "0.9.0", path = "../wordchipper-disk-cache", optional = true }
+wordchipper-disk-cache = { version = "0.9.0", path = "../wordchipper-disk-cache", optional = true, default-features = false }
 
 # "parallel" feature deps:
 rayon = { workspace = true, optional = true }

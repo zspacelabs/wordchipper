@@ -19,4 +19,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { workspace = true, features = ["extension-module"] }
-wordchipper = { path = "../../crates/wordchipper", features = ["client"] }
+wordchipper = { path = "../../crates/wordchipper", features = ["datagym", "rustls-tls"] }

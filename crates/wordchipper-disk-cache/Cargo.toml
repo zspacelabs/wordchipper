@@ -14,11 +14,21 @@ rust-version.workspace = true
 workspace = true
 
 
+[features]
+default = ["default-tls"]
+
+## Use the platform-native TLS backend (OpenSSL on Linux, SChannel on Windows, Security.framework on macOS).
+default-tls = ["downloader/default-tls"]
+
+## Use rustls (pure Rust) TLS backend. Useful for cross-compilation and manylinux builds.
+rustls-tls = ["downloader/rustls-tls"]
+
+
 [dependencies]
 directories-next = { workspace = true }
 
 # features=["tui"} incompatible with conflicting indicatif versions.
-downloader = { workspace = true }
+downloader = { workspace = true, default-features = false }
 
 
 [dev-dependencies]
