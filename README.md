@@ -2,6 +2,7 @@
 
 *by [ZSpaceLabs](https://zspacelabs.ai)*
 
+[![PyPI](https://img.shields.io/pypi/v/wordchipper)](https://pypi.org/project/wordchipper/)
 [![Crates.io Version](https://img.shields.io/crates/v/wordchipper)](https://crates.io/crates/wordchipper)
 [![Documentation](https://img.shields.io/docsrs/wordchipper)](https://docs.rs/wordchipper/latest/wordchipper/)
 [![Test Status](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zspacelabs/wordchipper/actions/workflows/ci.yml)
