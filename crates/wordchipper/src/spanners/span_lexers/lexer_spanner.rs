@@ -1,11 +1,11 @@
 //! # Lexer Text Spanner
 
 use core::ops::Range;
-use std::prelude::rust_2015::String;
 
 use crate::{
     WCHashSet,
     alloc::sync::Arc,
+    prelude::*,
     spanners::{
         SpanRef,
         TextSpanner,
@@ -141,8 +141,6 @@ impl TextSpanner for LexerTextSpanner {
 
 #[cfg(test)]
 mod tests {
-    use foldhash::HashSetExt;
-
     use super::*;
     use crate::{
         TokenType,
@@ -151,7 +149,6 @@ mod tests {
             vec,
             vec::Vec,
         },
-        prelude::*,
         pretrained::openai::OA_CL100K_BASE_PATTERN,
         spanners::{
             SpanRef,
@@ -181,7 +178,7 @@ mod tests {
 
         let spanner = from_config(&config);
 
-        let mut allowed = WCHashSet::new();
+        let mut allowed = WCHashSet::default();
         allowed.insert("<|NORP|>".to_string());
 
         let source = "abc 1<|FNORD|> def  <|NORP|> ghi   ";
