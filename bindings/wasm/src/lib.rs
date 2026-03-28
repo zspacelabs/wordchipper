@@ -110,7 +110,7 @@ impl Tokenizer {
         text: &str,
     ) -> Result<Vec<u32>, JsError> {
         self.inner
-            .try_encode(text)
+            .try_encode(text, None)
             .map_err(|e| JsError::new(&format!("encode error: {e}")))
     }
 
@@ -135,7 +135,7 @@ impl Tokenizer {
         let refs = inner_str_view(&strings);
         let results = self
             .inner
-            .try_encode_batch(&refs)
+            .try_encode_batch(&refs, None)
             .map_err(|e| JsError::new(&format!("encode_batch error: {e}")))?;
         let arr = Array::new();
         for tokens in results {

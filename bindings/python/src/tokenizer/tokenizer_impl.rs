@@ -48,7 +48,8 @@ impl Tokenizer {
         py: Python<'_>,
         text: &str,
     ) -> PyResult<Vec<u32>> {
-        py.detach(|| self.inner.try_encode(text)).map_err(to_pyerr)
+        py.detach(|| self.inner.try_encode(text, None))
+            .map_err(to_pyerr)
     }
 
     fn encode_batch(
@@ -58,7 +59,7 @@ impl Tokenizer {
     ) -> PyResult<Vec<Vec<u32>>> {
         py.detach(|| {
             let refs = wc::inner_str_view(&texts);
-            self.inner.try_encode_batch(&refs)
+            self.inner.try_encode_batch(&refs, None)
         })
         .map_err(to_pyerr)
     }

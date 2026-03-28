@@ -83,7 +83,7 @@ pub fn bench_wc(
 
     bencher
         .counter(BytesCount::new(text.len()))
-        .bench(|| encoder.try_encode(black_box(text)).unwrap());
+        .bench(|| encoder.try_encode(black_box(text), None).unwrap());
 }
 
 pub fn bench_tt(

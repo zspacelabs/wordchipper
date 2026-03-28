@@ -98,7 +98,7 @@ mod english {
         #[divan::bench]
         fn cl100k(bencher: Bencher) {
             let text = english_text();
-            let tokens = WC_CL100K.tokenizer.try_encode(&text).unwrap();
+            let tokens = WC_CL100K.tokenizer.try_encode(&text, None).unwrap();
             bencher.counter(BytesCount::new(text.len())).bench(|| {
                 WC_CL100K
                     .tokenizer
@@ -110,7 +110,7 @@ mod english {
         #[divan::bench]
         fn o200k(bencher: Bencher) {
             let text = english_text();
-            let tokens = WC_O200K.tokenizer.try_encode(&text).unwrap();
+            let tokens = WC_O200K.tokenizer.try_encode(&text, None).unwrap();
             bencher.counter(BytesCount::new(text.len())).bench(|| {
                 WC_O200K
                     .tokenizer
@@ -180,7 +180,7 @@ mod diverse {
         #[divan::bench]
         fn cl100k(bencher: Bencher) {
             let text = diverse_text();
-            let tokens = WC_CL100K.tokenizer.try_encode(&text).unwrap();
+            let tokens = WC_CL100K.tokenizer.try_encode(&text, None).unwrap();
             let decoder = &WC_CL100K.tokenizer.decoder();
             bencher
                 .counter(BytesCount::new(text.len()))
@@ -190,7 +190,7 @@ mod diverse {
         #[divan::bench]
         fn o200k(bencher: Bencher) {
             let text = diverse_text();
-            let tokens = WC_O200K.tokenizer.try_encode(&text).unwrap();
+            let tokens = WC_O200K.tokenizer.try_encode(&text, None).unwrap();
             let decoder = &WC_O200K.tokenizer.decoder();
             bencher
                 .counter(BytesCount::new(text.len()))

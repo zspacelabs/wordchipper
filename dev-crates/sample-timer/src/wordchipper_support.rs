@@ -46,7 +46,7 @@ impl<T: TokenType> EncDecEngine<T> for WordchipperEngine<T> {
         &self,
         batch: &[&str],
     ) -> Result<Vec<Vec<T>>, BoxError> {
-        Ok(self.tokenizer.try_encode_batch(batch)?)
+        Ok(self.tokenizer.try_encode_batch(batch, None)?)
     }
 
     fn decode_batch(

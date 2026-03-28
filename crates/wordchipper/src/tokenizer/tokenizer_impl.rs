@@ -3,6 +3,7 @@ use crate::{
     TokenEncoder,
     TokenType,
     UnifiedTokenVocab,
+    WCHashSet,
     WCResult,
     alloc::sync::Arc,
     decoders::{
@@ -69,22 +70,26 @@ impl<T: TokenType> TokenEncoder<T> for Tokenizer<T> {
         &self,
         text: &str,
         tokens: &mut Vec<T>,
+        allowed_specials: Option<&WCHashSet<String>>,
     ) -> WCResult<()> {
-        self.encoder.try_encode_append(text, tokens)
+        self.encoder
+            .try_encode_append(text, tokens, allowed_specials)
     }
 
     fn try_encode(
         &self,
         text: &str,
+        allowed_specials: Option<&WCHashSet<String>>,
     ) -> WCResult<Vec<T>> {
-        self.encoder.try_encode(text)
+        self.encoder.try_encode(text, allowed_specials)
     }
 
     fn try_encode_batch(
         &self,
         batch: &[&str],
+        allowed_specials: Option<&WCHashSet<String>>,
     ) -> WCResult<Vec<Vec<T>>> {
-        self.encoder.try_encode_batch(batch)
+        self.encoder.try_encode_batch(batch, allowed_specials)
     }
 }
 

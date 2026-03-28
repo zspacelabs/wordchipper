@@ -2,6 +2,7 @@
 
 use crate::{
     TokenType,
+    WCHashSet,
     WCResult,
     alloc::sync::Arc,
     encoders::TokenEncoder,
@@ -55,19 +56,21 @@ where
         &self,
         text: &str,
         tokens: &mut Vec<T>,
+        allowed_specials: Option<&WCHashSet<String>>,
     ) -> WCResult<()> {
-        self.inner.try_encode_append(text, tokens)
+        self.inner.try_encode_append(text, tokens, allowed_specials)
     }
 
     fn try_encode_batch(
         &self,
         batch: &[&str],
+        _allowed_specials: Option<&WCHashSet<String>>,
     ) -> WCResult<Vec<Vec<T>>> {
         use rayon::prelude::*;
 
         let results: Vec<WCResult<Vec<T>>> = batch
             .par_iter()
-            .map(|text| self.inner.try_encode(text))
+            .map(|text| self.inner.try_encode(text, None))
             .collect();
 
         results.into_iter().collect()

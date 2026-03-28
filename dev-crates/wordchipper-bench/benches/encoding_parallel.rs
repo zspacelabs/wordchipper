@@ -150,11 +150,11 @@ fn bench_wc(
     let encoder = build_encoder_wc::<u32>(model, selector, mode);
 
     // warmup
-    encoder.try_encode_batch(black_box(&strs)).unwrap();
+    encoder.try_encode_batch(black_box(&strs), None).unwrap();
 
     bencher
         .counter(BytesCount::new(BATCH.total_bytes))
-        .bench_local(|| encoder.try_encode_batch(black_box(&strs)).unwrap());
+        .bench_local(|| encoder.try_encode_batch(black_box(&strs), None).unwrap());
 }
 
 fn bench_tt(

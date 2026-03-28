@@ -18,7 +18,7 @@
 //! ) -> Vec<Vec<T>> {
 //!     let vocab1 = vocab.clone();
 //!     let encoder = TokenEncoderOptions::default().build(vocab1);
-//!     encoder.try_encode_batch(batch).unwrap()
+//!     encoder.try_encode_batch(batch, None).unwrap()
 //! }
 //! ```
 

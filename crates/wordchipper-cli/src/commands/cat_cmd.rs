@@ -73,7 +73,7 @@ fn run_cat_encode(
     // Read lines, but keep the end-of-line characters.
     let mut line = String::new();
     while reader.read_line(&mut line)? > 0 {
-        let tokens = tokenizer.try_encode(&line)?;
+        let tokens = tokenizer.try_encode(&line, None)?;
 
         for (idx, token) in tokens.iter().enumerate() {
             write!(writer, "{}{}", if idx == 0 { "" } else { " " }, token)?;

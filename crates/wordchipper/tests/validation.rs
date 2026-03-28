@@ -44,7 +44,7 @@ fn roundtrip_validation(model: OATokenizer) {
     let tokenizer = load_model(model);
 
     for text in SAMPLES {
-        let tokens = tokenizer.try_encode(text).unwrap();
+        let tokens = tokenizer.try_encode(text, None).unwrap();
         let decoded = tokenizer.try_decode_to_string(&tokens).unwrap();
         assert_eq!(
             &decoded.value, text,
@@ -60,7 +60,7 @@ fn tiktoken_validation(
     let tokenizer = load_model(model);
 
     for text in SAMPLES {
-        let wc_tokens = tokenizer.try_encode(text).unwrap();
+        let wc_tokens = tokenizer.try_encode(text, None).unwrap();
         let tt_tokens: Vec<u32> = tiktoken_bpe
             .encode_with_special_tokens(text)
             .into_iter()
@@ -81,7 +81,7 @@ fn tokenizers_validation(
     let tokenizer = load_model(model);
 
     for text in SAMPLES {
-        let wc_tokens = tokenizer.try_encode(text).unwrap();
+        let wc_tokens = tokenizer.try_encode(text, None).unwrap();
         let hf_encoding = hf_tok.encode(*text, true).unwrap();
         let hf_tokens: Vec<u32> = hf_encoding.get_ids().to_vec();
 
@@ -149,8 +149,8 @@ fn span_encoder_vs_bpe(
         .build(vocab);
 
     for text in SAMPLES {
-        let bpe_tokens = bpe_encoder.try_encode(text).unwrap();
-        let alt_tokens = alt_encoder.try_encode(text).unwrap();
+        let bpe_tokens = bpe_encoder.try_encode(text, None).unwrap();
+        let alt_tokens = alt_encoder.try_encode(text, None).unwrap();
         assert_eq!(
             bpe_tokens, alt_tokens,
             "{selector:?} mismatch for {model:?}: {text:?}",

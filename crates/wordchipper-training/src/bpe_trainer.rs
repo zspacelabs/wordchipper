@@ -474,7 +474,7 @@ mod tests {
             .build::<T>(vocab.clone());
 
         for sample in samples {
-            let tokens = tokenizer.try_encode(sample).unwrap();
+            let tokens = tokenizer.try_encode(sample, None).unwrap();
             assert_eq!(
                 tokenizer.try_decode_to_string(&tokens).unwrap().unwrap(),
                 sample

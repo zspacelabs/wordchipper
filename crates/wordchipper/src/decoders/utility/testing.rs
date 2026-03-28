@@ -31,7 +31,7 @@ pub fn common_decoder_tests<T: TokenType>(
         .with_parallel(false)
         .build(vocab.clone());
 
-    let token_batch = encoder.try_encode_batch(&samples).unwrap();
+    let token_batch = encoder.try_encode_batch(&samples, None).unwrap();
     let decoded_strings = decoder
         .try_decode_batch_to_strings(
             &token_batch
@@ -62,7 +62,9 @@ pub fn common_decoder_tests<T: TokenType>(
 
     let novel_token = vocab.max_token().unwrap() + T::one();
     let mut broken_tail = vec![novel_token];
-    encoder.try_encode_append("abc", &mut broken_tail).unwrap();
+    encoder
+        .try_encode_append("abc", &mut broken_tail, None)
+        .unwrap();
 
     // Partial Decode
     let partial_tokens = token_batch
