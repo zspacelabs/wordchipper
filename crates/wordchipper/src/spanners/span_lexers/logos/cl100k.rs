@@ -95,7 +95,7 @@ mod tests {
     fn test_logos_basic_splitting() {
         let s = spanner(Cl100kLexer);
         let text = "hello world";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         // cl100k-like: " world" is one token (space grouped with letters).
         assert_eq!(spans, vec![SpanRef::Word(0..5), SpanRef::Word(5..11),]);
@@ -113,7 +113,7 @@ mod tests {
         );
 
         let text = "hello<|FNORD|> world<|NORP|>!";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         assert_eq!(
             spans,
@@ -131,7 +131,7 @@ mod tests {
     fn test_logos_digits() {
         let s = spanner(Cl100kLexer);
         let text = "abc 123 4567";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         assert_eq!(
             spans,
@@ -150,7 +150,7 @@ mod tests {
     fn test_logos_contractions() {
         let s = spanner(Cl100kLexer);
         let text = "don't I'll she's";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         // cl100k: "don" is letters, "'t" is contraction (separate tokens).
         let words: Vec<&str> = spans
@@ -178,8 +178,14 @@ mod tests {
     fn test_logos_camel_case() {
         let s = spanner(Cl100kLexer);
         // cl100k uses \p{L}+ so CamelCase is one token.
-        assert_eq!(s.split_spans("CamelCase"), vec![SpanRef::Word(0..9)]);
-        assert_eq!(s.split_spans("getElementById"), vec![SpanRef::Word(0..14)]);
-        assert_eq!(s.split_spans("HTMLParser"), vec![SpanRef::Word(0..10)]);
+        assert_eq!(s.split_spans("CamelCase", None), vec![SpanRef::Word(0..9)]);
+        assert_eq!(
+            s.split_spans("getElementById", None),
+            vec![SpanRef::Word(0..14)]
+        );
+        assert_eq!(
+            s.split_spans("HTMLParser", None),
+            vec![SpanRef::Word(0..10)]
+        );
     }
 }

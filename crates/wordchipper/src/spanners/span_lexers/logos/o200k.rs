@@ -133,7 +133,7 @@ mod tests {
     fn test_o200k_contractions_attached() {
         let s = spanner(O200kLexer);
         let text = "don't I'll she's";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         let words: Vec<&str> = spans
             .iter()
@@ -168,7 +168,7 @@ mod tests {
 
         // o200k splits on case boundaries: UPPER*LOWER+ and UPPER+LOWER*.
         // "CamelCase" -> "Camel" + "Case"
-        let spans = s.split_spans("CamelCase");
+        let spans = s.split_spans("CamelCase", None);
         let words: Vec<&str> = spans
             .iter()
             .filter_map(|s| match s {
@@ -180,7 +180,7 @@ mod tests {
 
         // "getElementById" -> "get" + "Element" + "By" + "Id"
         let text = "getElementById";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
         let words: Vec<&str> = spans
             .iter()
             .filter_map(|s| match s {
@@ -192,7 +192,7 @@ mod tests {
 
         // "HTMLParser" -> all-upper run uses UPPER+LOWER* branch.
         let text = "HTMLParser";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
         let words: Vec<&str> = spans
             .iter()
             .filter_map(|s| match s {
@@ -211,7 +211,7 @@ mod tests {
 
         // "  !\u{0300}a": mark stays with punct, letter is separate
         assert_eq!(
-            s.split_spans("  !\u{0300}a"),
+            s.split_spans("  !\u{0300}a", None),
             vec![
                 SpanRef::Word(0..1), // " "
                 SpanRef::Word(1..5), // " !\u{0300}"
@@ -221,7 +221,7 @@ mod tests {
 
         // "  !\u{0300}\r": mark + CR stay with punct
         assert_eq!(
-            s.split_spans("  !\u{0300}\r"),
+            s.split_spans("  !\u{0300}\r", None),
             vec![
                 SpanRef::Word(0..1), // " "
                 SpanRef::Word(1..6), // " !\u{0300}\r"
@@ -231,7 +231,7 @@ mod tests {
         // k=6 class 1: chained punct+mark tokens absorb into one span
         // "  !\u{0300}!\u{0300}": both punct+mark groups merge
         assert_eq!(
-            s.split_spans("  !\u{0300}!\u{0300}"),
+            s.split_spans("  !\u{0300}!\u{0300}", None),
             vec![
                 SpanRef::Word(0..1), // " "
                 SpanRef::Word(1..8), // " !\u{0300}!\u{0300}"
@@ -241,7 +241,7 @@ mod tests {
         // k=6 class 2: punct+mark then punct+letter splits at letter
         // "  !\u{0300}!A": prefix absorbed, letter separate
         assert_eq!(
-            s.split_spans("  !\u{0300}!A"),
+            s.split_spans("  !\u{0300}!A", None),
             vec![
                 SpanRef::Word(0..1), // " "
                 SpanRef::Word(1..6), // " !\u{0300}!"
@@ -252,7 +252,7 @@ mod tests {
         // k=6 whitespace after punct+mark: space starts new match,
         // not absorbed into pending punct
         assert_eq!(
-            s.split_spans("  !\u{0300} A"),
+            s.split_spans("  !\u{0300} A", None),
             vec![
                 SpanRef::Word(0..1), // " "
                 SpanRef::Word(1..5), // " !\u{0300}"

@@ -104,10 +104,11 @@ impl<T: TokenType> TokenEncoder<T> for TokenSpanEncoder<T> {
             }
         }
 
-        self.spanner.for_each_split_span(text, &mut |span_ref| {
-            se.encode_append_span_ref(&self.vocab, text, span_ref, tokens);
-            true
-        });
+        self.spanner
+            .for_each_split_span(text, None, &mut |span_ref| {
+                se.encode_append_span_ref(&self.vocab, text, span_ref, tokens);
+                true
+            });
 
         Ok(())
     }

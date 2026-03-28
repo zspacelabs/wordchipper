@@ -98,7 +98,7 @@ mod tests {
     fn test_logos_basic_splitting() {
         let s = spanner(R50kLexer);
         let text = "hello world";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         assert_eq!(spans, vec![SpanRef::Word(0..5), SpanRef::Word(5..11),]);
     }
@@ -115,7 +115,7 @@ mod tests {
         );
 
         let text = "hello<|FNORD|> world<|NORP|>!";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         assert_eq!(
             spans,
@@ -133,7 +133,7 @@ mod tests {
     fn test_logos_digits() {
         let s = spanner(R50kLexer);
         let text = "abc 123 4567";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         // Space absorbed by ` ?` prefix in each content pattern.
         assert_eq!(
@@ -150,7 +150,7 @@ mod tests {
     fn test_logos_contractions() {
         let s = spanner(R50kLexer);
         let text = "don't I'll she's";
-        let spans = s.split_spans(text);
+        let spans = s.split_spans(text, None);
 
         let words: Vec<&str> = spans
             .iter()
@@ -177,8 +177,11 @@ mod tests {
     fn test_logos_camel_case() {
         let s = spanner(R50kLexer);
         // r50k uses \p{L}+ so CamelCase is one token.
-        assert_eq!(s.split_spans("CamelCase"), vec![SpanRef::Word(0..9)]);
-        assert_eq!(s.split_spans("getElementById"), vec![SpanRef::Word(0..14)]);
+        assert_eq!(s.split_spans("CamelCase", None), vec![SpanRef::Word(0..9)]);
+        assert_eq!(
+            s.split_spans("getElementById", None),
+            vec![SpanRef::Word(0..14)]
+        );
     }
 
     // Regression: contraction suffix must merge with trailing letters
@@ -189,7 +192,7 @@ mod tests {
 
         // "  'sA": ws split -> " ", punct absorbs " '", letters "sA"
         assert_eq!(
-            s.split_spans("  'sA"),
+            s.split_spans("  'sA", None),
             vec![
                 SpanRef::Word(0..1), // " "
                 SpanRef::Word(1..3), // " '"
@@ -199,7 +202,7 @@ mod tests {
 
         // "  'llA": same pattern with two-char contraction suffix
         assert_eq!(
-            s.split_spans("  'llA"),
+            s.split_spans("  'llA", None),
             vec![
                 SpanRef::Word(0..1), // " "
                 SpanRef::Word(1..3), // " '"
@@ -216,7 +219,7 @@ mod tests {
         // "don'tA": contraction split -> "don", "'t", "A"
         let text = "don'tA";
         let words: Vec<&str> = s
-            .split_spans(text)
+            .split_spans(text, None)
             .iter()
             .filter_map(|s| match s {
                 SpanRef::Word(r) => Some(&text[r.clone()]),

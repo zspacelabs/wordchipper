@@ -52,11 +52,11 @@ pub fn common_lexer_tests(lexer: Box<dyn SpanLexer>) {
 
     // ── split_spans: empty input ──
     let spanner = LexerTextSpanner::new(Arc::from(lexer), None);
-    let spans = spanner.split_spans("");
+    let spans = spanner.split_spans("", None);
     assert!(spans.is_empty(), "split_spans(\"\") should be empty");
 
     // ── split_spans: whitespace-only ──
-    let spans = spanner.split_spans("   ");
+    let spans = spanner.split_spans("   ", None);
     assert!(
         !spans.is_empty(),
         "split_spans(\"   \") should produce spans for whitespace"

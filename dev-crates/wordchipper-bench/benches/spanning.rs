@@ -79,7 +79,7 @@ mod english {
         let spanner = build_regex_only_spanner(OA_R50K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -88,7 +88,7 @@ mod english {
         let spanner = build_regex_automata_spanner(OA_R50K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -97,7 +97,7 @@ mod english {
         let spanner = build_default_spanner(OA_R50K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -106,7 +106,7 @@ mod english {
         let spanner = build_regex_only_spanner(OA_CL100K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -115,7 +115,7 @@ mod english {
         let spanner = build_regex_automata_spanner(OA_CL100K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -124,7 +124,7 @@ mod english {
         let spanner = build_default_spanner(OA_CL100K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -133,7 +133,7 @@ mod english {
         let spanner = build_regex_only_spanner(OA_O200K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -142,7 +142,7 @@ mod english {
         let spanner = build_regex_automata_spanner(OA_O200K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -151,7 +151,7 @@ mod english {
         let spanner = build_default_spanner(OA_O200K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 }
 
@@ -164,7 +164,7 @@ mod diverse {
         let spanner = build_regex_only_spanner(OA_R50K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -173,7 +173,7 @@ mod diverse {
         let spanner = build_regex_automata_spanner(OA_R50K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -182,7 +182,7 @@ mod diverse {
         let spanner = build_default_spanner(OA_R50K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -191,7 +191,7 @@ mod diverse {
         let spanner = build_regex_only_spanner(OA_CL100K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -200,7 +200,7 @@ mod diverse {
         let spanner = build_regex_automata_spanner(OA_CL100K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -209,7 +209,7 @@ mod diverse {
         let spanner = build_default_spanner(OA_CL100K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -218,7 +218,7 @@ mod diverse {
         let spanner = build_regex_only_spanner(OA_O200K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -227,7 +227,7 @@ mod diverse {
         let spanner = build_regex_automata_spanner(OA_O200K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 
     #[divan::bench]
@@ -236,6 +236,6 @@ mod diverse {
         let spanner = build_default_spanner(OA_O200K_BASE_PATTERN);
         bencher
             .counter(BytesCount::new(text.len()))
-            .bench(|| spanner.split_spans(black_box(&text)));
+            .bench(|| spanner.split_spans(black_box(&text), None));
     }
 }

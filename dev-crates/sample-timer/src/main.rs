@@ -291,7 +291,7 @@ fn main() -> Result<(), BoxError> {
         &mut |str_batch: &[&str]| -> Result<(), BoxError> {
             let degapped_input =
                 if args.decode && args.validate && args.respan_input_for_decode_check {
-                    Some(wc_engine.spanner().batch_remove_gaps(str_batch))
+                    Some(wc_engine.spanner().batch_remove_gaps(str_batch, None))
                 } else {
                     None
                 };

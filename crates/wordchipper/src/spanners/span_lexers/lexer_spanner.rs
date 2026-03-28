@@ -1,8 +1,10 @@
 //! # Lexer Text Spanner
 
 use core::ops::Range;
+use std::prelude::rust_2015::String;
 
 use crate::{
+    WCHashSet,
     alloc::sync::Arc,
     spanners::{
         SpanRef,
@@ -46,10 +48,14 @@ impl LexerTextSpanner {
     fn next_special_span(
         &self,
         text: &str,
+        allowed_specials: Option<&WCHashSet<String>>,
     ) -> Option<Range<usize>> {
-        self.special_lexer
-            .as_ref()
-            .and_then(|s| s.find_span_iter(text).next())
+        self.special_lexer.as_ref().and_then(|lexer| {
+            lexer.find_span_iter(text).find(|range| {
+                allowed_specials.is_none()
+                    || allowed_specials.unwrap().contains(&text[range.clone()])
+            })
+        })
     }
 
     /// Scan `text` into [`Word`](SpanRef::Word) and [`Gap`](SpanRef::Gap)
@@ -107,12 +113,13 @@ impl TextSpanner for LexerTextSpanner {
     fn for_each_split_span(
         &self,
         text: &str,
+        allowed_specials: Option<&WCHashSet<String>>,
         f: &mut dyn FnMut(SpanRef) -> bool,
     ) -> (bool, usize) {
         let mut current = text;
         let mut offset = 0;
 
-        while let Some(Range { start, end }) = self.next_special_span(current) {
+        while let Some(Range { start, end }) = self.next_special_span(current, allowed_specials) {
             let pre = &current[..start];
 
             let (cont, used) = self.for_each_word(pre, offset, f);
@@ -134,6 +141,8 @@ impl TextSpanner for LexerTextSpanner {
 
 #[cfg(test)]
 mod tests {
+    use foldhash::HashSetExt;
+
     use super::*;
     use crate::{
         TokenType,
@@ -142,6 +151,7 @@ mod tests {
             vec,
             vec::Vec,
         },
+        prelude::*,
         pretrained::openai::OA_CL100K_BASE_PATTERN,
         spanners::{
             SpanRef,
@@ -162,6 +172,76 @@ mod tests {
     }
 
     #[test]
+    fn test_allowed_specials() {
+        use crate::spanners::text_spanner::SpanRef::*;
+        type T = u32;
+
+        let config: TextSpanningConfig<T> = TextSpanningConfig::from_pattern(r"\w+")
+            .with_special_words([("<|FNORD|>", 4000), ("<|NORP|>", 4001)]);
+
+        let spanner = from_config(&config);
+
+        let mut allowed = WCHashSet::new();
+        allowed.insert("<|NORP|>".to_string());
+
+        let source = "abc 1<|FNORD|> def  <|NORP|> ghi   ";
+
+        assert_eq!(
+            spanner.split_spans(source, None),
+            vec![
+                Word(0..3),
+                Gap(3..4),
+                Word(4..5),
+                Special(5..14),
+                Gap(14..15),
+                Word(15..18),
+                Gap(18..20),
+                Special(20..28),
+                Gap(28..29),
+                Word(29..32),
+                Gap(32..35),
+            ]
+        );
+
+        assert_eq!(
+            spanner.split_spans(source, Some(&allowed)),
+            vec![
+                Word(0..3),
+                Gap(3..4),
+                Word(4..5),
+                Gap(5..7),
+                Word(7..12),
+                Gap(12..15),
+                Word(15..18),
+                Gap(18..20),
+                Special(20..28),
+                Gap(28..29),
+                Word(29..32),
+                Gap(32..35),
+            ]
+        );
+
+        let empty = Default::default();
+        assert_eq!(
+            spanner.split_spans(source, Some(&empty)),
+            vec![
+                Word(0..3),
+                Gap(3..4),
+                Word(4..5),
+                Gap(5..7),
+                Word(7..12),
+                Gap(12..15),
+                Word(15..18),
+                Gap(18..22),
+                Word(22..26),
+                Gap(26..29),
+                Word(29..32),
+                Gap(32..35),
+            ]
+        );
+    }
+
+    #[test]
     fn test_for_each_split_span() {
         use crate::spanners::text_spanner::SpanRef::*;
         type T = u32;
@@ -174,7 +254,7 @@ mod tests {
         let source = "abc 1<|FNORD|> def  <|NORP|> ghi   ";
 
         let mut spans: Vec<SpanRef> = Vec::new();
-        spanner.for_each_split_span(source, &mut |span_ref| {
+        spanner.for_each_split_span(source, None, &mut |span_ref| {
             spans.push(span_ref);
             true
         });
@@ -199,7 +279,7 @@ mod tests {
 
         // Test "for_each_split_span" Word Exit
         let mut spans: Vec<SpanRef> = Vec::new();
-        spanner.for_each_split_span("   abc", &mut |span_ref| match span_ref {
+        spanner.for_each_split_span("   abc", None, &mut |span_ref| match span_ref {
             Word(_) => false,
             _ => {
                 spans.push(span_ref);
@@ -210,7 +290,7 @@ mod tests {
 
         // Test "for_each_split_span" Special Exit
         let mut spans: Vec<SpanRef> = Vec::new();
-        spanner.for_each_split_span("abc   def<|FNORD|>", &mut |span_ref| match span_ref {
+        spanner.for_each_split_span("abc   def<|FNORD|>", None, &mut |span_ref| match span_ref {
             Special(_) => false,
             _ => {
                 spans.push(span_ref);
@@ -221,7 +301,7 @@ mod tests {
 
         // Test "for_each_word" Leading Gap Exit
         let mut spans: Vec<SpanRef> = Vec::new();
-        spanner.for_each_split_span("abc  def", &mut |span_ref| match span_ref {
+        spanner.for_each_split_span("abc  def", None, &mut |span_ref| match span_ref {
             Gap(_) => false,
             _ => {
                 spans.push(span_ref);
@@ -232,7 +312,7 @@ mod tests {
 
         // Test "for_each_word" Trailing Gap Exit
         let mut spans: Vec<SpanRef> = Vec::new();
-        spanner.for_each_split_span("foo  ", &mut |span_ref| match span_ref {
+        spanner.for_each_split_span("foo  ", None, &mut |span_ref| match span_ref {
             Gap(_) => false,
             _ => {
                 spans.push(span_ref);
@@ -255,7 +335,7 @@ mod tests {
         let buf = "hello<|FNORD|> wor<|NORP|>ld!";
 
         assert_eq!(
-            &spanner.split_spans(buf),
+            &spanner.split_spans(buf, None),
             &vec![
                 SpanRef::Word(0..5),
                 SpanRef::Special(5..14),
@@ -277,7 +357,7 @@ mod tests {
 
         let buf = vec!["hello world!", "abc def"];
         assert_eq!(
-            spanner.batch_remove_gaps(&buf),
+            spanner.batch_remove_gaps(&buf, None),
             vec!["helloworld", "abcdef"]
         );
     }
