@@ -34,6 +34,7 @@ client = [
     "download",
     "datagym",
     "default-tls",
+    "huggingface",
 ]
 
 ## The download feature enables downloading vocabularies from the internet.
@@ -102,6 +103,12 @@ tracing = [
 testing = []
 
 
+## Enable loading pretrained huggingface modules.
+huggingface = [
+    "std",
+    "dep:tokenizers",
+]
+
 
 [dependencies]
 # macro packages.
@@ -140,6 +147,8 @@ rayon = { workspace = true, optional = true }
 
 # "tracing" feature deps:
 tracing = { workspace = true, optional = true }
+
+tokenizers = { workspace = true, features = ["http"], optional = true }
 
 
 [dev-dependencies]
