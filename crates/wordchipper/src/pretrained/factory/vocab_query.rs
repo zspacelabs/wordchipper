@@ -66,7 +66,7 @@ impl Display for VocabQuery {
 }
 
 impl VocabQuery {
-    /// Build a new query from structure.
+    /// Build a new query.
     pub fn new(
         schema: Option<&str>,
         path: Option<&str>,
@@ -174,6 +174,19 @@ impl VocabQuery {
         }
         query.name() == self.name()
     }
+
+    /// Build a cache context for this query.
+    pub fn to_context(&self) -> Vec<String> {
+        let mut context = Vec::new();
+        if let Some(schema) = self.schema() {
+            context.push(schema.to_string());
+        }
+        if let Some(path) = self.path() {
+            context.extend(path.split('/').map(|p| p.to_string()));
+        }
+        context.push(self.name().to_string());
+        context
+    }
 }
 
 #[cfg(test)]
@@ -202,6 +215,19 @@ mod tests {
             VocabQuery::new(Some("xyz"), Some("foo/bar"), "vocab_name")
         );
     }
+
+    #[test]
+    fn test_to_context() {
+        let q = VocabQuery::from_str("vocab_name").unwrap();
+        assert_eq!(q.to_context(), vec!["vocab_name"]);
+
+        let q = VocabQuery::from_str("foo/bar/vocab_name").unwrap();
+        assert_eq!(q.to_context(), vec!["foo", "bar", "vocab_name"]);
+
+        let q = VocabQuery::from_str("xyz:foo/bar/vocab_name").unwrap();
+        assert_eq!(q.to_context(), vec!["xyz", "foo", "bar", "vocab_name"]);
+    }
+
     #[test]
     fn test_vocab_query_with_schema() {
         let query = VocabQuery::new(None, None, "vocab_name").with_schema(Some("provider"));
