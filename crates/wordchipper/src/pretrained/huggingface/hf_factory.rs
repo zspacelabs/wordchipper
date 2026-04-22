@@ -1,3 +1,5 @@
+use std::println;
+
 use tokenizers::{
     ModelWrapper::BPE,
     PreTokenizerWrapper,
@@ -130,7 +132,21 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
 
     let hf_vocab = bpe.get_vocab();
 
-    let special_tokens: WCHashSet<u32> = tok.get_added_tokens_decoder().keys().copied().collect();
+    println!(
+        "Debug: {:?}",
+        hf_vocab.iter().find(|(_, id)| **id == 157513)
+    );
+
+    // TODO: This is broken for Qwen/Qwen3.5-9B for some reason.
+    let mut special_tokens: WCHashSet<T> = Default::default();
+
+    let decoder = tok.get_added_tokens_decoder();
+    println!("Debug: {:#?}", decoder);
+
+    for (t, at) in decoder.iter() {
+        span_config.specials_mut().add_str_word(&at.content, *t);
+        special_tokens.insert(*t);
+    }
 
     // Forward and inverse bytes_to_unicode maps.
     let b2c = bytes_char();
@@ -140,7 +156,7 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
     let mut span_map: SpanTokenMap<T> = SpanTokenMap::default();
     for (s, id) in &hf_vocab {
         if special_tokens.contains(id) {
-            span_config.specials_mut().add_str_word(s, *id);
+            continue;
         } else {
             let mut bytes = Vec::with_capacity(s.len());
             for ch in s.chars() {
@@ -157,7 +173,13 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
         }
     }
 
-    assert_eq!(span_config.specials().len(), special_tokens.len());
+    if span_config.specials().len() != special_tokens.len() {
+        return Err(WCError::External(format!(
+            "hf vocab identifies {} special tokens, but only {} special tokens found in span_config",
+            special_tokens.len(),
+            span_config.specials().len()
+        )));
+    }
 
     // Byte map: the single-char string for each byte must resolve in the vocab.
     let byte_tokens: Vec<T> = (0u8..=255)
