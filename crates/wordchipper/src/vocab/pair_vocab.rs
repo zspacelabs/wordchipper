@@ -104,7 +104,7 @@ impl<T: TokenType> PairMapVocab<T> {
 
     /// Convert to a different token type.
     pub fn to_token_type<G: TokenType>(&self) -> WCResult<PairMapVocab<G>> {
-        try_vocab_size::<G>(self.max_token().unwrap().to_usize().unwrap())?;
+        try_vocab_size::<G>(self.max_token().unwrap().to_usize().unwrap() + 1)?;
 
         PairMapVocab::<G>::new(
             self.byte_vocab.to_token_type::<G>()?,
@@ -215,5 +215,16 @@ mod tests {
                 .chain([300_u32, 301, 302].into_iter())
                 .collect()
         );
+    }
+
+    #[test]
+    fn test_to_token_type_accepts_minimum_byte_vocab() {
+        let vocab = PairMapVocab::<u32>::default();
+
+        assert_eq!(vocab.max_token(), Some(255));
+
+        let converted = vocab.to_token_type::<u8>().unwrap();
+        assert_eq!(converted.max_token(), Some(255));
+        assert_eq!(converted.len(), 256);
     }
 }

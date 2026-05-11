@@ -159,7 +159,7 @@ impl<T: TokenType> SpanMapVocab<T> {
     /// Convert to a different token type.
     pub fn to_token_type<G: TokenType>(&self) -> WCResult<SpanMapVocab<G>> {
         if let Some(max) = self.max_token() {
-            try_vocab_size::<G>(max.to_usize().unwrap())?;
+            try_vocab_size::<G>(max.to_usize().unwrap() + 1)?;
         }
 
         SpanMapVocab::<G>::new(
@@ -336,6 +336,17 @@ mod tests {
                 .chain([300_u32, 301, 302].into_iter())
                 .collect()
         );
+    }
+
+    #[test]
+    fn test_to_token_type_accepts_minimum_byte_vocab() {
+        let vocab = SpanMapVocab::<u32>::default();
+
+        assert_eq!(vocab.max_token(), Some(255));
+
+        let converted = vocab.to_token_type::<u8>().unwrap();
+        assert_eq!(converted.max_token(), Some(255));
+        assert_eq!(converted.len(), 256);
     }
 
     #[test]
