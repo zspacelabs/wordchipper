@@ -12,7 +12,6 @@ publish = false
 wordchipper-cli-util = { path = "../../crates/wordchipper-cli-util" }
 divan-parser = { path = "../divan-parser" }
 
-serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 humansize = { workspace = true }
 # fontlib issues, investigate wasm install.

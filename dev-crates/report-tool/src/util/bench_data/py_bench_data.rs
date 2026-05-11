@@ -80,8 +80,8 @@ impl PythonParBenchData {
 
     pub fn series_names(&self) -> BTreeSet<String> {
         self.data
-            .iter()
-            .flat_map(|(_, v)| {
+            .values()
+            .flat_map(|v| {
                 v.as_object()
                     .unwrap()
                     .get("benchmarks")

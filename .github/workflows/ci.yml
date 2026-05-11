@@ -27,6 +27,16 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo clippy --no-deps
 
+  machete:
+    name: Unused Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install stable --profile minimal
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@cargo-machete
+      - run: cargo machete
+
   test:
     name: Build and Test
     runs-on: ubuntu-latest
@@ -119,13 +129,14 @@ jobs:
   ci:
     name: CI
     if: always()
-    needs: [ fmt, clippy, test, coverage, cross, wasm, python, lexer-equivalence ]
+    needs: [ fmt, clippy, machete, test, coverage, cross, wasm, python, lexer-equivalence ]
     runs-on: ubuntu-latest
     steps:
       - run: |
           results=(
             "${{ needs.fmt.result }}"
             "${{ needs.clippy.result }}"
+            "${{ needs.machete.result }}"
             "${{ needs.test.result }}"
             "${{ needs.coverage.result }}"
             "${{ needs.cross.result }}"
