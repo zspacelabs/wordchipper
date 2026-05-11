@@ -194,6 +194,7 @@ mod tests {
     use core::str::FromStr;
 
     use crate::{
+        alloc::vec,
         prelude::*,
         pretrained::factory::vocab_query::VocabQuery,
     };
