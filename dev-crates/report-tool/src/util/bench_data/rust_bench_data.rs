@@ -46,8 +46,8 @@ impl RustParBenchData {
 
     pub fn series_names(&self) -> BTreeSet<String> {
         self.data
-            .iter()
-            .flat_map(|(_, results)| results.iter())
+            .values()
+            .flat_map(|results| results.iter())
             .map(|result| result.name.clone())
             .collect()
     }
