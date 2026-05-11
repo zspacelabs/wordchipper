@@ -20,7 +20,6 @@ bpe-openai = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
 divan = { workspace = true }
 rayon = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tiktoken-rs = { workspace = true }
 tokenizers = { workspace = true, features = ["http"] }

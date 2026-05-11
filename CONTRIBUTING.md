@@ -18,15 +18,17 @@ rustup component add --toolchain nightly rustfmt miri
 For WASM work: `cargo install wasm-pack`  
 For Python bindings: `uv` + `maturin` (`uv pip install maturin pytest`)  
 For the book: `cargo install mdbook`
+For unused dependency checks: `cargo install cargo-machete`
 
 ---
 
 ## Workflow
 
 1. Format: `cargo +nightly fmt`
-2. Lint: `cargo clippy --no-deps` (fix all warnings — they're treated as errors in CI)
-3. Test: `cargo test --workspace`
-4. Commit.
+2. Check unused dependencies: `cargo machete`
+3. Lint: `cargo clippy --no-deps` (fix all warnings — they're treated as errors in CI)
+4. Test: `cargo test --workspace`
+5. Commit.
 
 A convenience script `fix.sh` runs format and clippy together if it exists at the repo root.
 
@@ -42,6 +44,9 @@ cargo +nightly fmt --check
 
 # Lint
 cargo clippy --no-deps
+
+# Unused dependencies
+cargo machete
 
 # Tests (default features, alternate feature set, no_std surface)
 cargo test --workspace
