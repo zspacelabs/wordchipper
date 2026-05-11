@@ -125,6 +125,7 @@ ringbuffer = { workspace = true }
 regex = { workspace = true, features = ["unicode"] }
 regex-automata = { workspace = true, features = ["alloc", "meta", "nfa-thompson", "hybrid", "unicode"] }
 strum = { workspace = true }
+indoc = { workspace = true }
 
 # Provides HashMap/HashSet in no_std mode (non-optional so `default-features = false` just works).
 hashbrown = { workspace = true, features = ["alloc"] }

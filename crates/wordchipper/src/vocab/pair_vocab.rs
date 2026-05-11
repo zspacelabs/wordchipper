@@ -47,19 +47,26 @@ pub fn try_validate_pair_map<T: TokenType>(
         }
     }
 
+    const ORPHAN_TOKENS_ERROR: &str = indoc::indoc! {r#"
+        This vocab has orphan tokens, which wordchipper does not yet support.
+        See: https://github.com/zspacelabs/wordchipper/issues/386
+    "#};
+
     for (&pair, &t) in pairs.iter() {
         for pt in [pair.0, pair.1] {
             let is_pair_target = pair_targets.contains(&pt);
             let byte_target = byte_vocab.get_byte(pt);
 
             if is_pair_target && let Some(b) = byte_target {
-                return Err(crate::WCError::VocabConflict(crate::alloc::format!(
-                    "Pair {pair:?} -> {t:?} parent {pt:?} is a pair target and byte target: {b:0x?}"
+                return Err(crate::WCError::NotImplemented(crate::alloc::format!(
+                    "{PRE}Pair {pair:?} -> {t:?} parent {pt:?} is a pair target and byte target: {b:0x?}",
+                    PRE = ORPHAN_TOKENS_ERROR,
                 )));
             }
             if !is_pair_target && byte_target.is_none() {
-                return Err(crate::WCError::VocabConflict(crate::alloc::format!(
-                    "Pair {pair:?} -> {t:?} parent {pt:?} is not defined"
+                return Err(crate::WCError::NotImplemented(crate::alloc::format!(
+                    "{PRE}Pair {pair:?} -> {t:?} parent {pt:?} is not defined",
+                    PRE = ORPHAN_TOKENS_ERROR,
                 )));
             }
         }

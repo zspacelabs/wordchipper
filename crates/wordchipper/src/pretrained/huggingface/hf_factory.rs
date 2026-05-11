@@ -1,5 +1,3 @@
-use std::println;
-
 use tokenizers::{
     ModelWrapper::BPE,
     PreTokenizerWrapper,
@@ -132,16 +130,20 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
 
     let hf_vocab = bpe.get_vocab();
 
+    /*
     println!(
         "Debug: {:?}",
         hf_vocab.iter().find(|(_, id)| **id == 157513)
     );
+     */
 
     // TODO: This is broken for Qwen/Qwen3.5-9B for some reason.
     let mut special_tokens: WCHashSet<T> = Default::default();
 
     let decoder = tok.get_added_tokens_decoder();
+    /*
     println!("Debug: {:#?}", decoder);
+     */
 
     for (t, at) in decoder.iter() {
         span_config.specials_mut().add_str_word(&at.content, *t);
