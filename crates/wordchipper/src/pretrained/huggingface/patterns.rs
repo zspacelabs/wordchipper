@@ -2,6 +2,7 @@
 
 use crate::{
     join_patterns,
+    spanners::span_lexers::accelerators::RegexAutomataTransformHook,
     support::regex::ConstRegexPattern,
 };
 
@@ -30,6 +31,10 @@ pub(crate) const QWEN35_PATTERN_RA: &str = join_patterns!(
     r"\s*[\r\n]+",
     r"\s+",
 );
+
+inventory::submit! {
+    RegexAutomataTransformHook::new(QWEN35_PATTERN, QWEN35_PATTERN_RA, true)
+}
 
 #[cfg(test)]
 mod tests {

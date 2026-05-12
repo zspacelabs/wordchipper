@@ -10,8 +10,6 @@ use tokenizers::{
     tokenizer::Tokenizer,
 };
 
-use super::patterns::QWEN35_PATTERN;
-
 use crate::{
     LabeledVocab,
     UnifiedTokenVocab,
@@ -43,18 +41,10 @@ use crate::{
     },
 };
 
-fn canonicalize_pattern(pattern: RegexPattern) -> RegexPattern {
-    if pattern.as_str() == QWEN35_PATTERN.as_str() {
-        return QWEN35_PATTERN.to_pattern();
-    }
-
-    pattern
-}
-
 fn extract_pattern(pt: Option<&PreTokenizerWrapper>) -> Result<RegexPattern, WCError> {
     fn split_regex(s: &tokenizers::pre_tokenizers::split::Split) -> Result<RegexPattern, WCError> {
         match &s.pattern {
-            SplitPattern::Regex(r) => Ok(canonicalize_pattern(r.clone().into())),
+            SplitPattern::Regex(r) => Ok(r.clone().into()),
             _ => Err(WCError::External("Split without Regex pattern".into())),
         }
     }
@@ -271,17 +261,5 @@ impl VocabProvider for HFVocabProvider {
             }
             Err(_) => Err(WCError::ResourceNotFound(query.to_string())),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_canonicalize_qwen35_pattern() {
-        let canonical = canonicalize_pattern(QWEN35_PATTERN.as_str().into());
-
-        assert_eq!(canonical, QWEN35_PATTERN.to_pattern());
     }
 }

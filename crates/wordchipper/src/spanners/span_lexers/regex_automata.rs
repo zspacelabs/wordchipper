@@ -21,51 +21,14 @@ use spin::Mutex;
 
 #[cfg(feature = "concurrent")]
 use crate::support::concurrency::PoolToy;
-#[cfg(feature = "huggingface")]
-use crate::pretrained::huggingface::patterns::{
-    QWEN35_PATTERN,
-    QWEN35_PATTERN_RA,
-};
 use crate::{
     alloc::sync::Arc,
     prelude::*,
-    pretrained::openai::patterns::{
-        OA_CL100K_BASE_PATTERN,
-        OA_CL100K_BASE_PATTERN_RA,
-        OA_O200K_BASE_PATTERN,
-        OA_O200K_BASE_PATTERN_RA,
-        OA_R50K_BASE_PATTERN,
-        OA_R50K_BASE_PATTERN_RA,
+    spanners::span_lexers::{
+        SpanLexer,
+        accelerators::get_regex_automata_transform,
     },
-    spanners::span_lexers::SpanLexer,
 };
-
-/// Known pattern transforms: (original fancy pattern, transformed RA pattern,
-/// `has_newline_branch`).
-const KNOWN_TRANSFORMS: &[(&str, &str, bool)] = &[
-    (
-        OA_R50K_BASE_PATTERN.as_str(),
-        OA_R50K_BASE_PATTERN_RA,
-        false,
-    ),
-    (
-        OA_CL100K_BASE_PATTERN.as_str(),
-        OA_CL100K_BASE_PATTERN_RA,
-        true,
-    ),
-    (
-        OA_O200K_BASE_PATTERN.as_str(),
-        OA_O200K_BASE_PATTERN_RA,
-        true,
-    ),
-];
-
-#[cfg(feature = "huggingface")]
-const HF_KNOWN_TRANSFORMS: &[(&str, &str, bool)] = &[(
-    QWEN35_PATTERN.as_str(),
-    QWEN35_PATTERN_RA,
-    true,
-)];
 
 /// `SpanLexer` using `regex_automata::meta::Regex` with pooled or single-mutex
 /// caches.
@@ -180,38 +143,18 @@ pub(crate) fn try_build(
     pattern: &str,
     max_pool: Option<NonZeroUsize>,
 ) -> Option<Arc<dyn SpanLexer>> {
-    // Check known transforms.
-    for &(original, transformed, has_newline_branch) in KNOWN_TRANSFORMS {
-        if pattern == original {
-            let regex = match Regex::new(transformed) {
-                Ok(r) => r,
-                Err(e) => {
-                    log::warn!(
-                        "regex-automata failed to compile known transform (len={}): {e}",
-                        transformed.len(),
-                    );
-                    return None;
-                }
-            };
-            return Some(build_lexer(regex, has_newline_branch, max_pool));
-        }
-    }
-
-    #[cfg(feature = "huggingface")]
-    for &(original, transformed, has_newline_branch) in HF_KNOWN_TRANSFORMS {
-        if pattern == original {
-            let regex = match Regex::new(transformed) {
-                Ok(r) => r,
-                Err(e) => {
-                    log::warn!(
-                        "regex-automata failed to compile known transform (len={}): {e}",
-                        transformed.len(),
-                    );
-                    return None;
-                }
-            };
-            return Some(build_lexer(regex, has_newline_branch, max_pool));
-        }
+    if let Some((transformed, has_newline_branch)) = get_regex_automata_transform(pattern) {
+        let regex = match Regex::new(transformed) {
+            Ok(r) => r,
+            Err(e) => {
+                log::warn!(
+                    "regex-automata failed to compile known transform (len={}): {e}",
+                    transformed.len(),
+                );
+                return None;
+            }
+        };
+        return Some(build_lexer(regex, has_newline_branch, max_pool));
     }
 
     // Fallback: try compiling directly (for patterns without lookaheads).
@@ -263,9 +206,16 @@ mod tests {
 
     use super::*;
     use crate::{
+        pretrained::openai::patterns::{
+            OA_CL100K_BASE_PATTERN,
+            OA_O200K_BASE_PATTERN,
+            OA_R50K_BASE_PATTERN,
+        },
         spanners::span_lexers::accelerators::testutil::assert_matches_reference_lexer,
         support::regex::RegexWrapper,
     };
+    #[cfg(feature = "huggingface")]
+    use crate::pretrained::huggingface::patterns::QWEN35_PATTERN;
 
     fn ref_lexer(pattern: &str) -> RegexWrapper {
         crate::support::regex::RegexPattern::Fancy(pattern.to_string())
