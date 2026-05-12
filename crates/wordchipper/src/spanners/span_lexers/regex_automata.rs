@@ -21,6 +21,11 @@ use spin::Mutex;
 
 #[cfg(feature = "concurrent")]
 use crate::support::concurrency::PoolToy;
+#[cfg(feature = "huggingface")]
+use crate::pretrained::huggingface::patterns::{
+    QWEN35_PATTERN,
+    QWEN35_PATTERN_RA,
+};
 use crate::{
     alloc::sync::Arc,
     prelude::*,
@@ -54,6 +59,13 @@ const KNOWN_TRANSFORMS: &[(&str, &str, bool)] = &[
         true,
     ),
 ];
+
+#[cfg(feature = "huggingface")]
+const HF_KNOWN_TRANSFORMS: &[(&str, &str, bool)] = &[(
+    QWEN35_PATTERN.as_str(),
+    QWEN35_PATTERN_RA,
+    true,
+)];
 
 /// `SpanLexer` using `regex_automata::meta::Regex` with pooled or single-mutex
 /// caches.
@@ -185,6 +197,23 @@ pub(crate) fn try_build(
         }
     }
 
+    #[cfg(feature = "huggingface")]
+    for &(original, transformed, has_newline_branch) in HF_KNOWN_TRANSFORMS {
+        if pattern == original {
+            let regex = match Regex::new(transformed) {
+                Ok(r) => r,
+                Err(e) => {
+                    log::warn!(
+                        "regex-automata failed to compile known transform (len={}): {e}",
+                        transformed.len(),
+                    );
+                    return None;
+                }
+            };
+            return Some(build_lexer(regex, has_newline_branch, max_pool));
+        }
+    }
+
     // Fallback: try compiling directly (for patterns without lookaheads).
     let regex = Regex::new(pattern).ok()?;
     Some(build_lexer(regex, false, max_pool))
@@ -295,6 +324,12 @@ mod tests {
     #[test]
     fn test_o200k_matches_reference() {
         check_pattern(OA_O200K_BASE_PATTERN.as_str());
+    }
+
+    #[cfg(feature = "huggingface")]
+    #[test]
+    fn test_qwen35_matches_reference() {
+        check_pattern(QWEN35_PATTERN.as_str());
     }
 
     #[test]
