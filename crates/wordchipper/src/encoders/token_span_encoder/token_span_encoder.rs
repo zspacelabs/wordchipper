@@ -108,6 +108,9 @@ impl<T: TokenType> TokenEncoder<T> for TokenSpanEncoder<T> {
             }
         }
 
+        let normalized_text = self.vocab.spanning().normalize_text(text);
+        let text = normalized_text.as_ref();
+
         self.spanner
             .for_each_split_span(text, special_filter, &mut |span_ref| {
                 se.encode_append_span_ref(&self.vocab, text, span_ref, tokens);

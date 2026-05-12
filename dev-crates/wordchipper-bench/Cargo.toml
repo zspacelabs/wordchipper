@@ -10,7 +10,7 @@ publish = false
 workspace = true
 
 [dependencies]
-wordchipper = { path = "../../crates/wordchipper", features = ["default", "download"] }
+wordchipper = { path = "../../crates/wordchipper", features = ["default", "download", "huggingface"] }
 wordchipper-data = { path = "../wordchipper-data" }
 divan-parser = { path = "../divan-parser" }
 
@@ -42,4 +42,8 @@ harness = false
 
 [[bench]]
 name = "decoding_single"
+harness = false
+
+[[bench]]
+name = "qwen_encoding_single"
 harness = false

@@ -122,15 +122,22 @@ impl<T: TokenType> UnifiedTokenVocab<T> {
             ));
         }
 
-        let tokens = span_vocab.tokens();
-        if tokens != pair_vocab.tokens() {
+        let span_tokens = span_vocab.tokens();
+        let pair_tokens = pair_vocab.tokens();
+        if !pair_tokens.is_subset(&span_tokens) {
+            let missing = pair_tokens
+                .difference(&span_tokens)
+                .copied()
+                .collect::<Vec<_>>();
             return Err(WCError::VocabConflict(
-                "span vocab and pair vocab have different token sets".into(),
+                crate::alloc::format!(
+                    "pair vocab contains tokens missing from span vocab: {missing:?}"
+                ),
             ));
         }
 
         for t in span_config.specials().tokens() {
-            if tokens.contains(&t) {
+            if span_tokens.contains(&t) {
                 let span = span_config.specials().lookup_span(&t).unwrap();
                 let special = string_from_utf8_lossy(span.to_vec());
                 return Err(WCError::VocabConflict(crate::alloc::format!(
@@ -360,5 +367,22 @@ mod tests {
 
         assert_eq!(vocab64.lookup_token("at".as_bytes()), Some(300 as u64));
         assert_eq!(vocab64.lookup_token("ate".as_bytes()), Some(301 as u64));
+    }
+
+    #[test]
+    fn test_init_allows_undecomposable_span_tokens() {
+        type T = u32;
+
+        let mut span_vocab: SpanTokenMap<T> = Default::default();
+        span_vocab.insert("abc".as_bytes().to_vec(), 300);
+        let span_vocab: SpanMapVocab<T> = span_vocab.into();
+
+        let seg_config = TextSpanningConfig::from_pattern(r"\w+");
+
+        let vocab = UnifiedTokenVocab::from_span_vocab(seg_config, span_vocab).unwrap();
+
+        assert_eq!(vocab.lookup_token("abc".as_bytes()), Some(300));
+        assert!(!vocab.pair_vocab().tokens().contains(&300));
+        assert!(vocab.pair_vocab().pair_map().is_empty());
     }
 }

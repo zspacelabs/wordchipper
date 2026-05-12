@@ -3,6 +3,7 @@
 #[cfg(feature = "concurrent")]
 pub mod concurrency;
 
+pub mod normalization;
 pub mod ranges;
 pub mod regex;
 pub mod resources;

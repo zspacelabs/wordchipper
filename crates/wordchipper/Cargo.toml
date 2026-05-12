@@ -139,6 +139,7 @@ serde_json = { workspace = true, optional = true }
 aho-corasick = { workspace = true }
 foldhash = { workspace = true, optional = true }
 unicode-general-category = { workspace = true }
+unicode-normalization = { workspace = true }
 
 # "download" feature deps:
 wordchipper-disk-cache = { version = "0.9.1", path = "../wordchipper-disk-cache", optional = true, default-features = false }

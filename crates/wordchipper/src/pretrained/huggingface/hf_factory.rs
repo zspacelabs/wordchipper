@@ -6,6 +6,7 @@ use tokenizers::{
         Sequence,
         Split,
     },
+    tokenizer::NormalizerWrapper,
     pre_tokenizers::split::SplitPattern,
     tokenizer::Tokenizer,
 };
@@ -31,6 +32,7 @@ use crate::{
     },
     spanners::TextSpanningConfig,
     support::{
+        normalization::TextNormalizer,
         regex::RegexPattern,
         resources::ResourceLoader,
     },
@@ -75,6 +77,28 @@ fn extract_pattern(pt: Option<&PreTokenizerWrapper>) -> Result<RegexPattern, WCE
     }
 }
 
+fn extract_text_normalizer(normalizer: &NormalizerWrapper) -> WCResult<TextNormalizer> {
+    match normalizer {
+        NormalizerWrapper::NFC(_) => Ok(TextNormalizer::NFC),
+        NormalizerWrapper::NFD(_) => Ok(TextNormalizer::NFD),
+        NormalizerWrapper::NFKC(_) => Ok(TextNormalizer::NFKC),
+        NormalizerWrapper::NFKD(_) => Ok(TextNormalizer::NFKD),
+        NormalizerWrapper::Sequence(sequence) => sequence
+            .as_ref()
+            .iter()
+            .map(extract_text_normalizer)
+            .collect::<WCResult<Vec<_>>>()
+            .map(TextNormalizer::Sequence),
+        _ => Err(WCError::External(crate::alloc::format!(
+            "unsupported huggingface normalizer: {normalizer:?}"
+        ))),
+    }
+}
+
+fn extract_normalizer(normalizer: Option<&NormalizerWrapper>) -> WCResult<Option<TextNormalizer>> {
+    normalizer.map(extract_text_normalizer).transpose()
+}
+
 /// Converts bytes to Unicode characters.
 /// See <https://github.com/openai/gpt-2/blob/master/src/encoder.py#L9>
 ///
@@ -116,6 +140,9 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
 
     let pattern = extract_pattern(tok.get_pre_tokenizer())?;
     let mut span_config: TextSpanningConfig<T> = TextSpanningConfig::from_pattern(pattern);
+    if let Some(normalizer) = extract_normalizer(tok.get_normalizer())? {
+        span_config = span_config.with_normalizer(normalizer);
+    }
 
     let BPE(bpe) = tok.get_model() else {
         return Err(WCError::External(
@@ -145,7 +172,22 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
      */
 
     for (t, at) in decoder.iter() {
-        span_config.specials_mut().add_str_word(&at.content, *t);
+        let special_content = if at.normalized {
+            span_config.normalize_text(&at.content).into_owned()
+        } else {
+            let normalized = span_config.normalize_text(&at.content);
+            if normalized.as_ref() != at.content {
+                return Err(WCError::External(crate::alloc::format!(
+                    "unsupported non-normalized special token under text normalizer: {:?}",
+                    at.content
+                )));
+            }
+            at.content.clone()
+        };
+
+        span_config
+            .specials_mut()
+            .add_str_word(&special_content, *t);
         special_tokens.insert(*t);
     }
 
@@ -261,5 +303,41 @@ impl VocabProvider for HFVocabProvider {
             }
             Err(_) => Err(WCError::ResourceNotFound(query.to_string())),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tokenizers::normalizers::{
+        Lowercase,
+        NFC,
+        NormalizerWrapper,
+        Sequence,
+    };
+
+    #[test]
+    fn test_extract_normalizer_maps_nfc() {
+        assert_eq!(
+            extract_normalizer(Some(&NormalizerWrapper::NFC(NFC))).unwrap(),
+            Some(TextNormalizer::NFC)
+        );
+    }
+
+    #[test]
+    fn test_extract_normalizer_maps_sequence() {
+        let sequence = Sequence::new(vec![NormalizerWrapper::NFC(NFC)]);
+
+        assert_eq!(
+            extract_normalizer(Some(&NormalizerWrapper::Sequence(sequence))).unwrap(),
+            Some(TextNormalizer::Sequence(vec![TextNormalizer::NFC]))
+        );
+    }
+
+    #[test]
+    fn test_extract_normalizer_rejects_unsupported_wrapper() {
+        let error = extract_normalizer(Some(&NormalizerWrapper::Lowercase(Lowercase))).unwrap_err();
+
+        assert!(matches!(error, WCError::External(_)));
     }
 }
