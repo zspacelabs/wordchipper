@@ -108,7 +108,7 @@ impl<T: TokenType> TokenEncoder<T> for TokenSpanEncoder<T> {
             }
         }
 
-        let normalized_text = self.vocab.spanning().normalize_text(text);
+        let normalized_text = self.vocab.normalize_text(text);
         let text = normalized_text.as_ref();
 
         self.spanner

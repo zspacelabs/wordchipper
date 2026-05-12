@@ -6,9 +6,15 @@ use crate::{
     WCError,
     WCHashSet,
     WCResult,
-    alloc::vec::Vec,
+    alloc::{
+        borrow::Cow,
+        vec::Vec,
+    },
     spanners::TextSpanningConfig,
-    support::strings::string_from_utf8_lossy,
+    support::{
+        normalization::TextNormalizer,
+        strings::string_from_utf8_lossy,
+    },
     vocab::{
         ByteMapVocab,
         PairMapVocab,
@@ -61,6 +67,9 @@ use crate::{
 pub struct UnifiedTokenVocab<T: TokenType> {
     /// Text Spanning Configuration
     spanning: TextSpanningConfig<T>,
+
+    /// Optional text normalizer applied before encoding.
+    input_normalizer: Option<TextNormalizer>,
 
     /// ``{ Vec<u8> -> T }`` vocabulary.
     span_vocab: SpanMapVocab<T>,
@@ -148,6 +157,7 @@ impl<T: TokenType> UnifiedTokenVocab<T> {
 
         Ok(Self {
             spanning: span_config,
+            input_normalizer: None,
             span_vocab,
             pair_vocab,
         })
@@ -161,14 +171,39 @@ impl<T: TokenType> UnifiedTokenVocab<T> {
     pub fn to_token_type<G: TokenType>(&self) -> WCResult<UnifiedTokenVocab<G>> {
         Ok(UnifiedTokenVocab::<G> {
             spanning: self.spanning.to_token_type::<G>()?,
+            input_normalizer: self.input_normalizer.clone(),
             span_vocab: self.span_vocab.to_token_type::<G>()?,
             pair_vocab: self.pair_vocab.to_token_type::<G>()?,
         })
     }
 
+    /// Attach an input normalizer used before encoding.
+    pub fn with_input_normalizer(
+        mut self,
+        normalizer: TextNormalizer,
+    ) -> Self {
+        self.input_normalizer = Some(normalizer);
+        self
+    }
+
     /// Get the [`TextSpanningConfig`].
     pub fn spanning(&self) -> &TextSpanningConfig<T> {
         &self.spanning
+    }
+
+    /// Get the optional input normalizer.
+    pub fn input_normalizer(&self) -> Option<&TextNormalizer> {
+        self.input_normalizer.as_ref()
+    }
+
+    /// Normalize text prior to encoding.
+    pub fn normalize_text<'a>(
+        &self,
+        text: &'a str,
+    ) -> Cow<'a, str> {
+        self.input_normalizer()
+            .map(|normalizer| normalizer.normalize(text))
+            .unwrap_or_else(|| Cow::Borrowed(text))
     }
 
     /// Get the `{ (T, T) -> T }` [`PairMapVocab`].
@@ -285,6 +320,7 @@ mod tests {
     use super::*;
     use crate::{
         spanners::TextSpanningConfig,
+        support::normalization::TextNormalizer,
         vocab::{
             PairTokenMap,
             SpanMapVocab,
@@ -367,6 +403,29 @@ mod tests {
 
         assert_eq!(vocab64.lookup_token("at".as_bytes()), Some(300 as u64));
         assert_eq!(vocab64.lookup_token("ate".as_bytes()), Some(301 as u64));
+    }
+
+    #[test]
+    fn test_input_normalizer() {
+        type T = u32;
+
+        let mut span_vocab: SpanTokenMap<T> = Default::default();
+        span_vocab.insert("abc".as_bytes().to_vec(), 300);
+        let span_vocab: SpanMapVocab<T> = span_vocab.into();
+
+        let vocab = UnifiedTokenVocab::from_span_vocab(
+            TextSpanningConfig::from_pattern(r"\w+"),
+            span_vocab,
+        )
+        .unwrap()
+        .with_input_normalizer(TextNormalizer::NFC);
+
+        assert_eq!(vocab.input_normalizer(), Some(&TextNormalizer::NFC));
+        assert_eq!(vocab.normalize_text("e\u{301}clair").as_ref(), "éclair");
+        assert_eq!(
+            vocab.to_token_type::<u64>().unwrap().input_normalizer(),
+            Some(&TextNormalizer::NFC)
+        );
     }
 
     #[test]

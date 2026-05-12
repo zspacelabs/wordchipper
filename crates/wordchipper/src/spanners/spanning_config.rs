@@ -2,10 +2,7 @@
 use crate::{
     TokenType,
     WCResult,
-    support::{
-        normalization::TextNormalizer,
-        regex::RegexPattern,
-    },
+    support::regex::RegexPattern,
     vocab::SpecialVocab,
 };
 
@@ -19,9 +16,6 @@ use crate::{
 pub struct TextSpanningConfig<T: TokenType> {
     /// Regex pattern for word splitting.
     pattern: RegexPattern,
-
-    /// Optional text normalizer applied before spanning.
-    normalizer: Option<TextNormalizer>,
 
     /// Special tokens vocabulary.
     specials: SpecialVocab<T>,
@@ -46,7 +40,6 @@ impl<T: TokenType> TextSpanningConfig<T> {
     {
         Self {
             pattern: pattern.into(),
-            normalizer: None,
             specials: SpecialVocab::default(),
         }
     }
@@ -64,20 +57,6 @@ impl<T: TokenType> TextSpanningConfig<T> {
     {
         Self {
             pattern: pattern.into(),
-            ..self
-        }
-    }
-
-    /// Set the optional text normalizer.
-    ///
-    /// ## Arguments
-    /// * `normalizer` - The new text normalizer.
-    pub fn with_normalizer(
-        self,
-        normalizer: TextNormalizer,
-    ) -> Self {
-        Self {
-            normalizer: Some(normalizer),
             ..self
         }
     }
@@ -121,7 +100,6 @@ impl<T: TokenType> TextSpanningConfig<T> {
     pub fn to_token_type<G: TokenType>(&self) -> WCResult<TextSpanningConfig<G>> {
         Ok(TextSpanningConfig::<G> {
             pattern: self.pattern.clone(),
-            normalizer: self.normalizer.clone(),
             specials: self.specials.to_token_type()?,
         })
     }
@@ -129,21 +107,6 @@ impl<T: TokenType> TextSpanningConfig<T> {
     /// Get the word pattern.
     pub fn pattern(&self) -> &RegexPattern {
         &self.pattern
-    }
-
-    /// Get the optional text normalizer.
-    pub fn normalizer(&self) -> Option<&TextNormalizer> {
-        self.normalizer.as_ref()
-    }
-
-    /// Normalize text prior to spanning.
-    pub fn normalize_text<'a>(
-        &self,
-        text: &'a str,
-    ) -> crate::alloc::borrow::Cow<'a, str> {
-        self.normalizer()
-            .map(|normalizer| normalizer.normalize(text))
-            .unwrap_or_else(|| crate::alloc::borrow::Cow::Borrowed(text))
     }
 
     /// Get the special tokens vocabulary.
@@ -167,7 +130,6 @@ mod tests {
     use super::*;
     use crate::{
         alloc::string::ToString,
-        support::normalization::TextNormalizer,
         vocab::SpecialVocab,
     };
 
@@ -193,9 +155,5 @@ mod tests {
 
         let config = config.with_specials(specials.clone());
         assert_eq!(config.specials(), &specials);
-
-        let config = config.with_normalizer(TextNormalizer::NFC);
-        assert_eq!(config.normalizer(), Some(&TextNormalizer::NFC));
-        assert_eq!(config.normalize_text("e\u{301}clair").as_ref(), "éclair");
     }
 }

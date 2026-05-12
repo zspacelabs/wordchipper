@@ -99,6 +99,15 @@ fn extract_normalizer(normalizer: Option<&NormalizerWrapper>) -> WCResult<Option
     normalizer.map(extract_text_normalizer).transpose()
 }
 
+fn normalize_input<'a>(
+    normalizer: Option<&TextNormalizer>,
+    text: &'a str,
+) -> crate::alloc::borrow::Cow<'a, str> {
+    normalizer
+        .map(|normalizer| normalizer.normalize(text))
+        .unwrap_or_else(|| crate::alloc::borrow::Cow::Borrowed(text))
+}
+
 /// Converts bytes to Unicode characters.
 /// See <https://github.com/openai/gpt-2/blob/master/src/encoder.py#L9>
 ///
@@ -139,10 +148,8 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
     type T = u32;
 
     let pattern = extract_pattern(tok.get_pre_tokenizer())?;
+    let input_normalizer = extract_normalizer(tok.get_normalizer())?;
     let mut span_config: TextSpanningConfig<T> = TextSpanningConfig::from_pattern(pattern);
-    if let Some(normalizer) = extract_normalizer(tok.get_normalizer())? {
-        span_config = span_config.with_normalizer(normalizer);
-    }
 
     let BPE(bpe) = tok.get_model() else {
         return Err(WCError::External(
@@ -173,9 +180,9 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
 
     for (t, at) in decoder.iter() {
         let special_content = if at.normalized {
-            span_config.normalize_text(&at.content).into_owned()
+            normalize_input(input_normalizer.as_ref(), &at.content).into_owned()
         } else {
-            let normalized = span_config.normalize_text(&at.content);
+            let normalized = normalize_input(input_normalizer.as_ref(), &at.content);
             if normalized.as_ref() != at.content {
                 return Err(WCError::External(crate::alloc::format!(
                     "unsupported non-normalized special token under text normalizer: {:?}",
@@ -238,8 +245,13 @@ pub fn vocab_from_hf_tokenizer(tok: &Tokenizer) -> WCResult<Arc<UnifiedTokenVoca
 
     let expected_len = span_vocab.len() + span_config.specials().len();
 
-    let vocab: Arc<UnifiedTokenVocab<T>> =
-        Arc::new(UnifiedTokenVocab::from_span_vocab(span_config, span_vocab)?);
+    let vocab = UnifiedTokenVocab::from_span_vocab(span_config, span_vocab)?;
+    let vocab = if let Some(normalizer) = input_normalizer {
+        vocab.with_input_normalizer(normalizer)
+    } else {
+        vocab
+    };
+    let vocab: Arc<UnifiedTokenVocab<T>> = Arc::new(vocab);
 
     // TODO: should `vocab.len()` include the special len()?
     if vocab.len() + vocab.special_vocab().len() != expected_len {
