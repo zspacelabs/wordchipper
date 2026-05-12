@@ -28,6 +28,12 @@ pub const HF_CL100K: &str = "Xenova/text-embedding-ada-002";
 /// The huggingface/tokenizers model to use for `o200k_base`.
 pub const HF_O200K: &str = "Xenova/gpt-4o";
 
+/// The wordchipper model identifier for Qwen 3.5 0.8B via the HF loader.
+pub const WC_QWEN35: &str = "hf:Qwen/Qwen3.5-0.8B";
+
+/// The huggingface/tokenizers model to use for Qwen 3.5 0.8B.
+pub const HF_QWEN35: &str = "Qwen/Qwen3.5-0.8B";
+
 /// The shared disk cache for benchmarks.
 static DISK_CACHE: OnceLock<Mutex<WordchipperDiskCache>> = OnceLock::new();
 

@@ -76,6 +76,11 @@ configuration.
 For a number of pretrained models, simplified constructors are
 available to download, cache, and load the vocabulary.
 
+At this time, we have support for the following loaders:
+
+* `openai:[{PATH}/]{NAME}` - Lod pre-trained OpenAI models.
+* `hf:[{PATH}/]{NAME}` - Load pre-trained HuggingFace models.
+
 See: [wordchipper::get_model](
 https://docs.rs/wordchipper/latest/wordchipper/fn.get_model.html)
 

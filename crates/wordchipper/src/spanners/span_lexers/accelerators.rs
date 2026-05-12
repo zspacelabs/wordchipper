@@ -40,6 +40,22 @@ pub struct RegexAcceleratorHook {
 }
 inventory::collect!(RegexAcceleratorHook);
 
+/// Inventory hook for regex-automata pattern transforms.
+///
+/// Some patterns require a lookahead-free or possessive-free variant before
+/// they can be compiled by `regex-automata`.
+pub struct RegexAutomataTransformHook {
+    /// The exact source regex pattern.
+    pub pattern: ConstRegexPattern,
+
+    /// The transformed pattern accepted by `regex-automata`.
+    pub transformed_pattern: &'static str,
+
+    /// Whether whitespace truncation should ignore newline-containing spans.
+    pub has_newline_branch: bool,
+}
+inventory::collect!(RegexAutomataTransformHook);
+
 impl RegexAcceleratorHook {
     /// Setup a new regex accelerator hook.
     pub const fn new(
@@ -47,6 +63,21 @@ impl RegexAcceleratorHook {
         builder: fn() -> Arc<dyn SpanLexer>,
     ) -> Self {
         Self { pattern, builder }
+    }
+}
+
+impl RegexAutomataTransformHook {
+    /// Setup a new regex-automata transform hook.
+    pub const fn new(
+        pattern: ConstRegexPattern,
+        transformed_pattern: &'static str,
+        has_newline_branch: bool,
+    ) -> Self {
+        Self {
+            pattern,
+            transformed_pattern,
+            has_newline_branch,
+        }
     }
 }
 
@@ -64,14 +95,36 @@ pub fn get_regex_accelerator(pattern: &str) -> Option<Arc<dyn SpanLexer>> {
     None
 }
 
+/// Get a registered `regex-automata` transform.
+pub fn get_regex_automata_transform(pattern: &str) -> Option<(&'static str, bool)> {
+    for hook in inventory::iter::<RegexAutomataTransformHook> {
+        if hook.pattern.as_str() == pattern {
+            return Some((hook.transformed_pattern, hook.has_newline_branch));
+        }
+    }
+    None
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::pretrained::openai::patterns::{
+        OA_CL100K_BASE_PATTERN,
+        OA_CL100K_BASE_PATTERN_RA,
+    };
 
     #[test]
     fn test_unknown_pattern_returns_none() {
         assert!(
             get_regex_accelerator("not_a_real_pattern_that_would_ever_be_registered").is_none()
+        );
+    }
+
+    #[test]
+    fn test_known_regex_automata_transform_returns_hook() {
+        assert_eq!(
+            get_regex_automata_transform(OA_CL100K_BASE_PATTERN.as_str()),
+            Some((OA_CL100K_BASE_PATTERN_RA, true))
         );
     }
 }

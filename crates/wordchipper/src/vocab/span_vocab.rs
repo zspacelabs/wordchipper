@@ -3,6 +3,7 @@
 use crate::{
     WCResult,
     alloc::vec::Vec,
+    support::with_ok_or_panic::WithOkOrPanic,
     types::{
         TokenType,
         WCHashMap,
@@ -96,7 +97,7 @@ impl<T: TokenType> SpanMapVocab<T> {
     pub fn from_byte_vocab(byte_vocab: ByteMapVocab<T>) -> Self {
         let span_map: SpanTokenMap<T> = byte_vocab.span_pairs().collect();
 
-        Self::new(byte_vocab, span_map).unwrap()
+        Self::new(byte_vocab, span_map).ok_or_panic()
     }
 
     /// Build a [`Self`] from a [`SpanTokenMap`].
@@ -126,7 +127,7 @@ impl<T: TokenType> SpanMapVocab<T> {
 
         let byte_vocab: ByteMapVocab<T> = ByteMapVocab::from_byte_to_token(&byte_to_token);
 
-        Self::new(byte_vocab, span_map).unwrap()
+        Self::new(byte_vocab, span_map).ok_or_panic()
     }
 
     /// Initialize a [`SpanMapVocab`].
@@ -227,24 +228,38 @@ impl<T: TokenType> SpanMapVocab<T> {
             .map(|(chunk, &token)| (token, chunk.as_ref()))
             .collect();
 
-        for token in self.tokens() {
+        let mut tokens: Vec<T> = self.tokens().into_iter().collect();
+        tokens.sort_by_key(|token| token_to_span.get(token).map_or(1, |span| span.len()));
+
+        let mut grounded: WCHashSet<T> = byte_vocab.tokens();
+
+        for token in tokens {
             let span = token_to_span[&token];
             if span.len() <= 1 {
                 continue;
             }
+
+            let mut added = false;
             for p in 1..span.len() {
                 let pre = &span[..p];
                 let post = &span[p..];
 
                 if let Some(a) = self.lookup_token(pre)
                     && let Some(b) = self.lookup_token(post)
+                    && grounded.contains(&a)
+                    && grounded.contains(&b)
                 {
                     pairs.insert((a, b), token);
+                    added = true;
                 }
+            }
+
+            if added {
+                grounded.insert(token);
             }
         }
 
-        PairMapVocab::<T>::new(byte_vocab, pairs).unwrap()
+        PairMapVocab::<T>::new(byte_vocab, pairs).ok_or_panic()
     }
 }
 
@@ -387,5 +402,19 @@ mod tests {
             .map(|&(a, b)| (a, b))
             .collect::<PairTokenMap<T>>()
         );
+    }
+
+    #[test]
+    fn test_build_pair_vocab_omits_undecomposable_span_token() {
+        type T = u32;
+
+        let mut span_map: SpanTokenMap<T> = Default::default();
+        span_map.insert("abc".as_bytes().to_vec(), 300);
+
+        let vocab = SpanMapVocab::from(span_map);
+        let pair_vocab = vocab.to_pair_vocab();
+
+        assert!(pair_vocab.pair_map().is_empty());
+        assert!(!pair_vocab.tokens().contains(&300));
     }
 }

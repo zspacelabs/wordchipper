@@ -5,12 +5,16 @@ use crate::alloc::string::String;
 /// Errors from wordchipper operations.
 #[derive(Debug, thiserror::Error)]
 pub enum WCError {
+    /// Not Implemented Error.
+    #[error("Not Implemented: {0}")]
+    NotImplemented(String),
+
     /// Resource not found.
-    #[error("{0}")]
+    #[error("Resource Not Found: {0}")]
     ResourceNotFound(String),
 
     /// The resource is a duplicate.
-    #[error("{0}")]
+    #[error("Duplicate: {0}")]
     DuplicatedResource(String),
 
     /// Vocab size exceeds the capacity of the target token type.
@@ -28,7 +32,7 @@ pub enum WCError {
     },
 
     /// Vocabulary data is inconsistent.
-    #[error("{0}")]
+    #[error("Vocab Conflict: {0}")]
     VocabConflict(String),
 
     /// Token value out of range for the target type.

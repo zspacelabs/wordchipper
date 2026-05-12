@@ -36,6 +36,9 @@
 pub mod factory;
 pub mod openai;
 
+#[cfg(feature = "huggingface")]
+pub mod huggingface;
+
 #[doc(inline)]
 pub use factory::{
     LabeledVocab,

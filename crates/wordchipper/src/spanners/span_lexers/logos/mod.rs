@@ -45,6 +45,8 @@ macro_rules! logos_lexer {
 pub mod cl100k;
 pub mod gpt2_family;
 pub mod o200k;
+#[cfg(feature = "huggingface")]
+pub mod qwen35;
 pub mod r50k;
 
 #[cfg(any(test, feature = "testing"))]
