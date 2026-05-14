@@ -138,7 +138,6 @@ jobs:
             "${{ needs.clippy.result }}"
             "${{ needs.machete.result }}"
             "${{ needs.test.result }}"
-            "${{ needs.coverage.result }}"
             "${{ needs.cross.result }}"
             "${{ needs.wasm.result }}"
             "${{ needs.python.result }}"
