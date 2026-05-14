@@ -21,20 +21,24 @@ pub struct VocabDescription {
 
 impl VocabDescription {
     /// Build a new vocabulary description.
-    pub fn new<Q>(
+    pub fn new<Q, C, D>(
         id: Q,
-        context: &[&str],
-        description: &str,
+        context: &[C],
+        description: D,
     ) -> Self
     where
         Q: Into<VocabQuery>,
+        C: AsRef<str>,
+        D: AsRef<str>,
     {
         let id = id.into();
+        let context = context.iter().map(|c| c.as_ref().to_string()).collect();
+        let description = description.as_ref().to_string();
 
         Self {
             id,
-            context: context.iter().map(|&s| s.to_string()).collect(),
-            description: description.to_string(),
+            context,
+            description,
         }
     }
 

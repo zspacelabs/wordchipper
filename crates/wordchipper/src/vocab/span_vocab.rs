@@ -3,6 +3,7 @@
 use crate::{
     WCResult,
     alloc::vec::Vec,
+    support::with_ok_or_panic::WithOkOrPanic,
     types::{
         TokenType,
         WCHashMap,
@@ -96,7 +97,7 @@ impl<T: TokenType> SpanMapVocab<T> {
     pub fn from_byte_vocab(byte_vocab: ByteMapVocab<T>) -> Self {
         let span_map: SpanTokenMap<T> = byte_vocab.span_pairs().collect();
 
-        Self::new(byte_vocab, span_map).unwrap()
+        Self::new(byte_vocab, span_map).ok_or_panic()
     }
 
     /// Build a [`Self`] from a [`SpanTokenMap`].
@@ -126,7 +127,7 @@ impl<T: TokenType> SpanMapVocab<T> {
 
         let byte_vocab: ByteMapVocab<T> = ByteMapVocab::from_byte_to_token(&byte_to_token);
 
-        Self::new(byte_vocab, span_map).unwrap()
+        Self::new(byte_vocab, span_map).ok_or_panic()
     }
 
     /// Initialize a [`SpanMapVocab`].
@@ -244,7 +245,7 @@ impl<T: TokenType> SpanMapVocab<T> {
             }
         }
 
-        PairMapVocab::<T>::new(byte_vocab, pairs).unwrap()
+        PairMapVocab::<T>::new(byte_vocab, pairs).ok_or_panic()
     }
 }
 

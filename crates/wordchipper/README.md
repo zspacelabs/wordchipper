@@ -18,6 +18,12 @@ and ~6.9x-9.2x when using custom DFA lexers for specific OpenAI vocabularies.
 Under python wrappers, we see a range of ~2x-4x (4 to 64 cores) speedups over
 [tiktoken](https://github.com/openai/tiktoken).
 
+### Changelog
+
+* 0.9.1 - 2023-03-22
+    - Add support for remote huggingface loading (via `hf:[{PATH}/]{NAME}`)
+    - Detect / error on vocabs with orphan tokens: [Bug 386](https://github.com/zspacelabs/wordchipper/issues/386)
+
 ### Suite Crates
 
 This is the main crate for the [wordchipper](https://github.com/zspacelabs/wordchipper) project.
@@ -75,6 +81,11 @@ configuration.
 
 For a number of pretrained models, simplified constructors are
 available to download, cache, and load the vocabulary.
+
+At this time, we have support for the following loaders:
+
+* `openai:[{PATH}/]{NAME}` - Lod pre-trained OpenAI models.
+* `hf:[{PATH}/]{NAME}` - Load pre-trained HuggingFace models.
 
 See: [wordchipper::get_model](
 https://docs.rs/wordchipper/latest/wordchipper/fn.get_model.html)
