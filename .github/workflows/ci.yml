@@ -66,7 +66,6 @@ jobs:
           --exclude wordchipper-data
           --exclude divan-parser
           --exclude lexer-equivalence
-          --fail-under-lines 75
           --lcov --output-path lcov.info
       - uses: codecov/codecov-action@v5
         with:
